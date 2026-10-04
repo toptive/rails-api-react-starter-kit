@@ -45,6 +45,8 @@ env:
     SOLID_QUEUE_IN_PUMA: "true"
     DB_HOST: postgres
     PUBLIC_URL: https://CHANGE_ME.toptive.dev
+    CANONICAL_HOST: CHANGE_ME.toptive.dev
+    NATIVE_SCHEME: starterkit
     SPA_ORIGIN: https://CHANGE_ME.toptive.dev
     API_ORIGIN: https://CHANGE_ME.toptive.dev
     TENANCY: multi

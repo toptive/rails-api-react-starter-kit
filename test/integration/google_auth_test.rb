@@ -91,8 +91,9 @@ class GoogleAuthTest < ActionDispatch::IntegrationTest
     assert_equal user.id, data.dig("auth", "user", "id")
   end
 
-  test "unverified identities and closed signup cannot create accounts or sessions" do
-    [ [ false, "open", "email_not_verified" ], [ true, "closed", "signup_closed" ] ].each do |verified, signup, error|
+  test "unverified identities and restricted signup cannot create accounts or sessions" do
+    [ [ false, "open", "email_not_verified" ], [ true, "closed", "signup_closed" ],
+      [ true, "invite", "invitation_required" ] ].each do |verified, signup, error|
       ENV["SIGNUP_MODE"] = signup
       get "/api/v1/auth/google/start"
       state = URI.decode_www_form(URI(response.location).query).to_h.fetch("state")
@@ -101,7 +102,29 @@ class GoogleAuthTest < ActionDispatch::IntegrationTest
           get "/api/v1/auth/google/callback", params: { state: state, code: "fixture-code" }
         end
       end
+      assert_response :found
       assert_equal error, URI.decode_www_form(URI(response.location).fragment).to_h.fetch("error")
+    end
+  end
+
+  { "start" => 10, "callback" => 20 }.each do |resource, limit|
+    test "Google #{resource} allows #{limit} requests per minute per IP" do
+      path = "/api/v1/auth/google/#{resource}"
+      headers = { "REMOTE_ADDR" => "203.0.113.1" }
+      limit.times do
+        get path, headers: headers
+        assert_response :found
+      end
+      get path, headers: headers
+      assert_error :too_many_requests, "rate_limited"
+      assert_equal "60", response.headers["Retry-After"]
+      assert_equal 60, response.parsed_body.dig("error", "details", "retryAfter")
+      get path, headers: { "REMOTE_ADDR" => "203.0.113.2" }
+      assert_response :found
+      travel 61.seconds do
+        get path, headers: headers
+        assert_response :found
+      end
     end
   end
 

@@ -1,8 +1,8 @@
 class Bootstrap
   def self.for_session(session, scope:)
-    return scope.user.with_lock { payload(session, scope) } if session
+    scope.user.reload if session
 
-    payload(nil, scope)
+    payload(session, scope)
   end
 
   def self.payload(session, scope)

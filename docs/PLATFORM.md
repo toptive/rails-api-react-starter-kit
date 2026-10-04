@@ -68,7 +68,9 @@ Admin fills run through `FillTranslationsJob`; see [ADMIN.md](ADMIN.md) for 201/
 
 Sentry is inactive without `SENTRY_DSN`. With a DSN, request and job exceptions use the
 Rails integration. Only the user UUID is retained: request bodies, headers, cookies, query,
-URL, breadcrumbs, contexts, tags, attachments and exception messages/locals are scrubbed.
+URL, breadcrumbs, contexts, tags, attachments and exception locals are scrubbed.
+Messages are scrubbed for user-originated errors; other exception messages are retained
+for diagnosis. See [SECURITY.md](SECURITY.md).
 `Monitoring.report(exception, user_id: ...)` reports rescued exceptions. Environment comes
 from `SENTRY_ENV`, release from `KAMAL_VERSION`; tracing is disabled.
 

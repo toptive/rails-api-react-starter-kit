@@ -39,7 +39,8 @@ Dir.chdir(root) do
   changed = 0
   files.split("\0").uniq.each do |path|
     next unless File.file?(path) && !File.symlink?(path)
-    next if path == "bin/rename" || path == "pnpm-lock.yaml" || path.end_with?(".enc", ".key") || path.start_with?("vendor/")
+    next if path == "bin/rename" || path == "pnpm-lock.yaml" || path.end_with?(".lock", ".enc", ".key") ||
+      path.start_with?("vendor/", "frontend/src/api/generated/", "i18n/locales/", "config/locales/")
 
     content = File.binread(path).force_encoding(Encoding::UTF_8)
     next unless content.valid_encoding? && !content.include?("\0")

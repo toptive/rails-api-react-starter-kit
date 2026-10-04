@@ -208,7 +208,8 @@ rg -n 'process\.env|import\.meta\.env' frontend i18n
 | `FAL_KEY`, `GOOGLE_API_KEY`, `GEMINI_MODEL` | Optional media/Gemini; model `gemini-2.5-flash` |
 | `SENTRY_DSN`, `SENTRY_ENV`, `KAMAL_VERSION` | Optional monitoring, Rails environment default, deployment release |
 | `KAMAL_REGISTRY_PASSWORD` | Dummy login for loopback registry; real secret with an authenticated registry |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NATIVE_SCHEME` | Optional Google OAuth credentials; native scheme defaults to `starterkit` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional Google OAuth credentials; configure both together |
+| `NATIVE_SCHEME` | Google native handoff scheme; defaults to `starterkit` and must match the Capacitor app |
 | `VITE_DEV_API_URL`, `VITE_PORT` | Vite dev proxy target `http://localhost:3000`, SPA port 5173 |
 | `VITE_API_URL`, `VITE_PUBLIC_URL`, `VITE_SITE_INDEXING`, `VITE_PRERENDER_API_URL`, `VITE_OUT_DIR` | Public bundle/prerender configuration; Docker build args, output `../public` |
 | `E2E`, `E2E_PGDATABASE`, `E2E_API_DIR`, `E2E_API_URL`, `E2E_BASE_URL`, `E2E_PORT`, `E2E_VITE_PORT`, `E2E_API_OFF_URL`, `E2E_BASE_OFF_URL`, `E2E_STRIPE_URL`, `E2E_MAILBOX_PATH`, `E2E_AI`, `E2E_BILLING` | Test-only browser runner controls; see [GATES.md](GATES.md) |

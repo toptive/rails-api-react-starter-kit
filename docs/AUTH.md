@@ -97,8 +97,8 @@ to an existing account or creates one according to signup policy. It confirms th
 Web handoffs use `PUBLIC_URL/auth/callback#token=...` with expiry, new-account marker and
 validated return path; native handoffs use
 `NATIVE_SCHEME://auth/callback`. Tokens remain out of query strings and server access logs.
-Provider failures return a stable error code in the fragment. Both resources allow ten
-requests per minute. Tests stub only Google's HTTP boundary.
+Provider failures return a stable error code in the fragment. Start allows ten requests per
+minute; callback allows twenty. Tests stub only Google's HTTP boundary.
 
 ## Rate limits
 

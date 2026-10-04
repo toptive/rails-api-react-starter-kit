@@ -75,6 +75,23 @@ class AuthTest < ActionDispatch::IntegrationTest
     assert_nil response.headers["Set-Cookie"]
   end
 
+  test "authenticated bootstrap returns the current profile without locking rows" do
+    user = create_user
+    token = sign_in(user)
+    user.update!(name: "Updated profile")
+    queries = []
+    capture = ->(event) { queries << event.payload[:sql] }
+
+    ActiveSupport::Notifications.subscribed(capture, "sql.active_record") do
+      get "/api/v1/bootstrap", headers: bearer(token)
+    end
+
+    assert_response :ok
+    assert_equal user.id, data.dig("auth", "user", "id")
+    assert_equal "Updated profile", data.dig("auth", "user", "name")
+    assert_empty queries.grep(/FOR (?:UPDATE|SHARE|NO KEY UPDATE|KEY SHARE)/i)
+  end
+
   test "bootstrap refuses supplied invalid expired and revoked sessions so clients discard bearers" do
     user = create_user
     token = sign_in(user)
