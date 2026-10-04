@@ -4,6 +4,20 @@ require_relative "../support/tenancy_requests"
 class MembershipsTest < ActionDispatch::IntegrationTest
   include TenancyRequests
 
+  test "single mode refuses leaving without changing or recreating the seat" do
+    Rails.application.config.x.tenancy = "single"
+    sign_in(create_user)
+    member = create_user
+    token = sign_in(member)
+    scope = Session.scope_for(Session.find_by_token(token))
+    assert_no_difference [ "Membership.for(scope).count", "AuditEvent.count" ] do
+      delete "/api/v1/settings/members/#{scope.membership.id}", headers: bearer(token)
+    end
+    assert_error :forbidden, "forbidden"
+    assert_equal "member", scope.membership.reload.role
+    assert_equal scope.organization.id, scope.session.reload.organization_id
+  end
+
   test "create organization invite accept list change role and remove flow" do
     post "/api/v1/organizations", params: { name: "Together" }, headers: bearer(@owner_token), as: :json
     assert_response :created

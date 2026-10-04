@@ -39,6 +39,7 @@ class Membership < ApplicationRecord
       Organization.refresh_membership!(scope)
       membership = self.for(scope).find(id)
       Pundit.authorize(scope, membership, :destroy?)
+      raise ApiError.forbidden if Organization.tenancy == "single" && membership.user_id == scope.user.id
       raise ApiError.conflict(:last_owner) if membership.role == "owner" && last_owner?(scope)
 
       membership.destroy!

@@ -41,7 +41,8 @@ the serialized user. Anonymous bootstrap has `auth: null`.
 | member / full | Yes | No |
 | any role / viewer | Yes | No |
 
-Every member may leave their own seat. The last owner cannot leave or be removed
+In multi mode every member may leave their own seat. In single mode leaving the shared
+organization returns `403 forbidden`; a manager may still remove another member. The last owner cannot leave or be removed
 (`409 last_owner`) or be demoted (`422 validation_failed`, `role: validation.last_owner`).
 An admin trying to promote or change an owner receives `role: validation.owner_only`;
 removing an owner returns `403 forbidden`. Owner counts refer to the role, regardless of access.
@@ -51,6 +52,10 @@ finding the target through the tenant scope and counting owners. Writes and audi
 transaction. This prevents stale authority and concurrent removal of all owners.
 
 ## Tenant query rule
+
+`Session` and `AuditEvent` are explicitly excluded from tenant models: sessions are user-owned
+and may select an organization; audits preserve historical organization references.
+The architecture scan covers `app/`, `lib/` and `db/seeds.rb`.
 
 Tenant models include `TenantScoped`, belong to an organization and carry a non-null
 `organization_id`. **The only tenant query entry is `Model.for(scope)`**, including creation,

@@ -5,7 +5,7 @@ module Api
 
       def show
         skip_authorization
-        render_data(Bootstrap.for_session(current_session), serializer: BootstrapSerializer)
+        render_data(Bootstrap.for_session(current_session, scope: current_scope), serializer: BootstrapSerializer)
       end
     end
   end

@@ -86,21 +86,6 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def validate_one_click_body
-    return unless request.media_type == "application/x-www-form-urlencoded"
-    return if params["List-Unsubscribe"] == "One-Click"
-
-    raise ApiError.bad_request
-  end
-
-  def render_email_subscription(payload)
-    if request.media_type == "application/x-www-form-urlencoded"
-      head :ok
-    else
-      render_data(payload, serializer: EmailSubscriptionSerializer)
-    end
-  end
-
   def render_collection(scope, serializer:, status: :ok, serializer_params: {})
     page = params.fetch(:page, 1).to_i.clamp(1, 1_000_000)
     per_page = params.fetch(:per_page, 25).to_i.clamp(1, 100)

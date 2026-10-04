@@ -30,7 +30,7 @@ class TenancyTest < ActiveSupport::TestCase
     tenant_models = Rails.root.glob("app/models/*.rb").filter_map do |path|
       path.basename.to_s.delete_suffix(".rb").camelize if File.read(path).match?(/^\s*include TenantScoped$/)
     end
-    Rails.root.glob("app/**/*.rb").each do |path|
+    (Rails.root.glob("app/**/*.rb") + Rails.root.glob("lib/**/*.rb") + [ Rails.root.join("db/seeds.rb") ]).each do |path|
       calls(syntax(path)).each do |call|
         receiver = call.receiver&.location&.slice
         tenant_file = tenant_models.include?(path.basename.to_s.delete_suffix(".rb").camelize)

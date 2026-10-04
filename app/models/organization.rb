@@ -86,10 +86,11 @@ class Organization < ApplicationRecord
 
     organization.with_lock do
       destination = Session::Scope.new(user: scope.user, session: scope.session, organization: organization)
-      raise ApiError.conflict(:not_member) unless Membership.for(destination).exists?(user_id: scope.user.id)
+      destination.membership = Membership.for(destination).find_by(user_id: scope.user.id)
+      raise ApiError.conflict(:not_member) unless destination.membership
 
       remember!(scope, organization)
-      Bootstrap.auth_for(scope.session)
+      Bootstrap.auth_for(destination)
     end
   end
 
