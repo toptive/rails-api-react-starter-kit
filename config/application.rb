@@ -28,6 +28,7 @@ module StarterKit
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.exceptions_app = ->(env) { Api::ExceptionsController.action(:show).call(env) }
     config.active_job.queue_adapter = :solid_queue
     config.solid_queue.connects_to = { database: { writing: :queue } }
     config.mission_control.jobs.base_controller_class = "ActionController::Base"

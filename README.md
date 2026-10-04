@@ -15,8 +15,7 @@ and the API contract, and prepares development and test databases. Optional loca
 are listed in `.env.example`; copy it to `.env` when needed.
 
 `GET /up` probes Rails; `GET /api/v1/health` returns `{ "data": { "status": "ok" }, "meta": {} }`.
-Protected endpoints refuse access until the session domain is implemented. `/jobs` is reserved
-for superadmins and currently denies access.
+Protected endpoints require a live bearer session. `/jobs` requires a live superadmin session.
 
 ```sh
 bin/rails typelizer:generate

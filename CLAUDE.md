@@ -1,8 +1,8 @@
 # StarterKit — rulebook
 
 Rails 8.1 JSON API on Ruby 3.4.10, PostgreSQL, one React SPA with TanStack Router and
-React Query. The API is at the repository root; the SPA lives in `frontend/` and can later
-run in Capacitor. This is the Toptive base template for API products.
+React Query. The API is at the repository root; the SPA lives in `frontend/` and supports
+Capacitor. This is the Toptive base template for API products.
 
 One `package.json` and one `pnpm-lock.yaml` at the root. Frontend commands run from the root:
 `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm i18n:build`.
@@ -38,7 +38,7 @@ build-script approvals only and declares no packages.
 - Error codes are stable English identifiers; messages are translated. Validation details
   carry translation keys, never strings hard-coded in controllers or models.
 - The admin translation domain must preserve runtime edits when it synchronizes new CSV
-  keys. Until that domain exists, the generated catalogues are the runtime source.
+  keys. Generated catalogues supply the default runtime values.
 
 ## Layout
 
@@ -76,8 +76,8 @@ docs/                       developer reference by area
   resource routing; never put a custom action name in an endpoint.
 - Raise `ApiError.<status>(:code, details)` for domain refusals. The boundary maps Pundit
   denial to 403, missing records to 404, invalid records to 422, malformed input to 400.
-- `Api::V1::BaseController#authenticate!` consumes opaque bearer tokens; the session lookup
-  is a deny-by-default seam until the authentication domain supplies digest/expiry checks.
+- `Api::V1::BaseController#authenticate!` consumes opaque bearer tokens by checking
+  their digest, expiry and revocation in the sessions table.
 
 ### Models and business rules
 
@@ -98,8 +98,8 @@ docs/                       developer reference by area
   controller APIs in jobs. Tests require `default` or `marketing` as the queue.
 - Solid Queue, Solid Cache and Solid Cable use PostgreSQL in development and production.
   Recurring jobs live in `config/recurring.yml`; never add an undeclared worker queue.
-- Mission Control Jobs is mounted at `/jobs`, behind the superadmin bearer route constraint.
-  It remains inaccessible until the session domain supplies a live-session lookup.
+- Mission Control Jobs is mounted at `/jobs`, behind a live, non-impersonating
+  superadmin session constraint. Browser access uses a short-lived signed dashboard cookie.
 - The dashboard uses Propshaft for its assets; the SPA uses Vite. Do not move SPA assets
   into Rails views or add a second frontend application.
 
@@ -131,7 +131,7 @@ docs/                       developer reference by area
 ## Frontend — React SPA
 
 - React, TypeScript strict and Vite. The shared SPA uses TanStack Router for navigation and
-  React Query for server state. The skeleton's placeholder has no domain data yet.
+  React Query for server state.
 - Data comes through `frontend/src/api/` hooks and the shared HTTP client; no raw `fetch` or
   axios in pages, no `useEffect` to load data. The client owns bearer and locale headers.
 - Input schemas validate forms; generated interfaces type responses. Avoid duplicated server
@@ -161,7 +161,7 @@ docs/                       developer reference by area
   use `cred` for local credentials. `.env.example` contains placeholders only.
 - Brakeman, bundler-audit and pnpm audit are gates. Fix findings; a proven false positive
   needs an individual documented reason, never a blanket suppression.
-- Future private uploads require authentication, allow-lists, size checks and byte validation.
+- Private uploads require authentication, allow-lists, size checks and byte validation.
   Sentry must omit request bodies, bearer tokens and personally identifying fields.
 
 ## Testing & gates
@@ -173,6 +173,15 @@ checks, frontend typecheck, ESLint, Vitest and pnpm audit. All failures block co
   `bin/setup` installs the hooks with `git config core.hooksPath .githooks`.
 - `.claude/hooks/architecture-check` runs after Edit/Write through `.claude/settings.json`.
   It checks architecture/style and regenerates relevant types or translations immediately.
+- More end-to-end tests, fewer unit tests. Backend request tests through the real router,
+  authentication, policies, database, serializers and envelope are the default: test each
+  endpoint outcome and flows that chain endpoints. Model tests cover real branching only
+  (money, dates, policies, parsers); never private helpers, isolated serializers or getters.
+- SPA flows use Playwright in `frontend/e2e/` against the real backend (`pnpm e2e` boots
+  the test API and seeds). Cover feature flows; mock provider HTTP boundaries only. Vitest
+  covers pure functions, never component renders with mocked APIs.
+- Architecture tests enforce the rulebook, including no `PLAN.md`, `STATUS.md`, `TODO.md`,
+  `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
 - Every behavior gets meaningful tests. Architecture tests enforce REST actions, explicit
   authorization, envelopes, model ownership and jobs with one model call.
 - Generated files are staged before drift checks. Do not skip hooks to make a commit pass.

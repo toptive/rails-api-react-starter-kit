@@ -194,7 +194,6 @@
   "errors.api.unauthorized": "Sign in to continue.",
   "errors.api.unknown_kind": "This kind of upload is not allowed.",
   "errors.api.uploads_not_configured": "File uploads are not set up yet.",
-  "errors.api.validation_error": "Some fields need a fix.",
   "errors.api.validation_failed": "Some fields need a fix.",
   "errors.page.403.body": "Your role doesn't allow it. Ask an owner or an admin of your organization.",
   "errors.page.403.title": "You can't open this page",
@@ -527,5 +526,8 @@
   "validation.terms_required": "Accept the terms and the privacy policy to create your account.",
   "validation.turnstile_required": "We couldn't confirm that you're a person. Wait for the security check to finish, then send the form again.",
   "validation.unique": "This is already taken.",
-  "validation.unsafe_unique": "This is already taken."
+  "validation.unsafe_unique": "This is already taken.",
+  "errors.api.rate_limited": "Too many attempts. Wait a minute and try again.",
+  "errors.api.method_not_allowed": "This request method is not supported.",
+  "errors.api.unsupported_media_type": "Send the request as JSON."
 }

@@ -15,5 +15,5 @@ class ApiError < StandardError
   def self.not_found(code = :not_found, details = {}) = new(code, :not_found, details)
   def self.conflict(code = :conflict, details = {}) = new(code, :conflict, details)
   def self.unprocessable(code = :validation_failed, details = {}) = new(code, :unprocessable_entity, details)
-  def self.too_many_requests(code = :too_many_requests, details = {}) = new(code, :too_many_requests, details)
+  def self.too_many_requests(code = :rate_limited, details = {}) = new(code, :too_many_requests, details)
 end

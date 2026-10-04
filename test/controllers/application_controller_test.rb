@@ -94,7 +94,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       get "/probe/invalid_record?locale=es"
       assert_response :unprocessable_entity
       assert_equal "validation_failed", response.parsed_body.dig("error", "code")
-      assert_equal({ "displayName" => [ "validation.required" ] }, response.parsed_body.dig("error", "details"))
+      assert_equal({ "displayName" => [ { "key" => "validation.required", "message" => I18n.t("validation.required", locale: :es) } ] }, response.parsed_body.dig("error", "details"))
     end
   end
 
@@ -106,7 +106,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       get "/probe/missing_parameter"
       assert_response :bad_request
       assert_equal "bad_request", response.parsed_body.dig("error", "code")
-      assert_equal({ "displayName" => [ "validation.required" ] }, response.parsed_body.dig("error", "details"))
+      assert_equal({ "displayName" => [ { "key" => "validation.required", "message" => I18n.t("validation.required") } ] }, response.parsed_body.dig("error", "details"))
     end
   end
 

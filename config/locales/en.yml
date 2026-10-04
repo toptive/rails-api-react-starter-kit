@@ -256,8 +256,10 @@ en:
       unauthorized: Sign in to continue.
       unknown_kind: This kind of upload is not allowed.
       uploads_not_configured: File uploads are not set up yet.
-      validation_error: Some fields need a fix.
       validation_failed: Some fields need a fix.
+      rate_limited: Too many attempts. Wait a minute and try again.
+      method_not_allowed: This request method is not supported.
+      unsupported_media_type: Send the request as JSON.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.

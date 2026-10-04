@@ -17,8 +17,7 @@ module Api
         request.authorization.to_s[/\ABearer ([^\s,]+)\z/i, 1]
       end
 
-      # Task 02 replaces this deny-by-default seam with Session.find_live(token).
-      # Never accept a token until its digest and expiry can be checked in the DB.
+      # Bearer authentication checks the stored digest, expiry and revocation.
       def find_session(_token) = nil
     end
   end

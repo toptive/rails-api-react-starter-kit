@@ -11,6 +11,7 @@ class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordInvalid, with: :render_record_invalid
   rescue_from ActionController::ParameterMissing, with: :render_parameter_missing
   rescue_from ActionDispatch::Http::Parameters::ParseError, with: :render_invalid_json
+  before_action :set_private_cache
 
   private
 
@@ -70,18 +71,31 @@ class ApplicationController < ActionController::API
   def render_forbidden(_error) = render_error(code: :forbidden, status: :forbidden)
   def render_not_found(_error) = render_error(code: :not_found, status: :not_found)
   def render_invalid_json(_error) = render_error(code: :invalid_json, status: :bad_request)
-  def render_rate_limited = render_error(code: :too_many_requests, status: :too_many_requests)
+  def set_private_cache
+    response.headers["Cache-Control"] = "private, no-store"
+  end
+
+  def render_rate_limited
+    response.headers["Retry-After"] = "60"
+    render_error(code: :rate_limited, status: :too_many_requests, details: { retryAfter: 60 })
+  end
 
   def render_parameter_missing(error)
     render_error(code: :bad_request, status: :bad_request,
-      details: { error.param.to_s.camelize(:lower) => [ "validation.required" ] })
+      details: { error.param.to_s.camelize(:lower) => [ validation_detail("validation.required") ] })
   end
 
   def render_record_invalid(error)
     details = error.record.errors.group_by(&:attribute).to_h do |field, errors|
-      [ field.to_s.camelize(:lower), errors.map { |item| validation_key(item) }.uniq ]
+      [ field.to_s.camelize(:lower), errors.map { |item| validation_detail(validation_key(item), item.options.slice(:count)) }.uniq ]
     end
     render_error(code: :validation_failed, status: :unprocessable_entity, details: details)
+  end
+
+  def validation_detail(key, bindings = {})
+    detail = { key: key, message: I18n.t(key, **bindings, locale: resolve_locale) }
+    detail[:bindings] = bindings if bindings.present?
+    detail
   end
 
   def validation_key(error)

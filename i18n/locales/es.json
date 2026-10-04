@@ -194,7 +194,6 @@
   "errors.api.unauthorized": "Ingresá para continuar.",
   "errors.api.unknown_kind": "Este tipo de subida no está permitido.",
   "errors.api.uploads_not_configured": "La subida de archivos todavía no está configurada.",
-  "errors.api.validation_error": "Hay campos para corregir.",
   "errors.api.validation_failed": "Hay campos para corregir.",
   "errors.page.403.body": "Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.",
   "errors.page.403.title": "No podés abrir esta página",
@@ -527,5 +526,8 @@
   "validation.terms_required": "Acepta los términos y la política de privacidad para crear tu cuenta.",
   "validation.turnstile_required": "No pudimos confirmar que eres una persona. Espera a que termine la verificación de seguridad y vuelve a enviar el formulario.",
   "validation.unique": "Esto ya está en uso.",
-  "validation.unsafe_unique": "Esto ya está en uso."
+  "validation.unsafe_unique": "Esto ya está en uso.",
+  "errors.api.rate_limited": "Demasiados intentos. Esperá un minuto y probá de nuevo.",
+  "errors.api.method_not_allowed": "Este método no está permitido.",
+  "errors.api.unsupported_media_type": "Enviá la solicitud como JSON."
 }

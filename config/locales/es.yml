@@ -260,8 +260,10 @@ es:
       unauthorized: Ingresá para continuar.
       unknown_kind: Este tipo de subida no está permitido.
       uploads_not_configured: La subida de archivos todavía no está configurada.
-      validation_error: Hay campos para corregir.
       validation_failed: Hay campos para corregir.
+      rate_limited: Demasiados intentos. Esperá un minuto y probá de nuevo.
+      method_not_allowed: Este método no está permitido.
+      unsupported_media_type: Enviá la solicitud como JSON.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.

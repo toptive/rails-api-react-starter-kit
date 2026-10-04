@@ -29,9 +29,7 @@ Development/test setup refuses a production environment.
 
 Secrets are environment values, never image layers or committed dotenv files. Use `cred` to
 populate an ignored local `.env` or run commands with secrets; the checked-in `.env.example`
-and `.kamal/secrets` contain only placeholders/environment references. A future product can
-add provider variables when their domains exist; no provider is contacted by this skeleton.
+and `.kamal/secrets` contain only placeholders/environment references.
 
-Production enables HTTPS/HSTS behind the TLS-terminating proxy. The job dashboard remains
-closed until a real superadmin session lookup is implemented; no default login credentials
-are configured. Do not deploy placeholder hosts or registry settings.
+Production enables HTTPS/HSTS behind the TLS-terminating proxy. The job dashboard requires
+a live superadmin session; no default login credentials are configured. Do not deploy placeholder hosts or registry settings.

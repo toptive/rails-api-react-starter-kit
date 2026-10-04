@@ -37,3 +37,15 @@ production SPA bundle.
 Architecture tests enforce REST-only actions, explicit Pundit authorization, raw JSON only
 in the envelope, no service folders, one model call per job and declared worker queues.
 Behavior tests verify the boundary's localized errors, bearer refusal and pagination.
+
+## Testing
+
+More end-to-end tests, fewer unit tests. Backend request tests through the real router,
+  authentication, policies, database, serializers and envelope are the default: test each
+  endpoint outcome and flows that chain endpoints. Model tests cover real branching only
+  (money, dates, policies, parsers); never private helpers, isolated serializers or getters.
+- SPA flows use Playwright in `frontend/e2e/` against the real backend (`pnpm e2e` boots
+  the test API and seeds). Cover feature flows; mock provider HTTP boundaries only. Vitest
+  covers pure functions, never component renders with mocked APIs.
+- Architecture tests enforce the rulebook, including no `PLAN.md`, `STATUS.md`, `TODO.md`,
+  `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
