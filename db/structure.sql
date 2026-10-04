@@ -123,6 +123,20 @@ CREATE TABLE public.invitations (
 
 
 --
+-- Name: legal_acceptances; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legal_acceptances (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    email_hash character varying NOT NULL,
+    versions jsonb DEFAULT '{}'::jsonb NOT NULL,
+    ip_address character varying,
+    accepted_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: memberships; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -187,6 +201,20 @@ CREATE TABLE public.sessions (
     organization_id uuid,
     CONSTRAINT sessions_impersonation_no_sudo CHECK (((impersonator_user_id IS NULL) OR (sudo_until IS NULL))),
     CONSTRAINT sessions_token_hash_length CHECK ((octet_length(token_hash) = 32))
+);
+
+
+--
+-- Name: subscriptions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subscriptions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    livemode boolean DEFAULT false NOT NULL,
+    status character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -262,6 +290,14 @@ ALTER TABLE ONLY public.invitations
 
 
 --
+-- Name: legal_acceptances legal_acceptances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_acceptances
+    ADD CONSTRAINT legal_acceptances_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: memberships memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -291,6 +327,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
 
 
 --
@@ -380,6 +424,13 @@ CREATE UNIQUE INDEX index_invitations_on_token_hash ON public.invitations USING 
 
 
 --
+-- Name: index_legal_acceptances_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legal_acceptances_on_user_id ON public.legal_acceptances USING btree (user_id);
+
+
+--
 -- Name: index_memberships_on_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -457,6 +508,20 @@ CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
 
 
 --
+-- Name: index_subscriptions_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_organization_id ON public.subscriptions USING btree (organization_id);
+
+
+--
+-- Name: index_subscriptions_on_organization_id_and_livemode; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_subscriptions_on_organization_id_and_livemode ON public.subscriptions USING btree (organization_id, livemode);
+
+
+--
 -- Name: index_user_tokens_on_token_hash_and_context; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -531,6 +596,14 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: subscriptions fk_rails_364213cc3e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT fk_rails_364213cc3e FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE RESTRICT;
+
+
+--
 -- Name: memberships fk_rails_64267aab58; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -552,6 +625,14 @@ ALTER TABLE ONLY public.sessions
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT fk_rails_758836b4f0 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: legal_acceptances fk_rails_7e26cdb304; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_acceptances
+    ADD CONSTRAINT fk_rails_7e26cdb304 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -609,6 +690,7 @@ ALTER TABLE ONLY public.impersonations
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261004110000'),
 ('20261004100000'),
 ('20261004090200'),
 ('20261004090100'),

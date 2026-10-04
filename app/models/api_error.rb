@@ -9,6 +9,13 @@ class ApiError < StandardError
     super(@code)
   end
 
+  def self.for_unmatched_route(request)
+    known_path = Rails.application.routes.routes.any? do |route|
+      route.defaults[:controller].to_s.start_with?("api/v1/") && route.path.match(request.path)
+    end
+    known_path ? new(:method_not_allowed, :method_not_allowed) : not_found
+  end
+
   def self.bad_request(code = :bad_request, details = {}) = new(code, :bad_request, details)
   def self.unauthorized(code = :unauthorized, details = {}) = new(code, :unauthorized, details)
   def self.forbidden(code = :forbidden, details = {}) = new(code, :forbidden, details)

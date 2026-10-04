@@ -26,6 +26,15 @@ class Session < ApplicationRecord
     { session: session, token: token }
   end
 
+  def self.devices_for(user)
+    user.sessions.live.where(impersonator_user_id: nil).order(created_at: :desc, id: :desc).to_a
+  end
+
+  def self.revoke_device!(user, id, request)
+    session = user.sessions.find(id)
+    session.revoke!(request: request)
+  end
+
   def self.find_by_token(token)
     session = lookup(token)
     return unless session&.live?

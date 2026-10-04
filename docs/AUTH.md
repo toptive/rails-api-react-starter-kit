@@ -42,7 +42,9 @@ Cloudflare-specific headers are not used as an independent identity source.
 Sign-in starts a ten-minute sudo window. A sign-in for the same user with a valid existing bearer
 refreshes that session and returns `token: null`. The client keeps its token. Sudo accepts the
 user's password or consumes a magic link belonging to the same user. A passwordless account
-must use the link. `require_sudo!` returns `403 sudo_required` for an expired window.
+must use the link. `require_sudo!` returns `403 sudo_required` when the window is missing or
+expired, and for impersonation. Email requests, password changes, account preview and account
+deletion all require sudo; email confirmation requires the bearer and the emailed token.
 
 Impersonation sessions never acquire sudo or superadmin authority and never slide their expiry.
 Ending impersonation revokes its token and sets the record's ended timestamp. Signing out while
@@ -97,3 +99,42 @@ user role and absence of impersonation. Tampering, demotion or sign-out removes 
 The dashboard has its own CSRF-protected browser session middleware; API bearer routes use no
 cookie session. CORS remains credential-free. This dashboard access endpoint is the deliberate
 cookie exception for the HTML operations engine.
+
+## Account settings and devices
+
+`PUT /api/v1/settings/profile` updates name (1–120 characters) and supported locale. It has no
+avatar field. `GET` and `PUT /api/v1/settings/email-preferences` expose `optionalEmails`;
+changes audit `user.optional_emails_started` or `user.optional_emails_stopped` once. Optional
+mailers use `ApplicationMailer#optional_email_headers` for the RFC 8058 HTTPS opt-out URL and
+`List-Unsubscribe-Post: List-Unsubscribe=One-Click`. Access and invitation mail have no opt-out
+headers. The starter kit currently has no optional mail kind.
+
+`GET /api/v1/settings/sessions` returns every live device of the bearer user, newest first,
+without pagination or impersonation sessions. The caller's row has `current: true`. Only the
+id, agent, IP, authentication time, creation time and current marker are serialized.
+`DELETE /api/v1/settings/sessions/:id` revokes a device, including the current one, and audits
+`session.revoked`. Another user's id returns 404. Known revoked bearers return
+`401 session_expired`; hashes remain until the daily cleanup.
+
+`PUT /api/v1/settings/email` validates a new address and returns 202 with that address, without
+changing the user's email. It refuses unavailable email delivery before token writes and limits
+requests to five per minute per user across devices. An unchanged address returns
+`409 email_unchanged` with `email: validation.email_unchanged`; other field errors use 422.
+A seven-day token is bound to the user and old email. Its encrypted delivery argument is queued
+after commit; the branded `mail.email_change.*` mail goes to the new address in the user's
+locale, linking to `SPA_ORIGIN/settings/email-confirmations/:token`.
+
+`GET /api/v1/settings/email-confirmations/:token` peeks without consuming. POST to
+`/api/v1/settings/email-confirmations` applies it under the user lock, deletes all of that user's
+change-email tokens and audits `user.email_changed`. Unknown, expired, spent, foreign or
+conflicting tokens return `422 email_change_invalid`. POST is limited to ten attempts per
+minute per IP. Confirmation does not require sudo.
+
+`PUT /api/v1/settings/password` requires `password` (12–72 bytes) and
+`passwordConfirmation`. Validation reports translated field details, including byte-length
+bindings and `validation.password_mismatch`. A successful transaction hashes the password,
+revokes every existing live session and child impersonation, deletes all user tokens, and issues
+a fresh fourteen-day session with a ten-minute sudo window for the current device and organization.
+The response is `AuthSession` with a new token; replace the stored bearer. Old bearers return
+`session_expired`. The change audits `user.password_changed`. Account deletion is documented in
+[PRIVACY.md](PRIVACY.md).

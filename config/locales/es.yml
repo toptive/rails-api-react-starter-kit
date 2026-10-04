@@ -276,6 +276,12 @@ es:
       last_owner: Elige otro dueño antes de salir o eliminar a este dueño.
       email_mismatch: Ingresa con la dirección de email de esta invitación.
       invitation_invalid: Esta invitación venció o ya no está disponible.
+      email_unchanged: Este ya es tu email.
+      email_change_invalid: Este enlace de confirmación de email no es válido o ha
+        vencido.
+      transfer_ownership: Nombra a otra persona como dueña antes de eliminar tu cuenta.
+      subscription_active: Cancela la suscripción de la organización antes de eliminar
+        tu cuenta.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.

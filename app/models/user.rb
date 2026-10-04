@@ -12,7 +12,6 @@ class User < ApplicationRecord
   validates :role, inclusion: { in: ROLES }
   validates :locale, inclusion: { in: ->(_) { I18n.available_locales.map(&:to_s) } }
   validates :terms_accepted, acceptance: { message: "validation.terms_required", allow_nil: false, accept: [ true, "true" ] }, on: :registration
-  validates :password, length: { minimum: 12, maximum: 72 }, allow_nil: true
   validate :password_byte_length
   before_save :hash_password, if: -> { password.present? }
 
@@ -100,6 +99,8 @@ class User < ApplicationRecord
 
   def record_registration_acceptance!(request)
     update!(legal_accepted_at: Time.current, legal_accepted_ip_address: request.remote_ip)
+    LegalAcceptance.create!(user: self, email_hash: Digest::SHA256.hexdigest(email),
+      versions: legal_accepted_versions, ip_address: request.remote_ip, accepted_at: legal_accepted_at)
     legal_accepted_versions.keys
   end
 
@@ -107,6 +108,12 @@ class User < ApplicationRecord
     Invitation.open_for_email?(email.to_s.strip.downcase)
   end
   private_class_method :open_invitation?
+
+  def update_profile!(attributes) = Settings.new(self).profile!(attributes)
+  def update_email_preferences!(attributes, scope, request) = Settings.new(self).preferences!(attributes, scope, request)
+  def request_email_change!(attributes) = Settings.new(self).email!(attributes)
+  def confirm_email!(token, scope, request) = Settings.new(self).confirm_email!(token, scope, request)
+  def update_password!(attributes, scope, request) = Settings.new(self).password!(attributes, scope, request)
 
   private
 
@@ -116,6 +123,9 @@ class User < ApplicationRecord
   end
 
   def password_byte_length
-    errors.add(:password, :too_long, count: 72) if password && password.bytesize > 72
+    return unless password
+
+    errors.add(:password, :too_short, count: 12) if password.bytesize < 12
+    errors.add(:password, :too_long, count: 72) if password.bytesize > 72
   end
 end

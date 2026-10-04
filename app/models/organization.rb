@@ -21,6 +21,10 @@ class Organization < ApplicationRecord
     joins(:memberships).where(memberships: { user_id: user.id }).order(:created_at, :id).to_a
   end
 
+  def self.lock_for_user(user)
+    joins(:memberships).where(memberships: { user_id: user.id }).reorder(:id).lock("FOR UPDATE OF organizations").to_a
+  end
+
   def self.scope_for(session)
     return Session::Scope.new unless session
 

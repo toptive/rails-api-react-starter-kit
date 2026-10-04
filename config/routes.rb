@@ -24,6 +24,21 @@ Rails.application.routes.draw do
         resource :acceptance, only: :create, controller: :invitation_acceptances
       end
       namespace :settings do
+        resource :profile, only: [] do
+          put "", action: :update, as: :update
+        end
+        resource :email_preferences, path: "email-preferences", only: :show do
+          put "", action: :update, as: :update
+        end
+        resources :sessions, only: %i[index destroy]
+        resource :email, only: [] do
+          put "", action: :update, as: :update
+        end
+        resources :email_confirmations, path: "email-confirmations", param: :token, only: %i[show create]
+        resource :password, only: [] do
+          put "", action: :update, as: :update
+        end
+        resource :account, only: %i[show destroy]
         resource :organization, only: :show do
           put "", action: :update, as: :update
         end

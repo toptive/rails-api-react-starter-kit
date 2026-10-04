@@ -542,5 +542,9 @@
   "errors.api.last_owner": "Choose another owner before leaving or removing this owner.",
   "errors.api.email_mismatch": "Sign in with the email address on this invitation.",
   "errors.api.invitation_invalid": "This invitation has expired or is no longer available.",
-  "organizations.default_name": "Default"
+  "organizations.default_name": "Default",
+  "errors.api.email_unchanged": "This is already your email.",
+  "errors.api.email_change_invalid": "This email confirmation link is invalid or has expired.",
+  "errors.api.transfer_ownership": "Make another person an owner before deleting your account.",
+  "errors.api.subscription_active": "Cancel the organization’s subscription before deleting your account."
 }

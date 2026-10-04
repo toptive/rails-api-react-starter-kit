@@ -273,6 +273,11 @@ en:
       last_owner: Choose another owner before leaving or removing this owner.
       email_mismatch: Sign in with the email address on this invitation.
       invitation_invalid: This invitation has expired or is no longer available.
+      email_unchanged: This is already your email.
+      email_change_invalid: This email confirmation link is invalid or has expired.
+      transfer_ownership: Make another person an owner before deleting your account.
+      subscription_active: Cancel the organization’s subscription before deleting
+        your account.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.

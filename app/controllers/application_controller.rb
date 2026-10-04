@@ -29,7 +29,7 @@ class ApplicationController < ActionController::API
         return locale if locale
       end
     end
-    locale_user&.locale || I18n.default_locale
+    I18n.available_locales.find { |locale| locale.to_s == locale_user&.locale_in_database } || I18n.default_locale
   rescue ActionDispatch::Http::Parameters::ParseError
     I18n.default_locale
   end

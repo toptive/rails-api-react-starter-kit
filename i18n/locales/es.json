@@ -542,5 +542,9 @@
   "errors.api.last_owner": "Elige otro dueño antes de salir o eliminar a este dueño.",
   "errors.api.email_mismatch": "Ingresa con la dirección de email de esta invitación.",
   "errors.api.invitation_invalid": "Esta invitación venció o ya no está disponible.",
-  "organizations.default_name": "Predeterminada"
+  "organizations.default_name": "Predeterminada",
+  "errors.api.email_unchanged": "Este ya es tu email.",
+  "errors.api.email_change_invalid": "Este enlace de confirmación de email no es válido o ha vencido.",
+  "errors.api.transfer_ownership": "Nombra a otra persona como dueña antes de eliminar tu cuenta.",
+  "errors.api.subscription_active": "Cancela la suscripción de la organización antes de eliminar tu cuenta."
 }
