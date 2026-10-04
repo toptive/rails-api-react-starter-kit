@@ -1,7 +1,7 @@
 class Billing
   SALES = %w[open test closed].freeze
 
-  def self.config = Rails.application.config_for(:billing).deep_symbolize_keys
+  def self.config = @config ||= Rails.application.config_for(:billing).deep_symbolize_keys
   def self.mode = ENV.fetch("BILLING_MODE", "test")
   def self.livemode? = mode == "live"
   def self.default_plan = config.fetch(:default_plan)
@@ -47,12 +47,11 @@ class Billing
   end
 
   def self.checkout(scope, attributes, request)
-    require_enabled!
-    require_key!
-    raise ApiError.forbidden(:test_mode) unless livemode? || operator?(scope)
+    offer, price, key, form = scope.organization.with_lock do
+      require_enabled!
+      require_key!
+      raise ApiError.forbidden(:test_mode) unless livemode? || operator?(scope)
 
-    # Serialize competing checkout requests with entitlement reconciliation.
-    scope.organization.with_lock do
       Organization.refresh_membership!(scope)
       Pundit.authorize(scope, self, :create?)
       raise ApiError.conflict(:already_subscribed) if current(scope)&.paid?
@@ -64,27 +63,27 @@ class Billing
       price = price_id(offer)
       raise ApiError.unavailable(:stripe_unavailable) unless price&.match?(/\Aprice_[a-zA-Z0-9_]+\z/) && !price.include?("CHANGE_ME")
 
-      gateway = Gateway.new(require_key!)
-      fetched = gateway.get("prices/#{price}")
-      matches = fetched["active"] == true && fetched["livemode"] == livemode? &&
-        fetched["unit_amount"] == offer[:amount_cents] && fetched["currency"] == offer[:currency] &&
-        fetched.dig("recurring", "interval") == offer[:interval] &&
-        fetched.dig("recurring", "interval_count") == 1
-      unless matches
-        Rails.logger.error("Stripe price does not match the configured offer")
-        raise ApiError.unprocessable(:price_mismatch)
-      end
       locale = scope.user.locale
-      key = Digest::SHA256.hexdigest([ scope.organization.id, scope.user.id, offer[:id], revision, locale, Time.current.to_i / 3600 ].join(":"))
-      session = gateway.post("checkout/sessions", checkout_form(scope, offer, price, locale), idempotency_key: "checkout-v1-#{key}")
-      result = { url: checked_url(session["url"], "checkout.stripe.com") }
+      key = Digest::SHA256.hexdigest([ scope.organization.id, scope.user.id, scope.user.email, offer[:id], revision, locale, Time.current.to_i / 3600 ].join(":"))
+      [ offer, price, key, checkout_form(scope, offer, price, locale) ]
+    end
+    gateway = Gateway.new(require_key!)
+    fetched = gateway.get("prices/#{price}")
+    matches = fetched["active"] == true && fetched["livemode"] == livemode? &&
+      fetched["unit_amount"] == offer[:amount_cents] && fetched["currency"] == offer[:currency] &&
+      fetched.dig("recurring", "interval") == offer[:interval] && fetched.dig("recurring", "interval_count") == 1
+    unless matches
+      Rails.logger.error("Stripe price does not match the configured offer")
+      raise ApiError.unprocessable(:price_mismatch)
+    end
+    session = gateway.post("checkout/sessions", form, idempotency_key: "checkout-v1-#{key}")
+    result = { url: checked_url(session["url"], "checkout.stripe.com") }
+    scope.organization.with_lock do
       Audit.record("billing.checkout_started", scope: scope, subject: scope.organization,
         metadata: { offer_id: offer[:id], offer_revision: revision, mode: mode }, request: request)
-      ActiveRecord.after_all_transactions_commit do
-        Analytics.track("checkout_started", scope, offer.slice(:plan, :interval).merge(mode: mode))
-      end
-      result
     end
+    Analytics.track("checkout_started", scope, offer.slice(:plan, :interval).merge(mode: mode))
+    result
   end
 
   def self.checkout_form(scope, offer, price, locale)
@@ -100,19 +99,22 @@ class Billing
   private_class_method :checkout_form
 
   def self.portal(scope, request)
-    scope.organization.with_lock do
+    subscription, form = scope.organization.with_lock do
       Organization.refresh_membership!(scope)
       Pundit.authorize(scope, self, :create?)
       subscription = current(scope)
       raise ApiError.conflict(:no_subscription) unless subscription
 
-      gateway = Gateway.new(require_key!)
-      result = gateway.post("billing_portal/sessions", customer: subscription.stripe_customer_id,
-        return_url: "#{public_url}/settings/billing", locale: scope.user.locale)
-      url = checked_url(result["url"], "billing.stripe.com")
-      Audit.record("billing.portal_opened", scope: scope, subject: subscription, request: request)
-      { url: url }
+      require_key!
+      [ subscription, { customer: subscription.stripe_customer_id,
+        return_url: "#{public_url}/settings/billing", locale: scope.user.locale } ]
     end
+    result = Gateway.new(require_key!).post("billing_portal/sessions", form)
+    url = checked_url(result["url"], "billing.stripe.com")
+    scope.organization.with_lock do
+      Audit.record("billing.portal_opened", scope: scope, subject: subscription, request: request)
+    end
+    { url: url }
   end
 
   def self.public_url = (ENV["PUBLIC_URL"].presence || Rails.application.config.x.spa_origin).delete_suffix("/")
@@ -145,6 +147,7 @@ class Billing
   def self.receive(raw, signature) = Webhook.new.receive(raw, signature)
   def self.process_event(id) = Reconciliation.new.process(id)
   def self.notice_sweep = Notices.new.sweep
+  def self.purge_events = BillingEvent.where("processed_at < ?", 30.days.ago).delete_all
 
   def self.readiness
     problems = []

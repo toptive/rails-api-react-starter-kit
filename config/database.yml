@@ -13,11 +13,6 @@ development:
     database: starter_kit_development_cache
     schema_format: ruby
     migrations_paths: db/cache_migrate
-  queue:
-    <<: *development
-    database: starter_kit_development_queue
-    schema_format: ruby
-    migrations_paths: db/queue_migrate
   cable:
     <<: *development
     database: starter_kit_development_cable
@@ -34,11 +29,6 @@ test:
     database: rails_api_starter_kit_test_cache
     schema_format: ruby
     migrations_paths: db/cache_migrate
-  queue:
-    <<: *test
-    database: rails_api_starter_kit_test_queue
-    schema_format: ruby
-    migrations_paths: db/queue_migrate
   cable:
     <<: *test
     database: rails_api_starter_kit_test_cable
@@ -58,11 +48,6 @@ production:
     database: starter_kit_production_cache
     schema_format: ruby
     migrations_paths: db/cache_migrate
-  queue:
-    <<: *production
-    database: starter_kit_production_queue
-    schema_format: ruby
-    migrations_paths: db/queue_migrate
   cable:
     <<: *production
     database: starter_kit_production_cable

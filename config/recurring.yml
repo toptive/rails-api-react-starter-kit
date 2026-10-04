@@ -16,3 +16,7 @@ production:
     class: BillingNoticeSweepJob
     queue: default
     schedule: "0 8 * * * Etc/UTC"
+  purge_billing_events:
+    class: BillingEventCleanupJob
+    queue: default
+    schedule: "30 3 * * * Etc/UTC"

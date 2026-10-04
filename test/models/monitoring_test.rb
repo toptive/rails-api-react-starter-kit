@@ -9,10 +9,16 @@ class MonitoringTest < ActiveSupport::TestCase
     ENV["SENTRY_DSN"] = previous
   end
 
+  test "monitoring retains diagnostics for infrastructure exceptions" do
+    event = Sentry::ErrorEvent.new(configuration: Sentry::Configuration.new)
+    event.add_exception_interface(RuntimeError.new("provider connection failed"), mechanism: Sentry::Mechanism.new)
+    assert_includes Monitoring.scrub(event).exception.values.first.value, "provider connection failed"
+  end
+
   test "monitoring strips request data breadcrumbs messages and all user data except id" do
     event = Sentry::ErrorEvent.new(configuration: Sentry::Configuration.new)
     event.rack_env = { "rack.input" => StringIO.new("secret-body"), "HTTP_COOKIE" => "secret-cookie", "HTTP_AUTHORIZATION" => "Bearer private", "PATH_INFO" => "/magic-links/private" }
-    event.add_exception_interface(RuntimeError.new("private@example.com"), mechanism: Sentry::Mechanism.new)
+    event.add_exception_interface(ApiError.bad_request, mechanism: Sentry::Mechanism.new)
     event.user = { id: "user-id", email: "private@example.com", ip_address: "127.0.0.1" }
     event.extra = { email: "private@example.com" }
     event.message = "private@example.com"

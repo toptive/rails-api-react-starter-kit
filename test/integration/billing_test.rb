@@ -130,11 +130,15 @@ class BillingTest < ActionDispatch::IntegrationTest
     assert AuditEvent.exists?(action: "billing.checkout_started", actor_id: @owner.id, organization_id: @organization.id)
   end
 
-  test "checkout idempotency changes with customer locale and offer revision" do
+  test "checkout idempotency changes with customer email locale and offer revision" do
     second = nil
     with_stripe do
       post "/api/v1/settings/billing/checkout-session", params: billing_attributes, headers: bearer(@owner_token), as: :json
       first = @stripe_requests.last.dig(:headers, "Idempotency-Key")
+      @owner.update!(email: "changed-customer@example.com")
+      post "/api/v1/settings/billing/checkout-session", params: billing_attributes, headers: bearer(@owner_token), as: :json
+      changed_email = @stripe_requests.last.dig(:headers, "Idempotency-Key")
+      refute_equal first, changed_email
       @owner.update!(locale: "es")
       post "/api/v1/settings/billing/checkout-session", params: billing_attributes, headers: bearer(@owner_token), as: :json
       second = @stripe_requests.last.dig(:headers, "Idempotency-Key")
@@ -210,7 +214,7 @@ class BillingTest < ActionDispatch::IntegrationTest
       assert data.fetch("url").start_with?("https://checkout.stripe.com/")
       assert_enqueued_with(job: ProcessStripeEventJob, queue: "default") { deliver_webhook }
       assert_response :ok
-      assert_equal({ "received" => true }, response.parsed_body)
+      assert_equal({ "received" => true }, data)
       perform_enqueued_jobs(only: ProcessStripeEventJob)
     end
     get "/api/v1/settings/billing", headers: bearer(@owner_token)

@@ -46,7 +46,9 @@ class AdminTranslationsTest < ActionDispatch::IntegrationTest
     refute_equal original_version, new_version
     assert_equal "Texto actualizado Ana", I18n.t("errors.api.not_found", locale: :es, name: "Ana")
     get "/api/v1/bootstrap?locale=es"
-    assert_equal new_version, data.fetch("i18nVersion")
+    refute_equal original_version, data.fetch("i18nVersion")
+    get "/api/v1/locales/es"
+    assert_equal "Texto actualizado {{name}}", data.fetch("errors.api.not_found")
     event = AuditEvent.find_by!(action: "translation.updated")
     assert_equal @admin.id, event.actor_id
     assert_equal({ "key" => "errors.api.not_found", "locale" => "es" }, event.metadata)
@@ -71,6 +73,7 @@ class AdminTranslationsTest < ActionDispatch::IntegrationTest
     assert_equal "Edited brand", data.fetch("app.name")
     assert_equal "Keep me", data.fetch("retired.edited")
     version = response.parsed_body.dig("meta", "version")
+    TranslationCatalog.invalidate!
     Rake::Task["i18n:sync"].reenable
     Rake::Task["i18n:sync"].invoke
     get "/api/v1/locales/en"

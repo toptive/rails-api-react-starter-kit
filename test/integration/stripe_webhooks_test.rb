@@ -10,7 +10,7 @@ class StripeWebhooksTest < ActionDispatch::IntegrationTest
         2.times do
           deliver_webhook
           assert_response :ok
-          assert_equal({ "received" => true }, response.parsed_body)
+          assert_equal({ "received" => true }, data)
         end
       end
     end

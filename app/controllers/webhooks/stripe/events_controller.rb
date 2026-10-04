@@ -7,7 +7,7 @@ module Webhooks
 
       def create
         skip_authorization
-        render_webhook_receipt(Billing.receive(request.raw_post, request.headers["Stripe-Signature"]))
+        render_data(Billing.receive(request.raw_post, request.headers["Stripe-Signature"]), serializer: WebhookReceiptSerializer)
       end
     end
   end

@@ -5,7 +5,7 @@ class Monitoring
     Sentry.capture_exception(exception) { |scope| scope.set_user(id: context[:user_id]) if context[:user_id] }
   end
 
-  def self.scrub(event, _hint = nil)
+  def self.scrub(event, hint = nil)
     if request = event.request
       request.data = nil
       request.cookies = nil
@@ -21,9 +21,11 @@ class Monitoring
     event.attachments = []
     event.breadcrumbs = Sentry::BreadcrumbBuffer.new
     event.transaction = nil
-    event.message = nil
+    user_exception = hint&.dig(:exception).is_a?(ApiError) ||
+      event.exception&.values&.any? { |exception| %w[ApiError ActiveRecord::RecordInvalid ActionController::ParameterMissing].include?(exception.type) }
+    event.message = nil if user_exception
     event.exception&.values&.each do |exception|
-      exception.value = exception.type
+      exception.value = exception.type if user_exception
       exception.stacktrace&.frames&.each { |frame| frame.vars = nil }
     end
     event

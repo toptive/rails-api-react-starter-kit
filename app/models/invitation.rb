@@ -23,7 +23,7 @@ class Invitation < ApplicationRecord
   def self.issue!(scope, attributes, request)
     AccountMail.require_available!
     User::Input.validate!(attributes, string_fields: %i[email role access], required: [ :email ])
-    scope.organization.with_lock do
+    Billing.with_capacity(scope, :members, count: -> { Membership.for(scope).count }) do
       Organization.refresh_membership!(scope)
       Pundit.authorize(scope, self, :create?)
       token = SecureRandom.urlsafe_base64(32)
@@ -62,10 +62,10 @@ class Invitation < ApplicationRecord
       raise ApiError.unprocessable(:invitation_invalid) unless invitation.open?
       raise ApiError.conflict(:email_mismatch, { email: invitation.email }) unless scope.user.email.casecmp?(invitation.email)
 
-      membership = Membership.for(destination).find_or_create_by!(user: scope.user) do |member|
-        member.role = invitation.role
-        member.access = invitation.access
-      end
+      membership = Membership.for(destination).find_by(user: scope.user) ||
+        Billing.with_capacity(destination, :members, count: -> { Membership.for(destination).count }) do
+          Membership.for(destination).create!(user: scope.user, role: invitation.role, access: invitation.access)
+        end
       invitation.event_actor_id = scope.user.id
       invitation.update!(accepted_at: Time.current)
       Organization.remember!(destination, destination.organization)

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 cd "$(dirname "$0")/.."
+if [[ "$(uname)" == "Darwin" ]]; then export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES; fi
 failed=()
 run() {
   local label="$1"

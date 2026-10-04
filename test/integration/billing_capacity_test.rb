@@ -4,6 +4,40 @@ require_relative "../support/billing_requests"
 class BillingCapacityTest < ActionDispatch::IntegrationTest
   include BillingRequests
 
+  test "recurring inbox cleanup preserves pending and recent events" do
+    old = BillingEvent.create!(stripe_event_id: "evt_old", type: "test", livemode: false, processed_at: 31.days.ago)
+    pending = BillingEvent.create!(stripe_event_id: "evt_pending", type: "test", livemode: false, created_at: 31.days.ago)
+    recent = BillingEvent.create!(stripe_event_id: "evt_recent", type: "test", livemode: false, processed_at: Time.current)
+    BillingEventCleanupJob.perform_now
+    refute BillingEvent.exists?(old.id)
+    assert BillingEvent.exists?(pending.id)
+    assert BillingEvent.exists?(recent.id)
+  end
+
+  test "invitations refuse full free organizations and acceptance rechecks capacity" do
+    guest = create_user
+    _, invitation_token = invite(guest.email)
+    2.times { seat(create_user) }
+    assert_no_difference [ "Invitation.count", "AuditEvent.count" ] do
+      post "/api/v1/settings/invitations", params: { email: "over-cap@example.com", role: "member", access: "full" },
+        headers: bearer(@owner_token), as: :json
+    end
+    assert_error :unprocessable_entity, "limit_reached"
+    guest_token = sign_in(guest)
+    assert_no_difference [ "Membership.count", "AuditEvent.count" ] do
+      post "/api/v1/invitations/#{invitation_token}/acceptance", headers: bearer(guest_token), as: :json
+    end
+    assert_error :unprocessable_entity, "limit_reached"
+    assert_nil Invitation.for(@scope).find_by!(email: guest.email).accepted_at
+    stored_subscription
+    post "/api/v1/invitations/#{invitation_token}/acceptance", headers: bearer(guest_token), as: :json
+    assert_response :created
+    assert_equal 4, Membership.for(@scope).count
+    post "/api/v1/settings/invitations", params: { email: "paid-cap@example.com", role: "member", access: "full" },
+      headers: bearer(@owner_token), as: :json
+    assert_response :created
+  end
+
   test "capacity guard counts and writes under the organization lock and refuses the next seat" do
     2.times do
       candidate = create_user

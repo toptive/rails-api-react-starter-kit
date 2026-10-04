@@ -56,3 +56,7 @@ More end-to-end tests, fewer unit tests.
 
 Backend tests use an isolated `rails_api_starter_kit_test` database and two workers by default.
 Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity.
+
+On macOS, `bin/check` exports `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` for Rails parallel
+workers. `pnpm audit` may require the local network proxy: supply `HTTPS_PROXY` and
+`HTTP_PROXY` in the calling shell when the npm advisory service is unreachable directly.

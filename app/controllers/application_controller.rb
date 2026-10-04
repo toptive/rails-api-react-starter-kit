@@ -75,10 +75,6 @@ class ApplicationController < ActionController::API
     }, status: status
   end
 
-  def render_webhook_receipt(payload)
-    render json: WebhookReceiptSerializer.new(payload).serializable_hash, status: :ok
-  end
-
   def render_catalogue(catalogue)
     response.headers["ETag"] = catalogue.fetch(:etag)
     response.headers["Cache-Control"] = "public, no-cache"
