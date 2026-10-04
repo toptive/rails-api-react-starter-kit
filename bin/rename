@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+# Run once in a new product checkout. Preview with --dry-run.
+require "fileutils"
+require "open3"
+require "optparse"
+require "securerandom"
+
+abort "Unset RENAME_UNUSED_KEY before running rename" if ENV.key?("RENAME_UNUSED_KEY")
+
+options = {}
+parser = OptionParser.new do |cli|
+  cli.banner = 'Usage: bin/rename --app acme_app --module AcmeApp --name "Acme" --domain acme.test'
+  %i[app module name domain].each { |key| cli.on("--#{key} VALUE") { |value| options[key] = value } }
+  cli.on("--dry-run") { options[:dry_run] = true }
+  cli.on("--help") { puts cli; exit }
+end
+begin
+  parser.parse!
+rescue OptionParser::ParseError => error
+  abort error.message
+end
+abort parser.to_s unless ARGV.empty? && %i[app module name domain].all? { |key| options[key] }
+app, namespace, name, domain = options.values_at(:app, :module, :name, :domain)
+abort "--app must be snake_case (at most 35 characters)" unless app.match?(/\A[a-z][a-z0-9]*(?:_[a-z0-9]+)*\z/) && app.length <= 35
+abort "--module must be CamelCase" unless namespace.match?(/\A[A-Z][A-Za-z0-9]*\z/)
+abort "--name must contain letters, numbers, spaces or . & ( ) -" unless name.match?(/\A[\p{L}\p{N}][\p{L}\p{N} .&()-]*\z/)
+abort "--domain must be a hostname without a scheme, path or port" unless domain.length <= 253 && domain.match?(/\A[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+\z/)
+abort "Choose product identifiers, not the template identifiers" if app == "starter_kit" || namespace == "StarterKit"
+
+Dir.chdir(File.expand_path("..", __dir__)) do
+  abort "This checkout has already been renamed" unless File.read("config/application.rb").include?("module StarterKit\n")
+  tracked, status = Open3.capture2("git", "ls-files", "-z")
+  abort "Run from a Git checkout" unless status.success?
+  files = tracked.split("\0").reject do |path|
+    path == "bin/rename" || path.start_with?("vendor/", "frontend/src/api/generated/", "i18n/locales/", "config/locales/") ||
+      path.end_with?(".lock", ".enc", ".key") || path == "pnpm-lock.yaml"
+  end
+  credentials = ([ "config/credentials.yml.enc" ] + Dir.glob("config/credentials/*.yml.enc")).uniq
+  # Resolve dependencies before changing any files. Never decrypt template credentials.
+  unless options[:dry_run]
+    require "bundler/setup"
+    require "active_support"
+    require "active_support/encrypted_file"
+  end
+  replacements = {
+    "rails_api_starter_kit" => app,
+    "STARTER_KIT" => app.upcase,
+    "starter_kit" => app,
+    "starter-kit" => app.tr("_", "-"),
+    "starterkit" => app.delete("_"),
+    "CHANGE_ME.toptive.dev" => domain,
+    "CHANGE_ME.example.com" => domain,
+    "hello@example.com" => "hello@#{domain}",
+    "app.example.com" => domain,
+    "api.example.com" => domain
+  }
+  changed = 0
+  files.each do |path|
+    next unless File.file?(path) && !File.symlink?(path)
+    original = File.binread(path).force_encoding(Encoding::UTF_8)
+    next unless original.valid_encoding? && !original.include?("\0")
+    content = original.dup
+    # Display names in Ruby tests/defaults and CSV differ from the Rails namespace.
+    content.gsub!('"StarterKit"', %Q("#{name}"))
+    content.gsub!("StarterKit —", "#{name} —")
+    content.gsub!(/^(\s*(?:APP_NAME|MAIL_FROM_NAME(?:_[A-Z]+)?):\s*)StarterKit$/, "\\1#{name}")
+    content.gsub!(/^(\s*(?:#\s*)?(?:APP_NAME|MAIL_FROM_NAME(?:_[A-Z]+)?)=)StarterKit$/, "\\1#{name}")
+    replacements.each { |from, to| content.gsub!(from, to) }
+    content.gsub!("StarterKit", namespace)
+    next if content == original
+    puts path
+    File.write(path, content) unless options[:dry_run]
+    changed += 1
+  end
+  files.sort_by { |path| -path.count("/") }.each do |path|
+    next unless File.file?(path) && !File.symlink?(path)
+    target = path.gsub("starter_kit", app).gsub("starter-kit", app.tr("_", "-")).gsub("StarterKit", namespace)
+    next if target == path
+    abort "Rename target exists: #{target}" if File.exist?(target)
+    puts "#{path} -> #{target}"
+    unless options[:dry_run]
+      FileUtils.mkdir_p(File.dirname(target))
+      FileUtils.mv(path, target)
+    end
+  end
+  credentials.each do |path|
+    puts "Regenerate #{path} and its ignored key"
+    next if options[:dry_run]
+    key_path = path == "config/credentials.yml.enc" ? "config/master.key" : path.sub(/\.yml\.enc\z/, ".key")
+    FileUtils.mkdir_p(File.dirname(path))
+    FileUtils.rm_f([ path, key_path ])
+    File.write(key_path, ActiveSupport::EncryptedFile.generate_key, mode: "w", perm: 0o600)
+    ActiveSupport::EncryptedFile.new(content_path: path, key_path: key_path,
+      env_key: "RENAME_UNUSED_KEY", raise_if_missing_key: true).tap do |encrypted|
+      encrypted.write("secret_key_base: #{SecureRandom.hex(64)}\n")
+    end
+  end
+  unless options[:dry_run]
+    FileUtils.rm_f("tmp/local_secret.txt")
+    FileUtils.rm_f(".template-repo")
+  end
+  puts "#{options[:dry_run] ? 'Would rewrite' : 'Rewrote'} #{changed} files for #{namespace} (#{app}), #{name}, #{domain}."
+  puts "Next: bin/setup --skip-server, review generated locales/types, then docs/NEW_PRODUCT.md."
+end
