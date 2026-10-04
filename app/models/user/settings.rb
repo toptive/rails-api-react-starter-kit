@@ -60,14 +60,14 @@ class User::Settings
 
       user.save!
       # Keep known bearer hashes so old devices receive session_expired rather than unauthorized.
-      user.sessions.live.order(:id).each { |session| session.revoke!(request: request) }
+      user.sessions.live.order(:id).each { |session| session.revoke!(request: request, audit: session.id != scope.session.id) }
       user.user_tokens.delete_all
       issued = Session.create_for(user, request)
       session = issued.fetch(:session)
       session.update!(organization: scope.organization)
       Audit.record("user.password_changed", scope: scope, subject: user, request: request)
       { token: issued.fetch(:token), expires_at: session.expires_at, sudo_until: session.sudo_until,
-        user: user, impersonator: nil, new_account: false }
+        user: user, impersonator: nil, new_account: false, can_manage: session.can_manage? }
     end
   end
 

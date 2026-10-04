@@ -94,14 +94,33 @@ class User < ApplicationRecord
     ActiveSupport::Notifications.instrument("user_signed_in", user_id: id, method: method)
     ActiveSupport::Notifications.instrument("signup_confirmed", user_id: id) if new_account
     { token: issued[:token], expires_at: session.expires_at, sudo_until: session.sudo_until,
-      user: self, impersonator: session.impersonator_user, new_account: new_account }
+      user: self, impersonator: session.impersonator_user, new_account: new_account, can_manage: session.can_manage? }
   end
 
   def record_registration_acceptance!(request)
-    update!(legal_accepted_at: Time.current, legal_accepted_ip_address: request.remote_ip)
-    LegalAcceptance.create!(user: self, email_hash: Digest::SHA256.hexdigest(email),
-      versions: legal_accepted_versions, ip_address: request.remote_ip, accepted_at: legal_accepted_at)
-    legal_accepted_versions.keys
+    LegalAcceptance.at_signup!(self, request.remote_ip)
+  end
+
+  def self.admin_list(query)
+    records = order(created_at: :desc, id: :desc)
+    records = records.where("name ILIKE :q OR email ILIKE :q", q: "%#{sanitize_sql_like(query)}%") if query.present?
+    records
+  end
+
+  def self.admin_detail(id)
+    user = find(id)
+    { user: user, organizations: Organization.for_user(user) }
+  end
+
+  def self.admin_update!(id, attributes, scope, request)
+    Input.validate!(attributes, string_fields: [ :role ], required: [ :role ])
+    user = find(id)
+    user.with_lock do
+      previous = user.role
+      user.update!(attributes.slice(:role))
+      Audit.record("user.role_changed", scope: scope, subject: user, metadata: { from: previous, to: user.role }, request: request) if previous != user.role
+    end
+    user
   end
 
   def self.open_invitation?(email)

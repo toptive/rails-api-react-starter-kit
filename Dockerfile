@@ -52,7 +52,7 @@ COPY . .
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
 # Mission Control dashboard assets (the SPA is built separately with Vite).
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN SPA_ORIGIN=https://app.example.com API_ORIGIN=https://api.example.com SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 

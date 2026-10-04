@@ -22,7 +22,7 @@ bcrypt comparison and return the same invalid-credentials response.
 | DELETE | `/api/v1/auth/session` | Revoke current session; 204 |
 | POST | `/api/v1/auth/sudo` | Reauthenticate with password or magicLinkToken |
 | DELETE | `/api/v1/auth/impersonation` | End impersonation and preserve admin session; 204 |
-| POST | `/api/v1/admin/jobs-access` | Mint a dashboard-only signed cookie; 204 |
+| POST | `/api/v1/admin/jobs-access` | Issue a single-use browser handoff URL; 201 |
 
 All data responses pass through Alba and generate committed Typelizer types and route helpers.
 Auth objects contain an organization, a membership and an organizations list; see
@@ -63,7 +63,8 @@ and expired emailed tokens. It runs on the default queue.
 `Invitation.open_for_email?`. Registration validates the consent checkbox and stores its timestamp,
 IP and version map in `legal_accepted_at`, `legal_accepted_ip_address` and `legal_accepted_versions`.
 The map is empty when no published legal versions exist; no versions are inferred from the checkbox.
-Audit metadata carries its accepted slugs. Registration and token/audit writes are transactional;
+Each published terms/privacy version also gets a retained `legal_acceptances` record linked
+to the immutable version. Audit metadata carries its accepted slugs. Registration and token/audit writes are transactional;
 email delivery is queued after they commit. Queued mail arguments encrypt the plain access
 token using a dedicated application key and a user-bound purpose.
 
@@ -91,14 +92,12 @@ allow ten attempts; magic-link requests and sudo allow five. Refusals use `429 r
 
 ## Browser job dashboard
 
-With a superadmin bearer, POST `/api/v1/admin/jobs-access` on the API origin, then navigate
-the browser to `/jobs` on that same origin. This endpoint sets a signed HttpOnly, SameSite=Strict
-cookie scoped to `/jobs`, valid for five minutes and Secure in production. It identifies a
-session, not a role claim: every dashboard request checks current session expiry/revocation,
-user role and absence of impersonation. Tampering, demotion or sign-out removes access immediately.
-The dashboard has its own CSRF-protected browser session middleware; API bearer routes use no
-cookie session. CORS remains credential-free. This dashboard access endpoint is the deliberate
-cookie exception for the HTML operations engine.
+With a superadmin bearer, POST `/api/v1/admin/jobs-access`, then open the returned API-origin
+URL. GET `/jobs/session?ticket=...` consumes the signed 60-second ticket exactly once, sets a
+five-minute HttpOnly dashboard cookie and redirects to `/jobs`. Every dashboard request checks
+the live session, current role and absence of impersonation. The engine has a separate
+CSRF-protected browser session; API bearer routes use no cookie session. CORS remains
+credential-free. See [ADMIN.md](ADMIN.md) for the complete handoff and impersonation flows.
 
 ## Account settings and devices
 

@@ -1,2 +1,2 @@
-class ImpersonationPolicy < ApplicationPolicy
+class ImpersonationPolicy < AdminPolicy
 end

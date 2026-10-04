@@ -1,0 +1,2 @@
+class LegalDocumentPolicy < AdminPolicy
+end

@@ -34,6 +34,9 @@ port ENV.fetch("PORT", 3000)
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# Stop Cable's listener/writer in the parent so each worker creates its own listener.
+before_fork { TranslationCatalog.stop! }
+
 # Run the Solid Queue supervisor inside of Puma for single-server deployments.
 plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 

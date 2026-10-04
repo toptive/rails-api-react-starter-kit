@@ -12,6 +12,22 @@ class Organization < ApplicationRecord
 
   def self.tenancy = Rails.application.config.x.tenancy
 
+  def self.admin_list(query)
+    records = order(created_at: :desc, id: :desc)
+    records = records.where("name ILIKE ?", "%#{sanitize_sql_like(query)}%") if query.present?
+    records
+  end
+
+  def self.admin_detail(id)
+    organization = find(id)
+    tenant = Session::Scope.new(organization: organization)
+    { organization: organization, memberships: Membership.for(tenant).includes(:user).order(:created_at, :id).to_a }
+  end
+
+  def admin_member_count
+    Membership.for(Session::Scope.new(organization: self)).count
+  end
+
   def self.ensure_default!
     insert_all([ { slug: "default", name: I18n.t("organizations.default_name"), personal: false } ], unique_by: :slug)
     find_by!(slug: "default")

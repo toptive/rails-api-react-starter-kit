@@ -1,6 +1,7 @@
 require_relative "boot"
 
 require "rails/all"
+require "csv"
 require_relative "../lib/client_identity"
 require_relative "../lib/operations_browser_session"
 
@@ -36,8 +37,9 @@ module StarterKit
     config.mission_control.jobs.base_controller_class = "ActionController::Base"
     config.mission_control.jobs.http_basic_auth_enabled = false
     config.mission_control.jobs.adapters = [ :solid_queue ]
-    config.i18n.available_locales = %i[en es]
-    config.i18n.default_locale = :en
+    csv_locales = CSV.read(File.expand_path("../i18n/translations.csv", __dir__), headers: true).headers.drop(1)
+    config.i18n.available_locales = csv_locales.map(&:to_sym)
+    config.i18n.default_locale = csv_locales.first.to_sym
     config.generators { |g| g.orm :active_record, primary_key_type: :uuid }
     config.action_controller.wrap_parameters_by_default = false
   end

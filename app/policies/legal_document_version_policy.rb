@@ -1,0 +1,2 @@
+class LegalDocumentVersionPolicy < AdminPolicy
+end

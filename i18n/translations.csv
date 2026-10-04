@@ -547,3 +547,5 @@
 "errors.api.email_change_invalid","This email confirmation link is invalid or has expired.","Este enlace de confirmación de email no es válido o ha vencido."
 "errors.api.transfer_ownership","Make another person an owner before deleting your account.","Nombra a otra persona como dueña antes de eliminar tu cuenta."
 "errors.api.subscription_active","Cancel the organization’s subscription before deleting your account.","Cancela la suscripción de la organización antes de eliminar tu cuenta."
+errors.api.ai_not_configured,Text translation is not configured.,La traducción de textos no está configurada.
+errors.api.ai_unavailable,The translation provider is unavailable. Try again later.,El proveedor de traducciones no está disponible. Intentá de nuevo más tarde.

@@ -72,11 +72,17 @@ class Session < ApplicationRecord
   def self.purge_expired
     where("COALESCE(revoked_at, expires_at) < ?", 30.days.ago).destroy_all
     UserToken.where("expires_at <= ?", Time.current).delete_all
+    Impersonation.where("ended_at < ?", 90.days.ago).where.not(id: select(:impersonation_id).where.not(impersonation_id: nil)).delete_all
+    JobsTicket.purge_expired
   end
 
   def live? = revoked_at.nil? && expires_at > Time.current
   def impersonating? = impersonator_user_id.present?
   def superadmin? = user.role == "superadmin" && !impersonating?
+  def can_manage?
+    scope = self.class.scope_for(self)
+    OrganizationPolicy.new(scope, scope.organization).update?
+  end
   def sudo? = !impersonating? && sudo_until.present? && sudo_until > Time.current
 
   def touch_usage!
@@ -97,7 +103,7 @@ class Session < ApplicationRecord
     self
   end
 
-  def revoke!(request: nil)
+  def revoke!(request: nil, audit: true)
     transaction do
       with_lock do
         return self if revoked_at
@@ -105,7 +111,7 @@ class Session < ApplicationRecord
         update!(revoked_at: Time.current)
         impersonation_sessions.live.each { |child| child.revoke!(request: request) }
         impersonation&.update!(ended_at: Time.current) if impersonating?
-        Audit.record("session.revoked", session: self, subject: self, request: request)
+        Audit.record("session.revoked", session: self, subject: self, request: request) if audit
         Audit.record("impersonation.stopped", session: self, subject: impersonation || self, request: request) if impersonating?
       end
     end

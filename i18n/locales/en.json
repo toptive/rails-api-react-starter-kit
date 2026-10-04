@@ -546,5 +546,7 @@
   "errors.api.email_unchanged": "This is already your email.",
   "errors.api.email_change_invalid": "This email confirmation link is invalid or has expired.",
   "errors.api.transfer_ownership": "Make another person an owner before deleting your account.",
-  "errors.api.subscription_active": "Cancel the organization’s subscription before deleting your account."
+  "errors.api.subscription_active": "Cancel the organization’s subscription before deleting your account.",
+  "errors.api.ai_not_configured": "Text translation is not configured.",
+  "errors.api.ai_unavailable": "The translation provider is unavailable. Try again later."
 }

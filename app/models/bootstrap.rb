@@ -4,7 +4,7 @@ class Bootstrap
       locales: I18n.available_locales.map(&:to_s), i18n_version: TranslationCatalog.version,
       app: { name: ENV.fetch("APP_NAME", "StarterKit"), tenancy: Organization.tenancy, signup_mode: User.signup_mode,
         email_available: AccountMail.available?, google_enabled: false,
-        public_url: Rails.application.config.x.spa_origin },
+        public_url: Rails.application.config.x.spa_origin, jobs_dashboard: true },
       flags: { billing: false }, turnstile: Turnstile.widget }
   end
 

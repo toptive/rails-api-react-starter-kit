@@ -10,4 +10,6 @@ class AuthSessionSerializer
   one :user, resource: UserSerializer
   typelize impersonator: { nullable: true }
   one :impersonator, resource: UserSerializer
+  typelize can_manage: :boolean
+  hash_attributes :can_manage
 end

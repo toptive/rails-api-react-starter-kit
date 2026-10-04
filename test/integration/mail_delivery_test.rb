@@ -4,6 +4,23 @@ require_relative "../support/auth_requests"
 class MailDeliveryTest < ActionDispatch::IntegrationTest
   include AuthRequests
 
+  test "one click unsubscribe headers target the API origin and the endpoint accepts the POST" do
+    previous_origin = Rails.application.config.x.api_origin
+    Rails.application.config.x.api_origin = "https://api.example.com"
+    Rails.application.config.x.spa_origin = "https://app.example.com"
+    user = create_user
+    mailer = ApplicationMailer.new
+    mailer.send(:optional_email_headers, user)
+    url = mailer.message["List-Unsubscribe"].value.delete_prefix("<").delete_suffix(">")
+    assert url.start_with?("https://api.example.com/api/v1/email-subscriptions/")
+    assert_equal "List-Unsubscribe=One-Click", mailer.message["List-Unsubscribe-Post"].value
+    post URI(url).request_uri, params: { "List-Unsubscribe" => "One-Click" }
+    assert_response :ok
+    assert_equal false, user.reload.optional_emails
+  ensure
+    Rails.application.config.x.api_origin = previous_origin
+  end
+
   test "magic link mail shares the branded layout and uses the recipient's locale" do
     user = create_user(locale: "es")
     mail = AuthMailer.with(user: user, encrypted_token: AccountMail.encrypt_token("a" * 43, user), kind: "magic_link").access

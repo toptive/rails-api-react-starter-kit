@@ -1,6 +1,6 @@
 # Deployment configuration
 
-Production requires `SPA_ORIGIN`; boot stops if it is unset or blank. `PUBLIC_URL` is only a
+Production requires `SPA_ORIGIN` and `API_ORIGIN`; boot stops if either is unset or blank. `PUBLIC_URL` is only a
 development/test fallback. `TENANCY=multi` creates personal organizations; `TENANCY=single`
 shares the default organization. Unknown modes stop boot. See [TENANCY.md](TENANCY.md).
 
@@ -17,6 +17,9 @@ Development/test setup refuses a production environment.
 
 | Variable | Purpose |
 |---|---|
+| `API_ORIGIN` | Public API origin for browser jobs handoffs and one-click unsubscribe (required in production) |
+| `OPENROUTER_API_KEY` | Optional OpenRouter credential for admin translation fills |
+| `OPENROUTER_MODEL` | Optional translation model (default `openai/gpt-4o-mini`) |
 | `SPA_ORIGIN` | SPA origin for mail links and CORS; required in production |
 | `PUBLIC_URL` | Development/test fallback for `SPA_ORIGIN` (default `http://localhost:5173`) |
 | `TENANCY` | `multi` (default) or `single`; shared mode creates the default organization at boot/seed |
@@ -50,3 +53,6 @@ a live superadmin session; no default login credentials are configured. Do not d
 Primary database schema loads use `db/structure.sql` to retain the append-only audit trigger.
 Production mail uses SMTP; development logs delivery metadata. See [AUTH.md](AUTH.md) for
 session lifetimes, signup behavior and the signed `/jobs` browser access cookie.
+
+The Docker server entrypoint runs `db:prepare` followed by `i18n:sync` before listening. Runtime
+text edits survive synchronization; see [I18N.md](I18N.md).

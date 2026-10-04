@@ -1,0 +1,2 @@
+class OperationsAccessPolicy < AdminPolicy
+end

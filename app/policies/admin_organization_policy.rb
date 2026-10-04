@@ -1,0 +1,2 @@
+class AdminOrganizationPolicy < AdminPolicy
+end

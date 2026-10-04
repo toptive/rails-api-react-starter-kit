@@ -282,6 +282,9 @@ es:
       transfer_ownership: Nombra a otra persona como dueña antes de eliminar tu cuenta.
       subscription_active: Cancela la suscripción de la organización antes de eliminar
         tu cuenta.
+      ai_not_configured: La traducción de textos no está configurada.
+      ai_unavailable: El proveedor de traducciones no está disponible. Intentá de
+        nuevo más tarde.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.

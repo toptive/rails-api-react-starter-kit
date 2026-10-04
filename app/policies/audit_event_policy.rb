@@ -1,2 +1,2 @@
-class AuditEventPolicy < ApplicationPolicy
+class AuditEventPolicy < AdminPolicy
 end

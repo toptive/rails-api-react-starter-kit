@@ -86,11 +86,30 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def render_legal_page(page)
+    response.headers["ETag"] = page.fetch(:etag)
+    response.headers["Cache-Control"] = "public, no-cache"
+    if request.fresh?(response)
+      head :not_modified
+    else
+      render_data(page, serializer: LegalPageSerializer)
+    end
+  end
+
+  def cast_legal_attributes
+    attributes = params.permit(:note, :publish, titles: {}, bodies: {}).to_h.symbolize_keys
+    %i[titles bodies].each do |field|
+      value = params[field]
+      attributes[field] = value if params.key?(field) && !value.is_a?(ActionController::Parameters)
+    end
+    attributes
+  end
+
   def render_collection(scope, serializer:, status: :ok, serializer_params: {})
-    page = params.fetch(:page, 1).to_i.clamp(1, 1_000_000)
-    per_page = params.fetch(:per_page, 25).to_i.clamp(1, 100)
-    total = scope.count(:all)
-    records = scope.limit(per_page).offset((page - 1) * per_page)
+    page = params.fetch(:page, 1).to_s.to_i.clamp(1, 1_000_000)
+    per_page = params.fetch(:per_page, 25).to_s.to_i.clamp(1, 100)
+    total = scope.is_a?(Array) ? scope.size : scope.count(:all)
+    records = scope.is_a?(Array) ? scope.slice((page - 1) * per_page, per_page).to_a : scope.limit(per_page).offset((page - 1) * per_page)
     render_data(records, serializer: serializer, status: status, serializer_params: serializer_params,
       meta: { pagination: { page: page, perPage: per_page, total: total, totalPages: [ (total.to_f / per_page).ceil, 1 ].max } })
   end

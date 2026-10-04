@@ -40,5 +40,5 @@ for authenticated channels; no public application channel is exposed.
 
 Mission Control Jobs is mounted at `/jobs` using `OperationsAccess`. Access requires a live
 superadmin session with no impersonator. Browser access uses a short-lived signed cookie
-minted by the superadmin API. The engine uses `ActionController::Base` for HTML
+minted by exchanging a single-use ticket from the superadmin API. The engine uses `ActionController::Base` for HTML
 and Propshaft for dashboard assets; it does not inherit the JSON API's callbacks.

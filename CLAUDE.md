@@ -205,5 +205,6 @@ files. Never run setup or seeds against production. See [docs/DEPLOY.md](docs/DE
 | Type contract | [docs/TYPE_CONTRACT.md](docs/TYPE_CONTRACT.md) | Alba, generated types and route helpers |
 | Tenancy | [docs/TENANCY.md](docs/TENANCY.md) | modes, roles, organization scope and isolation tests |
 | Accounts | [docs/AUTH.md](docs/AUTH.md) | sign-in, sudo, devices and account settings |
+| Admin | [docs/ADMIN.md](docs/ADMIN.md) | superadmin API, impersonation, texts, legal versions, audit and jobs access |
 | Privacy | [docs/PRIVACY.md](docs/PRIVACY.md) | deletion blockers and retained records |
 | Deploy | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker, Kamal and environment variables |

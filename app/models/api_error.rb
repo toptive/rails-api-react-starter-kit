@@ -23,4 +23,5 @@ class ApiError < StandardError
   def self.conflict(code = :conflict, details = {}) = new(code, :conflict, details)
   def self.unprocessable(code = :validation_failed, details = {}) = new(code, :unprocessable_entity, details)
   def self.too_many_requests(code = :rate_limited, details = {}) = new(code, :too_many_requests, details)
+  def self.unavailable(code, details = {}) = new(code, :service_unavailable, details)
 end

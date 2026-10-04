@@ -36,6 +36,9 @@ class SettingsPasswordTest < ActionDispatch::IntegrationTest
     assert_equal "Settings device", data.first.fetch("userAgent")
     assert_equal @organization.id, Session.find_by_token(fresh).organization_id
     assert_equal 1, AuditEvent.where(action: "user.password_changed", actor_id: @owner.id, subject_id: @owner.id).count
+    revoked_ids = AuditEvent.where(action: "session.revoked", actor_id: @owner.id).pluck(:subject_id)
+    refute_includes revoked_ids, @scope.session.id
+    assert_includes revoked_ids, Session.find_by(token_hash: Digest::SHA256.digest(second_token)).id
     post "/api/v1/auth/sessions", params: { email: @owner.email, password: "strong-password-123" }, as: :json
     assert_error :unauthorized, "invalid_credentials"
     post "/api/v1/auth/sessions", params: { email: @owner.email, password: "updated-password-123" }, as: :json

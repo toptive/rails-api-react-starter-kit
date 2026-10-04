@@ -20,6 +20,7 @@ env:
     RAILS_ENV: production
     PUBLIC_URL: https://app.example.com
     SPA_ORIGIN: https://app.example.com
+    API_ORIGIN: https://api.example.com
     TENANCY: multi
     DB_HOST: 192.0.2.2
     SOLID_QUEUE_IN_PUMA: true

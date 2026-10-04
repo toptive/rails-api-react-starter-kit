@@ -123,6 +123,20 @@ CREATE TABLE public.invitations (
 
 
 --
+-- Name: jobs_tickets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jobs_tickets (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    session_id uuid NOT NULL,
+    expires_at timestamp(6) without time zone NOT NULL,
+    consumed_at timestamp(6) without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: legal_acceptances; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -132,7 +146,39 @@ CREATE TABLE public.legal_acceptances (
     email_hash character varying NOT NULL,
     versions jsonb DEFAULT '{}'::jsonb NOT NULL,
     ip_address character varying,
-    accepted_at timestamp(6) without time zone NOT NULL
+    accepted_at timestamp(6) without time zone NOT NULL,
+    legal_document_version_id uuid
+);
+
+
+--
+-- Name: legal_document_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legal_document_versions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    legal_document_id uuid NOT NULL,
+    number integer NOT NULL,
+    titles jsonb DEFAULT '{}'::jsonb NOT NULL,
+    bodies jsonb DEFAULT '{}'::jsonb NOT NULL,
+    note character varying(255),
+    published_at timestamp(6) without time zone,
+    created_by_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: legal_documents; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legal_documents (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug character varying NOT NULL,
+    published_version_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -219,6 +265,21 @@ CREATE TABLE public.subscriptions (
 
 
 --
+-- Name: translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.translations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    key character varying NOT NULL,
+    locale character varying NOT NULL,
+    value text DEFAULT ''::text NOT NULL,
+    edited boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: user_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -290,11 +351,35 @@ ALTER TABLE ONLY public.invitations
 
 
 --
+-- Name: jobs_tickets jobs_tickets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jobs_tickets
+    ADD CONSTRAINT jobs_tickets_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: legal_acceptances legal_acceptances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_acceptances
     ADD CONSTRAINT legal_acceptances_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: legal_document_versions legal_document_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_document_versions
+    ADD CONSTRAINT legal_document_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: legal_documents legal_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_documents
+    ADD CONSTRAINT legal_documents_pkey PRIMARY KEY (id);
 
 
 --
@@ -338,6 +423,14 @@ ALTER TABLE ONLY public.subscriptions
 
 
 --
+-- Name: translations translations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.translations
+    ADD CONSTRAINT translations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_tokens user_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -351,6 +444,13 @@ ALTER TABLE ONLY public.user_tokens
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_on_user_id_legal_document_version_id_8b5841d436; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_on_user_id_legal_document_version_id_8b5841d436 ON public.legal_acceptances USING btree (user_id, legal_document_version_id);
 
 
 --
@@ -372,6 +472,13 @@ CREATE INDEX index_audit_events_on_created_at ON public.audit_events USING btree
 --
 
 CREATE INDEX index_audit_events_on_organization_id ON public.audit_events USING btree (organization_id);
+
+
+--
+-- Name: index_audit_events_on_subject_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audit_events_on_subject_id ON public.audit_events USING btree (subject_id);
 
 
 --
@@ -424,10 +531,59 @@ CREATE UNIQUE INDEX index_invitations_on_token_hash ON public.invitations USING 
 
 
 --
+-- Name: index_jobs_tickets_on_expires_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_jobs_tickets_on_expires_at ON public.jobs_tickets USING btree (expires_at);
+
+
+--
+-- Name: index_jobs_tickets_on_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_jobs_tickets_on_session_id ON public.jobs_tickets USING btree (session_id);
+
+
+--
+-- Name: index_legal_acceptances_on_legal_document_version_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legal_acceptances_on_legal_document_version_id ON public.legal_acceptances USING btree (legal_document_version_id);
+
+
+--
 -- Name: index_legal_acceptances_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_legal_acceptances_on_user_id ON public.legal_acceptances USING btree (user_id);
+
+
+--
+-- Name: index_legal_document_versions_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legal_document_versions_on_created_by_id ON public.legal_document_versions USING btree (created_by_id);
+
+
+--
+-- Name: index_legal_document_versions_on_legal_document_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legal_document_versions_on_legal_document_id ON public.legal_document_versions USING btree (legal_document_id);
+
+
+--
+-- Name: index_legal_document_versions_on_legal_document_id_and_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_legal_document_versions_on_legal_document_id_and_number ON public.legal_document_versions USING btree (legal_document_id, number);
+
+
+--
+-- Name: index_legal_documents_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_legal_documents_on_slug ON public.legal_documents USING btree (slug);
 
 
 --
@@ -522,6 +678,13 @@ CREATE UNIQUE INDEX index_subscriptions_on_organization_id_and_livemode ON publi
 
 
 --
+-- Name: index_translations_on_key_and_locale; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_translations_on_key_and_locale ON public.translations USING btree (key, locale);
+
+
+--
 -- Name: index_user_tokens_on_token_hash_and_context; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -604,11 +767,43 @@ ALTER TABLE ONLY public.subscriptions
 
 
 --
+-- Name: legal_acceptances fk_rails_3b2c4ebc36; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_acceptances
+    ADD CONSTRAINT fk_rails_3b2c4ebc36 FOREIGN KEY (legal_document_version_id) REFERENCES public.legal_document_versions(id);
+
+
+--
+-- Name: legal_document_versions fk_rails_49e0e9421c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_document_versions
+    ADD CONSTRAINT fk_rails_49e0e9421c FOREIGN KEY (created_by_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: legal_document_versions fk_rails_5fe2791bee; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_document_versions
+    ADD CONSTRAINT fk_rails_5fe2791bee FOREIGN KEY (legal_document_id) REFERENCES public.legal_documents(id);
+
+
+--
 -- Name: memberships fk_rails_64267aab58; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.memberships
     ADD CONSTRAINT fk_rails_64267aab58 FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jobs_tickets fk_rails_643d5a202b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jobs_tickets
+    ADD CONSTRAINT fk_rails_643d5a202b FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
 
 
 --
@@ -652,6 +847,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: legal_documents fk_rails_befd55bf99; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legal_documents
+    ADD CONSTRAINT fk_rails_befd55bf99 FOREIGN KEY (published_version_id) REFERENCES public.legal_document_versions(id);
+
+
+--
 -- Name: invitations fk_rails_d799c974a1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -690,6 +893,7 @@ ALTER TABLE ONLY public.impersonations
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261004150000'),
 ('20261004110000'),
 ('20261004100000'),
 ('20261004090200'),

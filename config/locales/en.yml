@@ -278,6 +278,8 @@ en:
       transfer_ownership: Make another person an owner before deleting your account.
       subscription_active: Cancel the organization’s subscription before deleting
         your account.
+      ai_not_configured: Text translation is not configured.
+      ai_unavailable: The translation provider is unavailable. Try again later.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.

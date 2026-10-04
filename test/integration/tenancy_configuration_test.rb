@@ -19,10 +19,18 @@ class TenancyConfigurationTest < ActiveSupport::TestCase
     assert_includes output, "https://app.example.com"
   end
 
+  test "production boot requires the API origin for jobs and one click unsubscribe" do
+    [ nil, "" ].each do |origin|
+      output, status = boot("SPA_ORIGIN" => "https://app.example.com", "API_ORIGIN" => origin)
+      refute status.success?
+      assert_includes output, "API_ORIGIN is required in production"
+    end
+  end
+
   private
 
   def boot(overrides)
-    environment = { "RAILS_ENV" => "production", "SECRET_KEY_BASE" => SecureRandom.hex(64), "TENANCY" => "multi" }.merge(overrides)
+    environment = { "RAILS_ENV" => "production", "SECRET_KEY_BASE" => SecureRandom.hex(64), "TENANCY" => "multi", "API_ORIGIN" => "https://api.example.com" }.merge(overrides)
     stdout, stderr, status = Open3.capture3(environment, "bin/rails", "runner", "puts Rails.application.config.x.spa_origin", chdir: Rails.root)
     [ stdout + stderr, status ]
   end

@@ -2,13 +2,9 @@ module Api
   module V1
     module Admin
       class JobsAccessesController < BaseController
-        skip_before_action :authenticate!
-        before_action :require_superadmin!
-
         def create
-          authorize current_session, :jobs_access?
-          response.headers["Set-Cookie"] = OperationsAccess.issue(current_session)
-          head :no_content
+          authorize OperationsAccess
+          render_data(OperationsAccess.issue(current_session, request), serializer: JobsAccessSerializer, status: :created)
         end
       end
     end

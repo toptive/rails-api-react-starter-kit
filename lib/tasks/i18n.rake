@@ -3,6 +3,14 @@ require "yaml"
 require "open3"
 
 namespace :i18n do
+  desc "Sync CSV defaults without replacing runtime edits"
+  task sync: :environment do
+    puts "i18n: #{Translation.sync!}"
+  ensure
+    # Flush Solid Cable's batched writer before this short-lived process exits.
+    TranslationCatalog.stop!
+  end
+
   desc "Build JSON and Rails locales from the shared translation CSV"
   task :build do
     rows = CSV.read(Rails.root.join("i18n/translations.csv"), headers: true)

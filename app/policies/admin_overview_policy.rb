@@ -1,0 +1,2 @@
+class AdminOverviewPolicy < AdminPolicy
+end

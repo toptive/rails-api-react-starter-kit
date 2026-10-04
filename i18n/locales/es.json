@@ -546,5 +546,7 @@
   "errors.api.email_unchanged": "Este ya es tu email.",
   "errors.api.email_change_invalid": "Este enlace de confirmación de email no es válido o ha vencido.",
   "errors.api.transfer_ownership": "Nombra a otra persona como dueña antes de eliminar tu cuenta.",
-  "errors.api.subscription_active": "Cancela la suscripción de la organización antes de eliminar tu cuenta."
+  "errors.api.subscription_active": "Cancela la suscripción de la organización antes de eliminar tu cuenta.",
+  "errors.api.ai_not_configured": "La traducción de textos no está configurada.",
+  "errors.api.ai_unavailable": "El proveedor de traducciones no está disponible. Intentá de nuevo más tarde."
 }
