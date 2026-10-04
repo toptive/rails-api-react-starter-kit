@@ -269,6 +269,10 @@ en:
       signup_closed: Account registration is closed.
       invitation_required: You need an invitation to create an account.
       email_unavailable: We cannot send email right now. Try again later.
+      not_member: You do not belong to this organization.
+      last_owner: Choose another owner before leaving or removing this owner.
+      email_mismatch: Sign in with the email address on this invitation.
+      invitation_invalid: This invitation has expired or is no longer available.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.
@@ -508,12 +512,6 @@ en:
     value:
       days_7: In 7 days
       minutes_15: 15 minutes, one use
-    confirmation:
-      action: Sign in
-      headline: Sign in to %{app}
-      lead: Use the button to sign in. You do not need a password.
-      note1: Did not ask for this link? Ignore this email. Your account stays safe.
-      subject: Your sign-in link for %{app}
   nav:
     admin: Admin
     home: Home
@@ -545,6 +543,7 @@ en:
       submit: Create organization
       title: Create an organization
     switch: Switch organization
+    default_name: Default
   pagination:
     label: Pages
     next: Next

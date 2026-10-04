@@ -30,7 +30,7 @@ class User < ApplicationRecord
     user.locale ||= I18n.locale.to_s
     token = transaction do
       user.save!(context: :registration)
-      accepted = user.accept_published_legal!(request)
+      accepted = user.record_registration_acceptance!(request)
       Audit.record("user.registered", actor: user, subject: user, metadata: { accepted: accepted }, request: request)
       UserToken.issue_for(user)
     end
@@ -98,14 +98,13 @@ class User < ApplicationRecord
       user: self, impersonator: session.impersonator_user, new_account: new_account }
   end
 
-  def accept_published_legal!(request)
-    return [] unless defined?(LegalDocument)
-
-    LegalDocument.accept_at_signup(self, request.remote_ip)
+  def record_registration_acceptance!(request)
+    update!(legal_accepted_at: Time.current, legal_accepted_ip_address: request.remote_ip)
+    legal_accepted_versions.keys
   end
 
   def self.open_invitation?(email)
-    defined?(Invitation) && Invitation.open_for_email?(email.to_s.strip.downcase)
+    Invitation.open_for_email?(email.to_s.strip.downcase)
   end
   private_class_method :open_invitation?
 

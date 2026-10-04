@@ -101,6 +101,60 @@ CREATE TABLE public.impersonations (
 
 
 --
+-- Name: invitations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.invitations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    invited_by_id uuid,
+    email public.citext NOT NULL,
+    role character varying DEFAULT 'member'::character varying NOT NULL,
+    access character varying DEFAULT 'full'::character varying NOT NULL,
+    token_hash bytea NOT NULL,
+    accepted_at timestamp(6) without time zone,
+    expires_at timestamp(6) without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT invitations_access CHECK (((access)::text = ANY ((ARRAY['full'::character varying, 'viewer'::character varying])::text[]))),
+    CONSTRAINT invitations_role CHECK (((role)::text = ANY ((ARRAY['admin'::character varying, 'member'::character varying])::text[]))),
+    CONSTRAINT invitations_token_hash_length CHECK ((octet_length(token_hash) = 32))
+);
+
+
+--
+-- Name: memberships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.memberships (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    role character varying DEFAULT 'member'::character varying NOT NULL,
+    access character varying DEFAULT 'full'::character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT memberships_access CHECK (((access)::text = ANY ((ARRAY['full'::character varying, 'viewer'::character varying])::text[]))),
+    CONSTRAINT memberships_role CHECK (((role)::text = ANY ((ARRAY['owner'::character varying, 'admin'::character varying, 'member'::character varying])::text[])))
+);
+
+
+--
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.organizations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    slug public.citext NOT NULL,
+    personal boolean DEFAULT false NOT NULL,
+    onboarded_at timestamp(6) without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -167,7 +221,11 @@ CREATE TABLE public.users (
     optional_emails boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    CONSTRAINT users_role CHECK (((role)::text = ANY (ARRAY[('user'::character varying)::text, ('superadmin'::character varying)::text])))
+    last_organization_id uuid,
+    legal_accepted_at timestamp(6) without time zone,
+    legal_accepted_versions jsonb DEFAULT '{}'::jsonb NOT NULL,
+    legal_accepted_ip_address character varying,
+    CONSTRAINT users_role CHECK (((role)::text = ANY ((ARRAY['user'::character varying, 'superadmin'::character varying])::text[])))
 );
 
 
@@ -193,6 +251,30 @@ ALTER TABLE ONLY public.audit_events
 
 ALTER TABLE ONLY public.impersonations
     ADD CONSTRAINT impersonations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: invitations invitations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invitations
+    ADD CONSTRAINT invitations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: memberships memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT memberships_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.organizations
+    ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
 
 
 --
@@ -270,6 +352,62 @@ CREATE INDEX index_impersonations_on_target_user_id ON public.impersonations USI
 
 
 --
+-- Name: index_invitations_on_expires_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_invitations_on_expires_at ON public.invitations USING btree (expires_at);
+
+
+--
+-- Name: index_invitations_on_invited_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_invitations_on_invited_by_id ON public.invitations USING btree (invited_by_id);
+
+
+--
+-- Name: index_invitations_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_invitations_on_organization_id ON public.invitations USING btree (organization_id);
+
+
+--
+-- Name: index_invitations_on_token_hash; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_invitations_on_token_hash ON public.invitations USING btree (token_hash);
+
+
+--
+-- Name: index_memberships_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_organization_id ON public.memberships USING btree (organization_id);
+
+
+--
+-- Name: index_memberships_on_organization_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_memberships_on_organization_id_and_user_id ON public.memberships USING btree (organization_id, user_id);
+
+
+--
+-- Name: index_memberships_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_user_id ON public.memberships USING btree (user_id);
+
+
+--
+-- Name: index_organizations_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_organizations_on_slug ON public.organizations USING btree (slug);
+
+
+--
 -- Name: index_sessions_on_expires_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -340,6 +478,20 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
+-- Name: index_users_on_last_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_last_organization_id ON public.users USING btree (last_organization_id);
+
+
+--
+-- Name: invitations_pending_email_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX invitations_pending_email_index ON public.invitations USING btree (organization_id, email) WHERE (accepted_at IS NULL);
+
+
+--
 -- Name: audit_events audit_events_append_only; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -352,6 +504,14 @@ CREATE TRIGGER audit_events_append_only BEFORE DELETE OR UPDATE ON public.audit_
 
 ALTER TABLE ONLY public.impersonations
     ADD CONSTRAINT fk_rails_06800193f7 FOREIGN KEY (admin_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: invitations fk_rails_0fe4c14f0e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invitations
+    ADD CONSTRAINT fk_rails_0fe4c14f0e FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 
 
 --
@@ -371,11 +531,51 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: memberships fk_rails_64267aab58; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT fk_rails_64267aab58 FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sessions fk_rails_717a4cd6ef; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT fk_rails_717a4cd6ef FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
 -- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT fk_rails_758836b4f0 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: memberships fk_rails_99326fb65d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.memberships
+    ADD CONSTRAINT fk_rails_99326fb65d FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: users fk_rails_bb5362b0e2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_bb5362b0e2 FOREIGN KEY (last_organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: invitations fk_rails_d799c974a1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invitations
+    ADD CONSTRAINT fk_rails_d799c974a1 FOREIGN KEY (invited_by_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -409,6 +609,7 @@ ALTER TABLE ONLY public.impersonations
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261004100000'),
 ('20261004090200'),
 ('20261004090100'),
 ('20261004090000');

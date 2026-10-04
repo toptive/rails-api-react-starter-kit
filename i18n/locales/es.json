@@ -538,9 +538,9 @@
   "errors.api.signup_closed": "El registro de cuentas está cerrado.",
   "errors.api.invitation_required": "Necesitás una invitación para crear una cuenta.",
   "errors.api.email_unavailable": "Ahora no podemos enviar emails. Probá más tarde.",
-  "mail.confirmation.action": "Ingresar",
-  "mail.confirmation.headline": "Ingresa a {{app}}",
-  "mail.confirmation.lead": "Usa el botón para ingresar. No necesitas contraseña.",
-  "mail.confirmation.note1": "¿No pediste este enlace? Ignora este email. Tu cuenta sigue segura.",
-  "mail.confirmation.subject": "Tu enlace para ingresar a {{app}}"
+  "errors.api.not_member": "No perteneces a esta organización.",
+  "errors.api.last_owner": "Elige otro dueño antes de salir o eliminar a este dueño.",
+  "errors.api.email_mismatch": "Ingresa con la dirección de email de esta invitación.",
+  "errors.api.invitation_invalid": "Esta invitación venció o ya no está disponible.",
+  "organizations.default_name": "Predeterminada"
 }

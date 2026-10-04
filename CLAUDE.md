@@ -18,7 +18,8 @@ build-script approvals only and declares no packages.
   under `/tmp`; `docs/` holds developer reference documentation only.
 - **Everything is English**: identifiers, code, comments, docs and commit messages.
 - **Tenant isolation.** Every tenant row carries `organization_id`; every query is scoped to
-  the caller's organization. Every tenant model needs an isolation test and a Pundit policy.
+  the caller's organization through `Model.for(scope)` from `TenantScoped`. Every tenant model
+  needs an isolation request test and a Pundit policy. Unscoped tenant queries are a gate failure.
 - **The serializer is the type contract.** Responses go through Alba; TypeScript types and
   API route helpers are generated and committed. Never hand-write a mirror or API path.
 - **Gates are green before every commit and push.** Fix the code, never weaken a gate or
@@ -202,4 +203,5 @@ files. Never run setup or seeds against production. See [docs/DEPLOY.md](docs/DE
 | Gates | [docs/GATES.md](docs/GATES.md) | checks, hooks, setup |
 | i18n | [docs/I18N.md](docs/I18N.md) | CSV, generated catalogues, request locale |
 | Type contract | [docs/TYPE_CONTRACT.md](docs/TYPE_CONTRACT.md) | Alba, generated types and route helpers |
+| Tenancy | [docs/TENANCY.md](docs/TENANCY.md) | modes, roles, organization scope and isolation tests |
 | Deploy | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker, Kamal and environment variables |

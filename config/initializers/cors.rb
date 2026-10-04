@@ -1,6 +1,6 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch("SPA_ORIGIN", ENV.fetch("PUBLIC_URL", "http://localhost:5173")),
+    origins Rails.application.config.x.spa_origin,
       "capacitor://localhost", "ionic://localhost", "http://localhost"
     resource "/api/v1/*",
       headers: %w[Authorization Content-Type Accept-Language If-None-Match],

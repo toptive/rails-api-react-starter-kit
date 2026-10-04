@@ -4,7 +4,7 @@ class AuthMailer < ApplicationMailer
     @kind = params.fetch(:kind)
     @app_name = ENV.fetch("APP_NAME", "StarterKit")
     token = AccountMail.decrypt_token(params.fetch(:encrypted_token), @user)
-    @url = "#{ENV.fetch('SPA_ORIGIN', ENV.fetch('PUBLIC_URL', 'http://localhost:5173')).delete_suffix('/')}/magic-links/#{token}"
+    @url = "#{Rails.application.config.x.spa_origin.delete_suffix('/')}/magic-links/#{token}"
     I18n.with_locale(@user.locale) do
       sender = ENV.fetch("MAIL_FROM_#{@user.locale.upcase}", ENV.fetch("MAIL_FROM", "hello@example.com"))
       sender_name = ENV.fetch("MAIL_FROM_NAME_#{@user.locale.upcase}", ENV.fetch("MAIL_FROM_NAME", @app_name))

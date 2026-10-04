@@ -8,3 +8,7 @@ production:
     class: SessionCleanupJob
     queue: default
     schedule: every day at 3am
+  purge_expired_invitations:
+    class: InvitationCleanupJob
+    queue: default
+    schedule: every day at 3:15am

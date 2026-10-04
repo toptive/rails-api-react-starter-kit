@@ -6,7 +6,7 @@ class AuthTest < ActionDispatch::IntegrationTest
 
   test "register confirm sign in sudo and sign out flow" do
     travel_to Time.current.change(usec: 0)
-    ENV["SPA_ORIGIN"] = "https://app.example.com"
+    Rails.application.config.x.spa_origin = "https://app.example.com"
     perform_enqueued_jobs do
       post "/api/v1/auth/registrations?locale=es", params: {
         name: "Ana", email: " ANA@example.com ", termsAccepted: true, role: "superadmin", password: "ignored" }, as: :json
@@ -19,6 +19,9 @@ class AuthTest < ActionDispatch::IntegrationTest
     assert_equal "user", user.role
     event = AuditEvent.find_by!(action: "user.registered", actor_id: user.id)
     assert_equal [], event.metadata.fetch("accepted")
+    assert_equal Time.current, user.legal_accepted_at
+    assert_equal "127.0.0.1", user.legal_accepted_ip_address
+    assert_equal({}, user.legal_accepted_versions)
     assert_equal "127.0.0.1", event.ip_address
     email = ActionMailer::Base.deliveries.last
     assert_equal I18n.t("mail.magic_link.subject", app: "StarterKit", locale: :es), email.subject
@@ -64,10 +67,11 @@ class AuthTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_equal user.id, data.dig("auth", "user", "id")
     assert_equal "es", data.fetch("locale")
-    assert_empty data.dig("auth", "organizations")
-    assert_nil data.dig("auth", "organization")
-    assert_nil data.dig("auth", "membership")
-    assert_equal false, data.dig("auth", "onboardingRequired")
+    assert_equal 1, data.dig("auth", "organizations").length
+    assert_equal true, data.dig("auth", "organization", "personal")
+    assert_equal "owner", data.dig("auth", "membership", "role")
+    assert_nil data.dig("auth", "membership", "user")
+    assert_equal true, data.dig("auth", "onboardingRequired")
     assert_nil response.headers["Set-Cookie"]
   end
 

@@ -35,12 +35,16 @@ production SPA bundle.
   code and regenerates types or translations. A failure exits 2 with diagnostic output.
 
 Architecture tests enforce REST-only actions, explicit Pundit authorization, raw JSON only
-in the envelope, no service folders, one model call per job and declared worker queues.
+in the envelope, no service folders, one model call per job, declared worker queues and scoped
+tenant queries. Every tenant model has a policy and an isolation request test; see
+[TENANCY.md](TENANCY.md).
 Behavior tests verify the boundary's localized errors, bearer refusal and pagination.
 
 ## Testing
 
-More end-to-end tests, fewer unit tests. Backend request tests through the real router,
+More end-to-end tests, fewer unit tests.
+
+- Backend request tests through the real router,
   authentication, policies, database, serializers and envelope are the default: test each
   endpoint outcome and flows that chain endpoints. Model tests cover real branching only
   (money, dates, policies, parsers); never private helpers, isolated serializers or getters.

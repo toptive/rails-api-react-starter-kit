@@ -1,5 +1,9 @@
 # Deployment configuration
 
+Production requires `SPA_ORIGIN`; boot stops if it is unset or blank. `PUBLIC_URL` is only a
+development/test fallback. `TENANCY=multi` creates personal organizations; `TENANCY=single`
+shares the default organization. Unknown modes stop boot. See [TENANCY.md](TENANCY.md).
+
 `Dockerfile` uses Ruby 3.4.10, installs production gems, precompiles Bootsnap and Propshaft
 assets for Mission Control, and runs Rails through Thruster as an unprivileged user.
 The SPA is built separately with `pnpm build`; `frontend/dist` is its deployable artifact.
@@ -13,7 +17,9 @@ Development/test setup refuses a production environment.
 
 | Variable | Purpose |
 |---|---|
-| `SPA_ORIGIN`, `PUBLIC_URL` | SPA origin for mail links and CORS (default `http://localhost:5173`) |
+| `SPA_ORIGIN` | SPA origin for mail links and CORS; required in production |
+| `PUBLIC_URL` | Development/test fallback for `SPA_ORIGIN` (default `http://localhost:5173`) |
+| `TENANCY` | `multi` (default) or `single`; shared mode creates the default organization at boot/seed |
 | `APP_NAME`, `SIGNUP_MODE` | Product name; open/invite/closed signup policy |
 | `TRUSTED_PROXY_CIDRS` | Comma-separated proxy networks allowed to supply client forwarding headers |
 | `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_AUTHENTICATION` | Production mail server; port defaults to 587 with STARTTLS |

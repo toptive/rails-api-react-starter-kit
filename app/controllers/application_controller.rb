@@ -58,6 +58,16 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def cast_string_attributes(*fields)
+    fields.each do |field|
+      next unless params.key?(field)
+      next if params[field].is_a?(String)
+
+      raise ApiError.bad_request(:bad_request, User.validation_details(field, "validation.cast"))
+    end
+    params.permit(*fields).to_h.symbolize_keys
+  end
+
   def render_data(payload, serializer:, status: :ok, meta: {}, serializer_params: {})
     render json: {
       data: serializer.new(payload, params: serializer_params).serializable_hash,
@@ -73,6 +83,21 @@ class ApplicationController < ActionController::API
     else
       render_data(catalogue.fetch(:catalogue), serializer: LocaleSerializer,
         meta: catalogue.slice(:locale, :version))
+    end
+  end
+
+  def validate_one_click_body
+    return unless request.media_type == "application/x-www-form-urlencoded"
+    return if params["List-Unsubscribe"] == "One-Click"
+
+    raise ApiError.bad_request
+  end
+
+  def render_email_subscription(payload)
+    if request.media_type == "application/x-www-form-urlencoded"
+      head :ok
+    else
+      render_data(payload, serializer: EmailSubscriptionSerializer)
     end
   end
 

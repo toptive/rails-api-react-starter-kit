@@ -538,9 +538,9 @@
   "errors.api.signup_closed": "Account registration is closed.",
   "errors.api.invitation_required": "You need an invitation to create an account.",
   "errors.api.email_unavailable": "We cannot send email right now. Try again later.",
-  "mail.confirmation.action": "Sign in",
-  "mail.confirmation.headline": "Sign in to {{app}}",
-  "mail.confirmation.lead": "Use the button to sign in. You do not need a password.",
-  "mail.confirmation.note1": "Did not ask for this link? Ignore this email. Your account stays safe.",
-  "mail.confirmation.subject": "Your sign-in link for {{app}}"
+  "errors.api.not_member": "You do not belong to this organization.",
+  "errors.api.last_owner": "Choose another owner before leaving or removing this owner.",
+  "errors.api.email_mismatch": "Sign in with the email address on this invitation.",
+  "errors.api.invitation_invalid": "This invitation has expired or is no longer available.",
+  "organizations.default_name": "Default"
 }

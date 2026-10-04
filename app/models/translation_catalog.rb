@@ -1,6 +1,6 @@
 class TranslationCatalog
   def self.version
-    Digest::SHA256.hexdigest(I18n.available_locales.map { |locale| File.read(path(locale)) }.join)
+    @version ||= Digest::SHA256.hexdigest(I18n.available_locales.map { |locale| File.read(path(locale)) }.join)
   end
 
   def self.for_locale(locale)

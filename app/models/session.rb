@@ -4,6 +4,7 @@ class Session < ApplicationRecord
   Scope = Struct.new(:user, :session, :organization, :membership, keyword_init: true)
 
   belongs_to :user
+  belongs_to :organization, optional: true
   belongs_to :impersonator_user, class_name: "User", optional: true
   belongs_to :impersonator_session, class_name: "Session", optional: true
   belongs_to :impersonation, optional: true
@@ -21,6 +22,7 @@ class Session < ApplicationRecord
     session = create!(user: user, token_hash: Digest::SHA256.digest(token),
       expires_at: now + LIFETIME, authenticated_at: now, sudo_until: now + SUDO_WINDOW,
       ip_address: request.remote_ip, user_agent: request.user_agent&.slice(0, 255), last_used_at: now)
+    scope_for(session)
     { session: session, token: token }
   end
 
@@ -49,7 +51,7 @@ class Session < ApplicationRecord
   private_class_method :lookup
 
   def self.scope_for(session)
-    Scope.new(user: session&.user, session: session)
+    Organization.scope_for(session)
   end
 
   def self.redact_logs!

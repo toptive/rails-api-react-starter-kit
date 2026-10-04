@@ -10,6 +10,28 @@ Rails.application.routes.draw do
       resource :health, only: :show, controller: :health
       resource :bootstrap, only: :show
       resources :locales, only: :show, param: :locale
+      resources :email_subscriptions, path: "email-subscriptions", only: :show, param: :token do
+        resource :opt_out, path: "opt-out", only: :create, controller: :email_opt_outs
+      end
+      resource :current_organization, path: "current-organization", only: [] do
+        put "", action: :update, as: :update
+      end
+      resources :organizations, only: :create
+      resource :onboarding, only: :show do
+        put "", action: :update, as: :update
+      end
+      resources :invitations, only: :show, param: :token do
+        resource :acceptance, only: :create, controller: :invitation_acceptances
+      end
+      namespace :settings do
+        resource :organization, only: :show do
+          put "", action: :update, as: :update
+        end
+        resources :members, only: %i[index destroy] do
+          put "", action: :update, on: :member, as: :update
+        end
+        resources :invitations, only: %i[index create destroy]
+      end
       namespace :auth do
         resources :registrations, only: :create
         resources :magic_links, path: "magic-links", param: :token, only: %i[create show] do

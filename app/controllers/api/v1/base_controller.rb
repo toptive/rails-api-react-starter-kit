@@ -8,7 +8,7 @@ module Api
       private
 
       def current_user = current_session&.user
-      def current_scope = Session.scope_for(current_session)
+      def current_scope = @current_scope ||= Session.scope_for(current_session)
       def current_session = @current_session ||= Session.find_by_token(bearer_token)
       def locale_user = current_user
       def pundit_user = current_scope

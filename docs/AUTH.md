@@ -25,7 +25,8 @@ bcrypt comparison and return the same invalid-credentials response.
 | POST | `/api/v1/admin/jobs-access` | Mint a dashboard-only signed cookie; 204 |
 
 All data responses pass through Alba and generate committed Typelizer types and route helpers.
-Auth objects contain nullable organization/membership fields and an organizations list. Locale
+Auth objects contain an organization, a membership and an organizations list; see
+[TENANCY.md](TENANCY.md) for organization selection and isolation. Locale
 selection prefers the query, then supported Accept-Language tags, the user's locale and English.
 Locale dictionaries preserve dotted keys. ETags include the locale and catalogue digest;
 responses use `public, no-cache`. Other API responses use `private, no-store`.
@@ -57,9 +58,10 @@ and expired emailed tokens. It runs on the default queue.
 ## Registration and email
 
 `SIGNUP_MODE` accepts open, invite or closed; an unknown value stops boot. Invite mode consults
-`Invitation.open_for_email?`. Registration validates the consent checkbox and invokes the
-`User#accept_published_legal!` integration point for published terms/privacy versions. Audit
-metadata carries the accepted slugs. Registration and token/audit writes are transactional;
+`Invitation.open_for_email?`. Registration validates the consent checkbox and stores its timestamp,
+IP and version map in `legal_accepted_at`, `legal_accepted_ip_address` and `legal_accepted_versions`.
+The map is empty when no published legal versions exist; no versions are inferred from the checkbox.
+Audit metadata carries its accepted slugs. Registration and token/audit writes are transactional;
 email delivery is queued after they commit. Queued mail arguments encrypt the plain access
 token using a dedicated application key and a user-bound purpose.
 
@@ -67,9 +69,10 @@ Magic links last 15 minutes, work once and are bound to the recipient address. F
 invalidates the user's other magic links. Subsequent sign-ins consume only the submitted link.
 Reset tokens use 15 minutes and change-email contexts seven days. Only hashes are stored.
 
-Emails render in the recipient's locale using `mail.magic_link.*` or `mail.confirmation.*`
+Emails render in the recipient's locale using `mail.magic_link.*`
 and one branded HTML/text layout. Links point to `SPA_ORIGIN/magic-links/:token`; `PUBLIC_URL`
-is the origin fallback. Development uses log delivery without message bodies or tokens.
+is the development/test origin fallback. Production requires `SPA_ORIGIN` at boot.
+Development uses log delivery without message bodies or tokens.
 Production uses SMTP environment settings and refuses email-dependent work before writes
 when delivery is unavailable. Mail/job logs hide token arguments and access-link route segments.
 

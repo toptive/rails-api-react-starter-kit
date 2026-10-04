@@ -1,0 +1,4 @@
+<h1><%= I18n.t("mail.invitation.headline", organization: @organization) %></h1>
+<p><%= I18n.t("mail.invitation.lead", inviter: @inviter, app: @app_name) %></p>
+<p><a href="<%= @url %>" style="display:inline-block;padding:14px 24px;background:#11694f;color:#ffffff;border-radius:6px;text-decoration:none"><%= I18n.t("mail.invitation.action") %></a></p>
+<p><%= I18n.t("mail.invitation.footer", inviter: @inviter) %></p>

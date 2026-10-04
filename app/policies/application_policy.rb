@@ -12,6 +12,15 @@ class ApplicationPolicy
   def update? = false
   def destroy? = false
 
+  private
+
+  def current_member?
+    user&.membership.present? && user.membership.user_id == user.user&.id &&
+      user.membership.organization_id == user.organization&.id
+  end
+
+  public
+
   class Scope
     def initialize(user, scope)
       @user = user

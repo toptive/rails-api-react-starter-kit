@@ -4,12 +4,12 @@ require_relative "../support/auth_requests"
 class MailDeliveryTest < ActionDispatch::IntegrationTest
   include AuthRequests
 
-  test "confirmation mail shares the branded layout and uses the recipient's locale" do
+  test "magic link mail shares the branded layout and uses the recipient's locale" do
     user = create_user(locale: "es")
-    mail = AuthMailer.with(user: user, encrypted_token: AccountMail.encrypt_token("a" * 43, user), kind: "confirmation").access
-    assert_equal I18n.t("mail.confirmation.subject", locale: :es, app: "StarterKit"), mail.subject
+    mail = AuthMailer.with(user: user, encrypted_token: AccountMail.encrypt_token("a" * 43, user), kind: "magic_link").access
+    assert_equal I18n.t("mail.magic_link.subject", locale: :es, app: "StarterKit"), mail.subject
     assert_includes mail.html_part.body.decoded, 'lang="es"'
-    assert_includes mail.text_part.body.decoded, I18n.t("mail.confirmation.action", locale: :es)
+    assert_includes mail.text_part.body.decoded, I18n.t("mail.magic_link.action", locale: :es)
   end
 
   test "development log delivery does not log sign in tokens or email bodies" do

@@ -272,6 +272,10 @@ es:
       signup_closed: El registro de cuentas está cerrado.
       invitation_required: Necesitás una invitación para crear una cuenta.
       email_unavailable: Ahora no podemos enviar emails. Probá más tarde.
+      not_member: No perteneces a esta organización.
+      last_owner: Elige otro dueño antes de salir o eliminar a este dueño.
+      email_mismatch: Ingresa con la dirección de email de esta invitación.
+      invitation_invalid: Esta invitación venció o ya no está disponible.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.
@@ -510,12 +514,6 @@ es:
     value:
       days_7: En 7 días
       minutes_15: 15 minutos, un solo uso
-    confirmation:
-      action: Ingresar
-      headline: Ingresa a %{app}
-      lead: Usa el botón para ingresar. No necesitas contraseña.
-      note1: "¿No pediste este enlace? Ignora este email. Tu cuenta sigue segura."
-      subject: Tu enlace para ingresar a %{app}
   nav:
     admin: Administración
     home: Inicio
@@ -548,6 +546,7 @@ es:
       submit: Crear organización
       title: Crear una organización
     switch: Cambiar de organización
+    default_name: Predeterminada
   pagination:
     label: Páginas
     next: Siguiente

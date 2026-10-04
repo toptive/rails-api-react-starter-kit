@@ -8,11 +8,16 @@ module AuthRequests
       @saved_auth_env = ENV.to_h.slice("SIGNUP_MODE", "TURNSTILE_REQUIRED", "SPA_ORIGIN", "SMTP_ADDRESS")
       ENV["SIGNUP_MODE"] = "open"
       ENV.delete("TURNSTILE_REQUIRED")
+      @saved_spa_origin = Rails.application.config.x.spa_origin
+      @saved_tenancy = Rails.application.config.x.tenancy
+      Rails.application.config.x.tenancy = "multi"
       ActionMailer::Base.deliveries.clear
     end
 
     teardown do
       %w[SIGNUP_MODE TURNSTILE_REQUIRED SPA_ORIGIN SMTP_ADDRESS].each { |key| ENV[key] = @saved_auth_env[key] }
+      Rails.application.config.x.spa_origin = @saved_spa_origin
+      Rails.application.config.x.tenancy = @saved_tenancy
     end
   end
 
