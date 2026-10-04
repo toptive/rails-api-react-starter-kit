@@ -34,7 +34,10 @@ class User < ApplicationRecord
       UserToken.issue_for(user)
     end
     AccountMail.deliver(user, token, kind: "magic_link")
-    ActiveSupport::Notifications.instrument("user_registered", user_id: user.id, via: "email")
+    ActiveRecord.after_all_transactions_commit do
+      Analytics.track("signup_started", nil, via: "email")
+      Analytics.track("user_registered", user_id: user.id, via: "email")
+    end
     { email: user.email, new_account: true }
   rescue ActiveRecord::RecordNotUnique
     user.errors.add(:email, :taken)
@@ -91,8 +94,8 @@ class User < ApplicationRecord
       Session.create_for(self, request)
     end
     session = issued.fetch(:session)
-    ActiveSupport::Notifications.instrument("user_signed_in", user_id: id, method: method)
-    ActiveSupport::Notifications.instrument("signup_confirmed", user_id: id) if new_account
+    ActiveRecord.after_all_transactions_commit { Analytics.track("user_signed_in", user_id: id, method: method) }
+    ActiveRecord.after_all_transactions_commit { Analytics.track("signup_confirmed", user_id: id) } if new_account
     { token: issued[:token], expires_at: session.expires_at, sudo_until: session.sudo_until,
       user: self, impersonator: session.impersonator_user, new_account: new_account }
   end

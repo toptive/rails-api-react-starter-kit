@@ -137,10 +137,10 @@ class Invitation < ApplicationRecord
     return unless encrypted_delivery_token
 
     InvitationDeliveryJob.perform_later(organization_id, id, encrypted_delivery_token, delivery_locale)
-    ActiveSupport::Notifications.instrument("invitation_sent", user_id: event_actor_id, organization_id: organization_id, role: role)
+    Analytics.track("invitation_sent", user_id: event_actor_id, organization_id: organization_id, role: role)
   end
 
   def track_acceptance
-    ActiveSupport::Notifications.instrument("invitation_accepted", user_id: event_actor_id, organization_id: organization_id) if event_actor_id
+    Analytics.track("invitation_accepted", user_id: event_actor_id, organization_id: organization_id) if event_actor_id
   end
 end

@@ -68,7 +68,7 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
   test "any subscription that can charge in either mode blocks the sole member even with billing disabled" do
     %w[active trialing past_due unpaid incomplete paused unknown].product([ false, true ]).each do |status, live|
       Api::V1::BaseController::RATE_LIMIT_STORE.clear
-      subscription = Subscription.for(@scope).create!(status: status, livemode: live)
+      subscription = BillingSubscription.for(@scope).create!(plan: "pro", stripe_customer_id: "cus_test", stripe_subscription_id: "sub_" + SecureRandom.hex(8), status: status, livemode: live)
       get "/api/v1/settings/account", headers: bearer(@owner_token)
       assert_response :ok
       assert_equal({ "reason" => "subscription_active", "organization" => @organization.name }, data.fetch("blocker"))
@@ -82,8 +82,8 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
   end
 
   test "closed subscription history in either mode permits deletion but retains the empty organization" do
-    Subscription.for(@scope).create!(status: "canceled", livemode: false)
-    Subscription.for(@scope).create!(status: "incomplete_expired", livemode: true)
+    BillingSubscription.for(@scope).create!(plan: "pro", stripe_customer_id: "cus_test", stripe_subscription_id: "sub_" + SecureRandom.hex(8), status: "canceled", livemode: false)
+    BillingSubscription.for(@scope).create!(plan: "pro", stripe_customer_id: "cus_test", stripe_subscription_id: "sub_" + SecureRandom.hex(8), status: "incomplete_expired", livemode: true)
     get "/api/v1/settings/account", headers: bearer(@owner_token)
     assert_response :ok
     assert_nil data.fetch("blocker")
@@ -91,12 +91,12 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     assert Organization.exists?(@organization.id)
     assert_empty Membership.for(@scope)
-    assert_equal 2, Subscription.for(@scope).count
+    assert_equal 2, BillingSubscription.for(@scope).count
   end
 
   test "a remaining owner can manage an open subscription after another owner deletes their account" do
     signed_member(role: "owner")
-    Subscription.for(@scope).create!(status: "active", livemode: true)
+    BillingSubscription.for(@scope).create!(plan: "pro", stripe_customer_id: "cus_test", stripe_subscription_id: "sub_" + SecureRandom.hex(8), status: "active", livemode: true)
     delete "/api/v1/settings/account", headers: bearer(@owner_token)
     assert_response :no_content
     assert Organization.exists?(@organization.id)

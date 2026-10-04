@@ -15,7 +15,8 @@ class TenancyTest < ActiveSupport::TestCase
     Rails.root.glob("app/models/*.rb").each do |path|
       model = path.basename.to_s.delete_suffix(".rb").camelize.constantize
       next unless model < ApplicationRecord && model.column_names.include?("organization_id")
-      next if [ Session, AuditEvent ].include?(model)
+      # Contract global records: the webhook inbox organization ID is a nullable hint.
+      next if [ Session, AuditEvent, BillingEvent ].include?(model)
 
       assert model.include?(TenantScoped), "#{model}: include TenantScoped"
       assert model.reflect_on_association(:organization), "#{model}: belongs_to organization"

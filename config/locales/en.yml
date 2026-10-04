@@ -280,6 +280,15 @@ en:
         your account.
       ai_not_configured: Text translation is not configured.
       ai_unavailable: The translation provider is unavailable. Try again later.
+      stripe_unavailable: Payments are temporarily unavailable. Please try again.
+      test_mode: Paid plans are available to test operators only.
+      already_subscribed: Your organization already has a paid plan.
+      no_subscription: Your organization has no subscription to manage.
+      offer_changed: This offer has changed. Review the current offer and try again.
+      not_accepted: Accept the payment agreement before continuing.
+      price_mismatch: This offer is temporarily unavailable. Please try again later.
+      upload_incomplete: The upload is incomplete or the file is not allowed.
+      limit_reached: Your plan has reached its limit.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.
@@ -515,6 +524,9 @@ en:
       note1: 'That is the full amount: nothing is added.'
       note2: To change or cancel the plan, do it in the app before %{date}.
       subject: Your %{app} plan renews on %{date}
+      body: The plan for %{organization} renews on %{date} for %{amount}. You can
+        manage or cancel it before then.
+      cta: Manage payments
     unsubscribe: Unsubscribe
     value:
       days_7: In 7 days

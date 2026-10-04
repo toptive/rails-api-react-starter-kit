@@ -4,10 +4,11 @@ class TranslationFill < ApplicationRecord
   belongs_to :session, optional: true
 
   def self.start!(attributes, scope, request)
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + WAIT_SECONDS
     locale = Translation.validate_fill!(attributes)
     fill = create!(locale: locale, session: scope.session, ip_address: request.remote_ip)
     FillTranslationsJob.perform_later(fill.id)
-    fill.await_result
+    fill.await_result(deadline)
   end
 
   def self.complete!(id)
@@ -22,15 +23,16 @@ class TranslationFill < ApplicationRecord
     Rails.error.report(error)
   end
 
-  def await_result
-    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + WAIT_SECONDS
-    until reload.completed_at
+  def await_result(deadline)
+    loop do
+      reload
       return { count: nil, status: :accepted } if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+      if completed_at
+        raise ApiError.unavailable(error_code) if error_code
 
+        return { count: count, status: :created }
+      end
       sleep 0.05
     end
-    raise ApiError.unavailable(error_code) if error_code
-
-    { count: count, status: :created }
   end
 end

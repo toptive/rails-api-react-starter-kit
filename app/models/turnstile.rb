@@ -4,7 +4,19 @@ require "timeout"
 class Turnstile
   VERIFY_URL = URI("https://challenges.cloudflare.com/turnstile/v0/siteverify")
 
-  def self.required? = ENV["TURNSTILE_REQUIRED"] == "true"
+  def self.hostname = ENV["TURNSTILE_HOSTNAME"].presence || URI(Billing.public_url).host
+
+  def self.readiness
+    problems = []
+    %w[TURNSTILE_SITE_KEY TURNSTILE_SECRET_KEY].each do |name|
+      value = ENV[name]
+      problems << "#{name} is missing or uses a test key" if value.blank? || value.start_with?("1x", "2x", "3x")
+    end
+    problems << "TURNSTILE_HOSTNAME is missing" if hostname.blank?
+    problems
+  end
+
+  def self.required? = Flags.enabled?(:turnstile)
   def self.widget = { required: required?, site_key: required? ? ENV["TURNSTILE_SITE_KEY"].presence : nil }
 
   def self.verify!(token, action:, request:)
@@ -14,7 +26,7 @@ class Turnstile
 
   def self.accepted?(token, action, ip)
     return false unless token.is_a?(String) && token.bytesize.between?(1, 2048)
-    return false if ENV["TURNSTILE_SECRET_KEY"].blank? || ENV["TURNSTILE_HOSTNAME"].blank?
+    return false if ENV["TURNSTILE_SECRET_KEY"].blank? || hostname.blank?
 
     response = Timeout.timeout(5) do
       http = Net::HTTP.new(VERIFY_URL.host, VERIFY_URL.port)
@@ -27,9 +39,9 @@ class Turnstile
         response: token, remoteip: ip), "Content-Type" => "application/x-www-form-urlencoded")
     end
     body = JSON.parse(response.body)
-    response.is_a?(Net::HTTPSuccess) && body["success"] == true &&
-      body["hostname"] == ENV.fetch("TURNSTILE_HOSTNAME") && body["action"] == action
-  rescue Timeout::Error, IOError, SystemCallError, JSON::ParserError, OpenSSL::SSL::SSLError
+    response.is_a?(Net::HTTPSuccess) && body.is_a?(Hash) && body["success"] == true &&
+      body["hostname"] == hostname && body["action"] == action
+  rescue SocketError, Timeout::Error, IOError, SystemCallError, JSON::ParserError, OpenSSL::SSL::SSLError
     false
   end
   private_class_method :accepted?

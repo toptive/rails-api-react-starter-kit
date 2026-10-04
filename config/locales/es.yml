@@ -285,6 +285,17 @@ es:
       ai_not_configured: La traducción de textos no está configurada.
       ai_unavailable: El proveedor de traducciones no está disponible. Intentá de
         nuevo más tarde.
+      stripe_unavailable: Los pagos no están disponibles por el momento. Inténtalo
+        de nuevo.
+      test_mode: Los planes de pago solo están disponibles para operadores de prueba.
+      already_subscribed: Tu organización ya tiene un plan de pago.
+      no_subscription: Tu organización no tiene una suscripción para administrar.
+      offer_changed: Esta oferta cambió. Revisa la oferta actual e inténtalo de nuevo.
+      not_accepted: Acepta el acuerdo de pago antes de continuar.
+      price_mismatch: Esta oferta no está disponible por el momento. Inténtalo más
+        tarde.
+      upload_incomplete: La subida está incompleta o el archivo no está permitido.
+      limit_reached: Tu plan alcanzó su límite.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.
@@ -519,6 +530,9 @@ es:
       note1: 'Ese es el monto total: no se suma nada.'
       note2: Para cambiar o cancelar el plan, hazlo en la app antes del %{date}.
       subject: Tu plan de %{app} se renueva el %{date}
+      body: El plan de %{organization} se renueva el %{date} por %{amount}. Puedes
+        administrarlo o cancelarlo antes.
+      cta: Administrar pagos
     unsubscribe: Darme de baja
     value:
       days_7: En 7 días

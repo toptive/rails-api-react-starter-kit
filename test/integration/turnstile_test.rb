@@ -42,7 +42,7 @@ class TurnstileTest < ActionDispatch::IntegrationTest
 
   test "siteverify refusal wrong host wrong action invalid JSON and timeout fail closed" do
     bodies = [ { success: false }, { success: true, hostname: "other.example.com", action: "registration" },
-      { success: true, hostname: "app.example.com", action: "magic_link" }, "invalid-json", :timeout ]
+      { success: true, hostname: "app.example.com", action: "magic_link" }, "invalid-json", "[]", "null", :timeout ]
     bodies.each do |body|
       with_siteverify(body) do
         assert_no_difference [ "User.count", "UserToken.count", "AuditEvent.count" ] do

@@ -4,6 +4,7 @@ require "rails/all"
 require "csv"
 require_relative "../lib/client_identity"
 require_relative "../lib/operations_browser_session"
+require_relative "../lib/public_site"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -17,7 +18,7 @@ module StarterKit
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks client_identity.rb operations_browser_session.rb])
+    config.autoload_lib(ignore: %w[assets tasks client_identity.rb operations_browser_session.rb public_site.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -33,7 +34,8 @@ module StarterKit
     config.api_only = true
     config.exceptions_app = ->(env) { Api::ExceptionsController.action(:show).call(env) }
     config.active_job.queue_adapter = :solid_queue
-    config.solid_queue.connects_to = { database: { writing: :queue } }
+    # Inherit the primary connection so inbox and queue writes share a transaction.
+    config.solid_queue.connects_to = nil
     config.mission_control.jobs.base_controller_class = "ActionController::Base"
     config.mission_control.jobs.http_basic_auth_enabled = false
     config.mission_control.jobs.adapters = [ :solid_queue ]

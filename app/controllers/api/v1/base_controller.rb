@@ -15,6 +15,7 @@ module Api
 
       def authenticate!
         @current_session = Session.authenticate(bearer_token)
+        Sentry.set_user(id: @current_session.user_id)
       end
 
       def require_sudo!

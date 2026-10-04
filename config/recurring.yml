@@ -7,8 +7,12 @@ production:
   purge_expired_sessions:
     class: SessionCleanupJob
     queue: default
-    schedule: every day at 3am
+    schedule: "0 3 * * * Etc/UTC"
   purge_expired_invitations:
     class: InvitationCleanupJob
     queue: default
-    schedule: every day at 3:15am
+    schedule: "15 3 * * * Etc/UTC"
+  billing_notice_sweep:
+    class: BillingNoticeSweepJob
+    queue: default
+    schedule: "0 8 * * * Etc/UTC"

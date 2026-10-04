@@ -548,5 +548,16 @@
   "errors.api.transfer_ownership": "Nombra a otra persona como dueña antes de eliminar tu cuenta.",
   "errors.api.subscription_active": "Cancela la suscripción de la organización antes de eliminar tu cuenta.",
   "errors.api.ai_not_configured": "La traducción de textos no está configurada.",
-  "errors.api.ai_unavailable": "El proveedor de traducciones no está disponible. Intentá de nuevo más tarde."
+  "errors.api.ai_unavailable": "El proveedor de traducciones no está disponible. Intentá de nuevo más tarde.",
+  "errors.api.stripe_unavailable": "Los pagos no están disponibles por el momento. Inténtalo de nuevo.",
+  "errors.api.test_mode": "Los planes de pago solo están disponibles para operadores de prueba.",
+  "errors.api.already_subscribed": "Tu organización ya tiene un plan de pago.",
+  "errors.api.no_subscription": "Tu organización no tiene una suscripción para administrar.",
+  "errors.api.offer_changed": "Esta oferta cambió. Revisa la oferta actual e inténtalo de nuevo.",
+  "errors.api.not_accepted": "Acepta el acuerdo de pago antes de continuar.",
+  "errors.api.price_mismatch": "Esta oferta no está disponible por el momento. Inténtalo más tarde.",
+  "errors.api.upload_incomplete": "La subida está incompleta o el archivo no está permitido.",
+  "errors.api.limit_reached": "Tu plan alcanzó su límite.",
+  "mail.renewal_notice.body": "El plan de {{organization}} se renueva el {{date}} por {{amount}}. Puedes administrarlo o cancelarlo antes.",
+  "mail.renewal_notice.cta": "Administrar pagos"
 }

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resource :health, only: :show, controller: :health
+  resource :sitemap, path: "sitemap.xml", only: :show, controller: :sitemaps
+  resource :robots, path: "robots.txt", only: :show, controller: :robots
   get "up" => "rails/health#show", as: :rails_health_check
   namespace :admin do
     namespace :jobs do
@@ -10,9 +13,17 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "/admin/jobs"
   end
 
+  namespace :webhooks do
+    namespace :stripe do
+      resources :events, only: :create
+    end
+  end
+
   namespace :api do
     namespace :v1 do
       resource :health, only: :show, controller: :health
+      resources :direct_uploads, path: "direct-uploads", only: :create
+      resources :events, only: :create
       resource :bootstrap, only: :show
       resources :locales, only: :show, param: :locale
       resources :legal_pages, path: "legal-pages", only: :show, param: :slug
@@ -30,6 +41,10 @@ Rails.application.routes.draw do
         resource :acceptance, only: :create, controller: :invitation_acceptances
       end
       namespace :settings do
+        resource :billing, only: :show, controller: :billings do
+          resource :checkout_session, path: "checkout-session", only: :create, controller: :billing_checkout_sessions
+          resource :portal_session, path: "portal-session", only: :create, controller: :billing_portal_sessions
+        end
         resource :profile, only: [] do
           put "", action: :update, as: :update
         end

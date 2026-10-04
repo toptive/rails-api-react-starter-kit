@@ -93,8 +93,8 @@ allow ten attempts; magic-link requests and sudo allow five. Refusals use `429 r
 ## Browser job dashboard
 
 With a superadmin bearer, POST `/api/v1/admin/jobs-access`, then open the returned API-origin
-URL. GET `/jobs/session?ticket=...` consumes the signed 60-second ticket exactly once, sets a
-five-minute HttpOnly dashboard cookie and redirects to `/jobs`. Every dashboard request checks
+URL. GET `/admin/jobs/session?ticket=...` consumes the signed 60-second ticket exactly once, sets a
+five-minute HttpOnly dashboard cookie and redirects to `/admin/jobs`. Every dashboard request checks
 the live session, current role and absence of impersonation. The engine has a separate
 CSRF-protected browser session; API bearer routes use no cookie session. CORS remains
 credential-free. See [ADMIN.md](ADMIN.md) for the complete handoff and impersonation flows.

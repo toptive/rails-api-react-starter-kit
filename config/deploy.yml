@@ -8,7 +8,7 @@ proxy:
   ssl: true
   host: api.example.com
   healthcheck:
-    path: /up
+    path: /health
 registry:
   username: your-registry-user
   password:
@@ -22,6 +22,10 @@ env:
     SPA_ORIGIN: https://app.example.com
     API_ORIGIN: https://api.example.com
     TENANCY: multi
+    SITE_INDEXING: "0"
+    BILLING_ENABLED: "false"
+    BILLING_MODE: test
+    TURNSTILE_REQUIRED: "false"
     DB_HOST: 192.0.2.2
     SOLID_QUEUE_IN_PUMA: true
   secret:

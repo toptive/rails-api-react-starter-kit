@@ -207,4 +207,7 @@ files. Never run setup or seeds against production. See [docs/DEPLOY.md](docs/DE
 | Accounts | [docs/AUTH.md](docs/AUTH.md) | sign-in, sudo, devices and account settings |
 | Admin | [docs/ADMIN.md](docs/ADMIN.md) | superadmin API, impersonation, texts, legal versions, audit and jobs access |
 | Privacy | [docs/PRIVACY.md](docs/PRIVACY.md) | deletion blockers and retained records |
+| Billing | [docs/BILLING.md](docs/BILLING.md) | offers, Stripe checkout, reconciliation, renewals |
+| Platform | [docs/PLATFORM.md](docs/PLATFORM.md) | uploads, analytics, flags, AI, monitoring, health and jobs |
+| SEO | [docs/SEO.md](docs/SEO.md) | sitemap, robots, indexing lock and canonical host |
 | Deploy | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker, Kamal and environment variables |

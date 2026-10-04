@@ -548,5 +548,16 @@
   "errors.api.transfer_ownership": "Make another person an owner before deleting your account.",
   "errors.api.subscription_active": "Cancel the organization’s subscription before deleting your account.",
   "errors.api.ai_not_configured": "Text translation is not configured.",
-  "errors.api.ai_unavailable": "The translation provider is unavailable. Try again later."
+  "errors.api.ai_unavailable": "The translation provider is unavailable. Try again later.",
+  "errors.api.stripe_unavailable": "Payments are temporarily unavailable. Please try again.",
+  "errors.api.test_mode": "Paid plans are available to test operators only.",
+  "errors.api.already_subscribed": "Your organization already has a paid plan.",
+  "errors.api.no_subscription": "Your organization has no subscription to manage.",
+  "errors.api.offer_changed": "This offer has changed. Review the current offer and try again.",
+  "errors.api.not_accepted": "Accept the payment agreement before continuing.",
+  "errors.api.price_mismatch": "This offer is temporarily unavailable. Please try again later.",
+  "errors.api.upload_incomplete": "The upload is incomplete or the file is not allowed.",
+  "errors.api.limit_reached": "Your plan has reached its limit.",
+  "mail.renewal_notice.body": "The plan for {{organization}} renews on {{date}} for {{amount}}. You can manage or cancel it before then.",
+  "mail.renewal_notice.cta": "Manage payments"
 }

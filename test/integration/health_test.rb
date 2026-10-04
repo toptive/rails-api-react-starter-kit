@@ -12,9 +12,9 @@ class HealthTest < ActionDispatch::IntegrationTest
   end
 
   test "job dashboard is inaccessible without a verified superadmin session" do
-    get "/jobs"
+    get "/admin/jobs"
     assert_response :not_found
-    get "/jobs", headers: { "Authorization" => "Bearer arbitrary-token" }
+    get "/admin/jobs", headers: { "Authorization" => "Bearer arbitrary-token" }
     assert_response :not_found
   end
 

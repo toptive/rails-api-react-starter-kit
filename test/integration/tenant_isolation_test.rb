@@ -42,20 +42,39 @@ class TenantIsolationTest < ActionDispatch::IntegrationTest
     refute Membership.for(other_scope).exists?(user_id: @owner.id)
   end
 
-  test "Subscription tenant isolation keeps another organization's billing out of account deletion" do
+  test "BillingSubscription tenant isolation keeps another organization's billing out of account deletion" do
     other_token = sign_in(create_user)
     other_scope = Session.scope_for(Session.find_by_token(other_token))
-    subscription = Subscription.for(other_scope).create!(status: "active", livemode: true)
+    subscription = BillingSubscription.for(other_scope).create!(plan: "pro", stripe_customer_id: "cus_test", stripe_subscription_id: "sub_" + SecureRandom.hex(8), status: "active", livemode: true)
     get "/api/v1/settings/account", params: { organizationId: other_scope.organization.id }, headers: bearer(@owner_token)
     assert_response :ok
     assert_nil data.fetch("blocker")
     delete "/api/v1/settings/account", params: { organizationId: other_scope.organization.id }, headers: bearer(@owner_token), as: :json
     assert_response :no_content
-    assert Subscription.for(other_scope).exists?(subscription.id)
+    assert BillingSubscription.for(other_scope).exists?(subscription.id)
     assert Organization.exists?(other_scope.organization.id)
     assert Membership.for(other_scope).exists?(user_id: other_scope.user.id)
     get "/api/v1/settings/account", headers: bearer(other_token)
     assert_equal "subscription_active", data.dig("blocker", "reason")
+  end
+
+  test "BillingSubscription tenant isolation keeps overview checkout and portal in the caller organization" do
+    saved = ENV.to_h.slice("BILLING_ENABLED", "BILLING_MODE")
+    ENV["BILLING_ENABLED"] = "true"
+    ENV["BILLING_MODE"] = "test"
+    other_token = sign_in(create_user)
+    other_scope = Session.scope_for(Session.find_by_token(other_token))
+    BillingSubscription.for(other_scope).create!(plan: "pro", status: "active", livemode: false,
+      stripe_customer_id: "cus_secret", stripe_subscription_id: "sub_secret", current_period_end: 1.day.from_now)
+    get "/api/v1/settings/billing", params: { organizationId: other_scope.organization.id }, headers: bearer(@owner_token)
+    assert_response :ok
+    assert_equal "free", data.fetch("plan")
+    assert_nil data.fetch("subscription")
+    post "/api/v1/settings/billing/portal-session", params: { organizationId: other_scope.organization.id }, headers: bearer(@owner_token), as: :json
+    assert_error :conflict, "no_subscription"
+    refute_includes response.body, "cus_secret"
+  ensure
+    saved.each { |key, value| ENV[key] = value }
   end
 
   test "organization settings and switching never accept a supplied organization as authority" do

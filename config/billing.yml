@@ -1,0 +1,21 @@
+shared:
+  currency: usd
+  default_plan: free
+  plans:
+    free:
+      members: 3
+    pro:
+      members:
+  offers:
+    - id: pro_monthly
+      plan: pro
+      interval: month
+      amount_cents: 1900
+    - id: pro_yearly
+      plan: pro
+      interval: year
+      amount_cents: 19000
+  renewal_notice_intervals: [year]
+  renewal_notice_days:
+    from: 25
+    until: 15

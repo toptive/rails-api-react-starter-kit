@@ -21,7 +21,7 @@ class AccountDeletion
       Audit.record("user.deleted", scope: scope, subject: scope.user, request: request)
       organizations.each do |organization|
         tenant = Session::Scope.new(organization: organization)
-        next if Membership.for(tenant).exists? || Subscription.for(tenant).exists?
+        next if Membership.for(tenant).exists? || BillingSubscription.for(tenant).exists?
 
         organization.destroy!
         Audit.record("organization.deleted", scope: tenant, actor: scope.user, subject: organization, request: request)
@@ -37,7 +37,7 @@ class AccountDeletion
 
       others = Membership.for(tenant).where.not(user_id: scope.user.id)
       reason = if !others.exists?
-        "subscription_active" if Subscription.open?(tenant)
+        "subscription_active" if BillingSubscription.open?(tenant)
       elsif membership.role == "owner" && !others.exists?(role: "owner")
         "transfer_ownership"
       end

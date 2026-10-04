@@ -549,3 +549,14 @@
 "errors.api.subscription_active","Cancel the organization’s subscription before deleting your account.","Cancela la suscripción de la organización antes de eliminar tu cuenta."
 errors.api.ai_not_configured,Text translation is not configured.,La traducción de textos no está configurada.
 errors.api.ai_unavailable,The translation provider is unavailable. Try again later.,El proveedor de traducciones no está disponible. Intentá de nuevo más tarde.
+"errors.api.stripe_unavailable","Payments are temporarily unavailable. Please try again.","Los pagos no están disponibles por el momento. Inténtalo de nuevo."
+"errors.api.test_mode","Paid plans are available to test operators only.","Los planes de pago solo están disponibles para operadores de prueba."
+"errors.api.already_subscribed","Your organization already has a paid plan.","Tu organización ya tiene un plan de pago."
+"errors.api.no_subscription","Your organization has no subscription to manage.","Tu organización no tiene una suscripción para administrar."
+"errors.api.offer_changed","This offer has changed. Review the current offer and try again.","Esta oferta cambió. Revisa la oferta actual e inténtalo de nuevo."
+"errors.api.not_accepted","Accept the payment agreement before continuing.","Acepta el acuerdo de pago antes de continuar."
+"errors.api.price_mismatch","This offer is temporarily unavailable. Please try again later.","Esta oferta no está disponible por el momento. Inténtalo más tarde."
+"errors.api.upload_incomplete","The upload is incomplete or the file is not allowed.","La subida está incompleta o el archivo no está permitido."
+"errors.api.limit_reached","Your plan has reached its limit.","Tu plan alcanzó su límite."
+"mail.renewal_notice.body","The plan for {{organization}} renews on {{date}} for {{amount}}. You can manage or cancel it before then.","El plan de {{organization}} se renueva el {{date}} por {{amount}}. Puedes administrarlo o cancelarlo antes."
+"mail.renewal_notice.cta","Manage payments","Administrar pagos"

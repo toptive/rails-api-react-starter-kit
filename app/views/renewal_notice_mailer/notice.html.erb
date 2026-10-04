@@ -1,0 +1,2 @@
+<p><%= I18n.t("mail.renewal_notice.body", organization: @organization.name, amount: @amount, date: @date, locale: @user.locale) %></p>
+<p><%= link_to I18n.t("mail.renewal_notice.cta", locale: @user.locale), @url %></p>

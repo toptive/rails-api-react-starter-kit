@@ -174,10 +174,10 @@ class Organization < ApplicationRecord
   end
 
   def track_creation
-    ActiveSupport::Notifications.instrument("organization_created", user_id: event_actor_id, organization_id: id) if event_actor_id && !personal?
+    Analytics.track("organization_created", user_id: event_actor_id, organization_id: id) if event_actor_id && !personal?
   end
 
   def track_onboarding
-    ActiveSupport::Notifications.instrument("onboarding_completed", user_id: event_actor_id, organization_id: id, skipped: onboarding_skipped) if event_actor_id
+    Analytics.track("onboarding_completed", user_id: event_actor_id, organization_id: id, skipped: onboarding_skipped) if event_actor_id
   end
 end

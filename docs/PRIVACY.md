@@ -24,7 +24,7 @@ A successful transaction removes the user, memberships, all sessions and emailed
 Foreign keys nullify inviter and impersonation references. It deletes organizations left empty
 when they have no subscription records, including their invitations through database cascades.
 An empty organization with closed subscription history remains with its billing records.
-`Subscription.for(scope)` enforces tenant isolation, and deletion checks both billing modes.
+`BillingSubscription.for(scope)` enforces tenant isolation, and deletion checks both billing modes.
 The subscription table currently provides the status and mode required for deletion; payment
 provider reconciliation belongs to billing.
 
