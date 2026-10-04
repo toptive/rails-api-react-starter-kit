@@ -98,6 +98,14 @@ class BillingTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "checkout accepts a single recurring interval when Stripe omits the default count" do
+    with_stripe(price: stripe_price.merge(recurring: { interval: "month" })) do
+      post "/api/v1/settings/billing/checkout-session", params: billing_attributes, headers: bearer(@owner_token), as: :json
+      assert_response :created
+      assert_equal "https://checkout.stripe.com/c/pay", data.fetch("url")
+    end
+  end
+
   test "checkout returns 201 and sends agreed localized terms with stable idempotency" do
     @owner.update!(locale: "es")
     with_stripe do

@@ -1,3 +1,7 @@
+require_relative "../../lib/type_contract"
+Typelizer::RouteWriter.prepend(TypeContract::Routes)
+Typelizer::Writer.prepend(TypeContract::Serializers)
+
 Typelizer.configure do |config|
   config.output_dir = Rails.root.join("frontend/src/api/generated/serializers")
   config.types_import_path = "./index"

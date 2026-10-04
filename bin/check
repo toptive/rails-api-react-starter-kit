@@ -20,6 +20,7 @@ run "Frontend types" pnpm typecheck
 run "Frontend lint" pnpm lint
 run "Frontend tests" pnpm test
 run "Frontend security" pnpm audit --audit-level=high
+run "Browser journeys" bin/e2e
 if (( ${#failed[@]} )); then
   printf '\nFailed gate: %s\n' "${failed[@]}" >&2
   exit 1

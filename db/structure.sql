@@ -155,8 +155,8 @@ CREATE TABLE public.invitations (
     expires_at timestamp(6) without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    CONSTRAINT invitations_access CHECK (((access)::text = ANY ((ARRAY['full'::character varying, 'viewer'::character varying])::text[]))),
-    CONSTRAINT invitations_role CHECK (((role)::text = ANY ((ARRAY['admin'::character varying, 'member'::character varying])::text[]))),
+    CONSTRAINT invitations_access CHECK (((access)::text = ANY (ARRAY[('full'::character varying)::text, ('viewer'::character varying)::text]))),
+    CONSTRAINT invitations_role CHECK (((role)::text = ANY (ARRAY[('admin'::character varying)::text, ('member'::character varying)::text]))),
     CONSTRAINT invitations_token_hash_length CHECK ((octet_length(token_hash) = 32))
 );
 
@@ -233,8 +233,8 @@ CREATE TABLE public.memberships (
     access character varying DEFAULT 'full'::character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    CONSTRAINT memberships_access CHECK (((access)::text = ANY ((ARRAY['full'::character varying, 'viewer'::character varying])::text[]))),
-    CONSTRAINT memberships_role CHECK (((role)::text = ANY ((ARRAY['owner'::character varying, 'admin'::character varying, 'member'::character varying])::text[])))
+    CONSTRAINT memberships_access CHECK (((access)::text = ANY (ARRAY[('full'::character varying)::text, ('viewer'::character varying)::text]))),
+    CONSTRAINT memberships_role CHECK (((role)::text = ANY (ARRAY[('owner'::character varying)::text, ('admin'::character varying)::text, ('member'::character varying)::text])))
 );
 
 
@@ -799,7 +799,8 @@ CREATE TABLE public.users (
     legal_accepted_at timestamp(6) without time zone,
     legal_accepted_versions jsonb DEFAULT '{}'::jsonb NOT NULL,
     legal_accepted_ip_address character varying,
-    CONSTRAINT users_role CHECK (((role)::text = ANY ((ARRAY['user'::character varying, 'superadmin'::character varying])::text[])))
+    google_uid character varying,
+    CONSTRAINT users_role CHECK (((role)::text = ANY (ARRAY[('user'::character varying)::text, ('superadmin'::character varying)::text])))
 );
 
 
@@ -1647,6 +1648,13 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
+-- Name: index_users_on_google_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_google_uid ON public.users USING btree (google_uid);
+
+
+--
 -- Name: index_users_on_last_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1910,6 +1918,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20261004170000'),
 ('20261004160000'),
 ('20261004150000'),
+('20261004140000'),
 ('20261004110000'),
 ('20261004100000'),
 ('20261004090200'),

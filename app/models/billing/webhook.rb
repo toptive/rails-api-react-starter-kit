@@ -9,7 +9,7 @@ class Billing::Webhook
 
     verify!(raw, signature, secret)
     event = JSON.parse(raw)
-    valid = event.is_a?(Hash) && event["id"].is_a?(String) && event["id"].match?(/\Aevt_[a-zA-Z0-9_]+\z/) &&
+    valid = event.is_a?(Hash) && event["id"].is_a?(String) && event["id"].match?(/\Aevt_[a-zA-Z0-9_-]+\z/) &&
       event["type"].is_a?(String) && event["livemode"] == Billing.livemode?
     raise ApiError.bad_request(:invalid_signature) unless valid
 
@@ -64,7 +64,7 @@ class Billing::Webhook
       organization = details.dig("metadata", "organization_id")
     end
     subscription = subscription["id"] if subscription.is_a?(Hash)
-    subscription = nil unless subscription.is_a?(String) && subscription.match?(/\Asub_[a-zA-Z0-9_]+\z/)
+    subscription = nil unless subscription.is_a?(String) && subscription.match?(/\Asub_[a-zA-Z0-9_-]+\z/)
     organization = nil unless organization.is_a?(String) && organization.match?(UUID)
     [ subscription, organization ]
   end

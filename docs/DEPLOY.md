@@ -5,10 +5,17 @@ shares the default organization. Unknown modes stop boot. See [TENANCY.md](TENAN
 
 `Dockerfile` uses Ruby 3.4.10, installs production gems, precompiles Bootsnap and Propshaft
 assets for Mission Control, and runs Rails through Thruster as an unprivileged user.
-The SPA is built separately with `pnpm build`; `frontend/dist` is its deployable artifact.
+A Node stage installs the frozen pnpm lockfile and runs `pnpm build`; Vite and prerendering
+write to `public/` through `VITE_OUT_DIR=../public`. The Ruby stage adds those artifacts and
+precompiles Propshaft dashboard assets. The runtime contains no Node process.
 
-`config/deploy.yml` is a Kamal template. Replace its server, hostname, image and registry
-username for a product before deployment. `bin/check` must pass before building. The server
+`config/deploy.yml` is a Kamal template for a shared PostgreSQL server on the `kamal` network
+(`DB_HOST=postgres`) and an SSH-forwarded local registry at `localhost:5555`. Replace the
+server address and domain with the product's values; `bin/rename` rewrites service, image,
+module, database names, storage prefix and build domains together. Provision a product role
+and `starter_kit_production`, `starter_kit_production_cache` and
+`starter_kit_production_cable` before the first deploy. The role owns all three databases;
+Solid Queue stays in the primary database. Do not start another Postgres accessory per app. `bin/check` must pass before building. The server
 entrypoint runs `db:prepare`, including Solid adapter schemas; it never seeds production.
 Development/test setup refuses a production environment.
 
@@ -29,7 +36,7 @@ Development/test setup refuses a production environment.
 | `MAIL_FROM`, `MAIL_FROM_NAME` | Email sender; optional locale overrides suffixed `_ES`/`_EN` |
 | `TURNSTILE_REQUIRED` | `true` requires bot verification for registrations and magic-link requests |
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_HOSTNAME` | Public widget key, siteverify credential and accepted hostname |
-| `API_URL` | Vite's dev proxy origin (default `http://localhost:3000`) |
+| `VITE_DEV_API_URL` | Vite dev proxy origin (default `http://localhost:3000`) |
 | `PORT`, `VITE_PORT` | API and frontend dev ports |
 | `RAILS_MAX_THREADS` | Puma threads and database connection pool |
 | `JOB_CONCURRENCY` | Solid Queue worker processes |
@@ -38,7 +45,8 @@ Development/test setup refuses a production environment.
 | `CACHE_DATABASE_URL`, `CABLE_DATABASE_URL` | Optional dedicated Solid DB connection overrides |
 | `STARTER_KIT_DATABASE_PASSWORD` | Password for production PostgreSQL role |
 | `SECRET_KEY_BASE` | Production Rails signing secret, supplied at runtime |
-| `KAMAL_REGISTRY_PASSWORD` | Image registry credential, supplied through Kamal secrets |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional Google OAuth credentials; absent means disabled |
+| `NATIVE_SCHEME` | Google native callback scheme; defaults to `starterkit` |
 | `SOLID_QUEUE_IN_PUMA` | Run the queue supervisor beside Puma in a single-container deployment |
 | `RAILS_LOG_LEVEL` | Production log verbosity (default `info`) |
 
@@ -69,8 +77,7 @@ See [BILLING.md](BILLING.md) for offers, webhooks and reconciliation.
 Solid Queue inherits the primary Active Record connection. Its tables live in the primary
 schema so webhook inbox rows and jobs share a database transaction. Keep that connection
 shared; a dedicated queue database would break this guarantee. Cache and Cable retain
-their dedicated PostgreSQL databases. Existing queue databases from older checkouts are
-unused; drain their pending jobs before migrating a deployed product to this configuration.
+their dedicated PostgreSQL databases. The checked-in config declares no separate queue database.
 
 Uploads need `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and optionally
 `S3_ENDPOINT` / `S3_REGION`. The bucket must be private. Configure bucket CORS for the
@@ -85,3 +92,27 @@ The deploy template starts with `SITE_INDEXING=0`; set it to `1` at launch.
 `CANONICAL_HOST` (defaults to the public URL host in production) names the public host; the configured API origin remains
 usable and `/health` bypasses the redirect. Health probes use `/health`, which checks
 PostgreSQL readiness and returns 503 when unavailable. See [SEO.md](SEO.md).
+
+## SPA build and delivery
+
+Docker build arguments `VITE_API_URL`, `VITE_PUBLIC_URL`, `VITE_SITE_INDEXING` and optional
+`VITE_PRERENDER_API_URL` configure the bundle. `VITE_API_URL` defaults to same-origin calls;
+`VITE_PUBLIC_URL` supplies canonical links. A reachable prerender API adds published legal
+pages; otherwise the legal pages load through the API at runtime. Never pass secrets as
+Vite variables. Build configuration is fixed in the image; runtime API settings remain env.
+
+`SpaDelivery` runs before the static server, serves public prerendered files when present,
+and returns the root `index.html` for browser routes. HTML is private/no-store with a fresh
+nonce on the inline appearance bootstrap only. Hashed assets cache for a year with immutable
+headers. Unknown `/api/*` routes return the JSON error envelope, and `/admin/jobs`, health,
+sitemap, robots, webhooks and the test mailbox remain backend routes.
+
+Kamal retains `/rails/public/assets` across rolling deploys. `SITE_INDEXING` and
+`VITE_SITE_INDEXING` start at `0`; change both at launch. Build architecture is `amd64` for
+the shared host; use a separate remote builder if cross-building is too slow.
+
+Run `bin/check` before `docker build` or `bundle exec kamal deploy`. The image entrypoint runs
+`db:prepare` and `i18n:sync` before Thruster starts Rails; schema or sync failures stop boot.
+No seeds run in production. A local smoke uses throwaway primary/cache/cable databases and
+runtime `SECRET_KEY_BASE`, database password, origins and host values; `/health` must answer
+200 before routing traffic. See [NEW_PRODUCT.md](NEW_PRODUCT.md) for product setup.

@@ -21,6 +21,22 @@ class StripeWebhooksTest < ActionDispatch::IntegrationTest
     refute event.respond_to?(:payload)
   end
 
+  test "signed opaque identifiers with hyphens reconcile through the provider boundary" do
+    subscription_id = "sub_#{SecureRandom.uuid}"
+    event_id = "evt_#{SecureRandom.uuid}"
+    with_stripe(subscription: stripe_subscription(id: subscription_id)) do
+      perform_enqueued_jobs(only: ProcessStripeEventJob) do
+        deliver_webhook(webhook_event(id: event_id, object: { subscription: subscription_id,
+          metadata: { organization_id: @organization.id } }))
+      end
+    end
+    assert_response :ok
+    assert_equal({ "received" => true }, data)
+    assert_equal "synced", BillingEvent.find_by!(stripe_event_id: event_id).outcome
+    assert_equal subscription_id, Billing.current(@scope).stripe_subscription_id
+    assert Billing.current(@scope).paid?
+  end
+
   test "invalid tampered stale and future signatures are refused without writes" do
     [ { signature: "bad" }, { secret: "whsec_wrong" }, { timestamp: 301.seconds.ago.to_i },
       { timestamp: 301.seconds.from_now.to_i } ].each do |options|

@@ -22,16 +22,16 @@ development:
 test:
   primary: &test
     <<: *default
-    database: rails_api_starter_kit_test
+    database: <%= ENV.fetch("E2E_PGDATABASE", "rails_api_starter_kit_test") %>
     schema_format: sql
   cache:
     <<: *test
-    database: rails_api_starter_kit_test_cache
+    database: <%= ENV.fetch("E2E_PGDATABASE", "rails_api_starter_kit_test") %>_cache
     schema_format: ruby
     migrations_paths: db/cache_migrate
   cable:
     <<: *test
-    database: rails_api_starter_kit_test_cable
+    database: <%= ENV.fetch("E2E_PGDATABASE", "rails_api_starter_kit_test") %>_cable
     schema_format: ruby
     migrations_paths: db/cable_migrate
 

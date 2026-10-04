@@ -1,28 +1,35 @@
 # Type contract
 
-Alba serializers are the response schema. Include `ApplicationSerializer` for lower-camel
-keys and the Typelizer DSL; declare explicit types for hash/block attributes. `HealthSerializer`
-defines `status` as the TypeScript literal `"ok"`.
+Alba serializers and Rails routes generate the shared SPA contract with
+`bin/rails typelizer:generate`. Output under `frontend/src/api/generated/{serializers,routes}`
+is committed. `bin/rails contract:check` deletes stale output, regenerates it and compares it
+to the Git index. Stage generated changes before running gates. Never edit generated files
+or hand-write response mirrors or API paths.
 
-`config/initializers/typelizer.rb` generates:
+Every serializer includes `ApplicationSerializer`, which supplies Alba, lower-camel keys
+and Typelizer. Computed attributes declare `typelize` types explicitly. Nullable values are
+sent as null; optional fields may be omitted. Dictionaries keep their keys. `FieldError`,
+`ApiErrorBody`, `Pagination` and generic `Envelope<T, M>` come from backend declarations,
+just like domain responses. Pagination uses `meta.pagination.perPage`.
 
-| Source | Output |
-|---|---|
-| `app/serializers/**/*.rb` | `frontend/src/api/generated/serializers/` |
-| Routes beginning `/api/v1/` | `frontend/src/api/generated/routes/` |
+Route groups use controller paths that match URL resources, preserving plural names:
+`apiV1AuthMagicLinks`, `apiV1AuthMagicLinksSessions`,
+`apiV1AdminLegalDocumentsVersionsPublication`. Singleton groups retain singular names such
+as `apiV1Bootstrap` and `apiV1SettingsBilling`; the session sign-in/sign-out endpoints share
+`apiV1AuthSessions`. Actions are `index`, `show`, `create`, `update`, `destroy`.
+Files follow `routes/Api/V1/<Namespace>/<Controller>Controller.ts`, with default exports and
+an `index.ts`. The runtime exports `setBaseUrl`, `Method`, `RouteOptions` and
+`RouteDefinition { url, method }`. Required parameters are positional in URL order, followed
+by optional `{ query }` options.
 
-```sh
-bin/rails typelizer:generate
-git add frontend/src/api/generated
-bin/rails contract:check
-```
+`lib/type_contract.rb` adapts Typelizer 0.14's route template to positional arguments,
+re-exports runtime types, and emits the envelope's generic declaration. Controller paths
+supply group names; no group alias map or manual frontend helper is needed. The generator
+includes `/api/v1` only; SPA delivery, test mailbox, webhook and jobs browser routes stay
+outside it. `/api/v1/auth/google/start` and callback are browser navigation endpoints;
+all other SPA data calls use generated definitions through the shared HTTP client.
 
-The check removes prior output and regenerates both directories, so deleted serializers
-cannot leave stale interfaces. It compares generated files against the Git index, including
-untracked files. A staged generated update passes before commit; a modified or missing file
-fails. After a failure, review regenerated output and stage it with its source change.
-
-Import generated interfaces and route definitions into the shared API client. Never hand-edit
-output, mirror a response interface or hard-code a URL. Inputs may have separate validation
-schemas; they do not replace the generated response types. `/up`, engine routes and framework
-asset routes are excluded from the SPA's API contract.
+After a serializer or route change, regenerate, review the output, stage it, and run
+`pnpm typecheck`, `pnpm lint`, `pnpm test` and `bin/check`. Database-backed inference needs
+a migrated development database. TypeScript interfaces belong to the generator; input
+validation remains in the SPA's Zod schemas.

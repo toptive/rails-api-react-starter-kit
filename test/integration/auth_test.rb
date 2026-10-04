@@ -75,6 +75,23 @@ class AuthTest < ActionDispatch::IntegrationTest
     assert_nil response.headers["Set-Cookie"]
   end
 
+  test "bootstrap refuses supplied invalid expired and revoked sessions so clients discard bearers" do
+    user = create_user
+    token = sign_in(user)
+    get "/api/v1/bootstrap", headers: bearer("unknown")
+    assert_error :unauthorized, "unauthorized"
+    session = Session.find_by_token(token)
+    session.update!(expires_at: 1.minute.ago)
+    get "/api/v1/bootstrap", headers: bearer(token)
+    assert_error :unauthorized, "session_expired"
+    session.update!(expires_at: 1.day.from_now, revoked_at: Time.current)
+    get "/api/v1/bootstrap", headers: bearer(token)
+    assert_error :unauthorized, "session_expired"
+    get "/api/v1/bootstrap"
+    assert_response :ok
+    assert_nil data.fetch("auth")
+  end
+
   test "bootstrap anonymous and configured public flags" do
     get "/api/v1/bootstrap", headers: { "Accept-Language" => "es-AR" }
     assert_response :ok

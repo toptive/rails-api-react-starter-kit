@@ -47,7 +47,7 @@ class TenancyTest < ActiveSupport::TestCase
 
   test "tenancy updates expose PUT and never PATCH" do
     routes = Rails.application.routes.routes.select do |route|
-      route.defaults[:controller].to_s.match?(%r{\Aapi/v1/(?:current_organizations|onboardings|settings/(?:organizations|members))\z})
+      route.defaults[:controller].to_s.match?(%r{\Aapi/v1/(?:current_organization|onboarding|settings/(?:organization|members))\z})
     end
     refute_empty routes
     routes.each { |route| refute_match(/PATCH/, route.verb) }

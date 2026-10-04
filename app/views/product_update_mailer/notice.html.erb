@@ -1,0 +1,5 @@
+<h1><%= I18n.t("mail.product_update.headline", title: @title) %></h1>
+<p><%= I18n.t("mail.product_update.lead", summary: @summary) %></p>
+<p><a href="<%= @url %>"><%= I18n.t("mail.product_update.action") %></a></p>
+<p><%= I18n.t("mail.product_update.footer", app: @app_name) %></p>
+<p><a href="<%= @unsubscribe_url %>"><%= I18n.t("mail.unsubscribe") %></a></p>

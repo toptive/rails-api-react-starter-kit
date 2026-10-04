@@ -17,11 +17,11 @@ class SudoBoundaryTest < ActionDispatch::IntegrationTest
     token = sign_in(create_user)
     Session.find_by_token(token).update!(sudo_until: Time.current)
     with_routing do |routes|
-      routes.draw { get "/sudo-probe", to: "sudo_probe#show" }
-      get "/sudo-probe", headers: bearer(token)
+      routes.draw { get "/api/v1/sudo-probe", to: "sudo_probe#show" }
+      get "/api/v1/sudo-probe", headers: bearer(token)
       assert_error :forbidden, "sudo_required"
       Session.find_by_token(token).touch_sudo!
-      get "/sudo-probe", headers: bearer(token)
+      get "/api/v1/sudo-probe", headers: bearer(token)
       assert_response :no_content
     end
   end

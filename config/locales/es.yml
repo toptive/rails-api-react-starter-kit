@@ -10,10 +10,16 @@ es:
     audit:
       action: Acción
       actor: Por
+      actor_id: ID de la cuenta
+      details: Detalles
+      event_id: ID del evento
       impersonated: Suplantado
+      impersonator_id: ID del administrador que actuó
       lead: Quién hizo qué, y cuándo. Nada de esto se puede cambiar.
+      organization_id: ID de la organización
       search: Buscar por id o acción
       subject: Registro
+      subject_id: ID del registro
       title: Registro de auditoría
       when: Cuándo
     empty: Todavía no hay nada acá.
@@ -29,6 +35,7 @@ es:
       not_published: Sin publicar
       note: Nota sobre el cambio
       note_help: Para vos y otros administradores, no se muestra a los usuarios.
+      publication: Publicación
       publish: Publicar
       publish_body: Desde ahora todos van a ver esta versión.
       publish_now: Publicar ya
@@ -70,6 +77,8 @@ es:
         como editado.'
       fill_title: "¿Completar automáticamente los textos que faltan en %{language}?"
       filter_missing: Mostrar
+      inline_help: Guardá saliendo del campo o presionando Enter. Shift + Enter agrega
+        una línea.
       lead: Todos los textos de la app, por idioma. Los cambios se ven al instante
         y no se pierden al actualizar.
       missing_in: Faltan en %{language}
@@ -89,8 +98,12 @@ es:
       reason: Motivo
       reason_help: 'Por ejemplo: el número del pedido de soporte.'
       role: Rol
+      role_confirm_body: "%{email} tendrá el rol %{role}. Esto cambia el acceso al
+        área de administración."
+      role_confirm_title: "¿Cambiar el rol de esta cuenta?"
       search: Buscar usuarios por email o nombre
       title: Usuarios
+    bootstrap_name: Administrador
   app:
     name: StarterKit
   appearance:
@@ -99,6 +112,10 @@ es:
     light: Claro
     system: Igual que mi dispositivo
   auth:
+    callback:
+      loading: Completando tu ingreso…
+    check_email:
+      title: Abrí el enlace de tu email
     magic_link:
       confirm_submit: Confirmar e ingresar
       confirm_title: Confirmá tu email
@@ -111,6 +128,7 @@ es:
       closed_body: Ahora no estamos creando cuentas nuevas. Si ya tienes una cuenta,
         ingresa.
       closed_title: El registro está cerrado
+      consent_title: Términos y privacidad
       email_help: Te mandamos acá un link para ingresar. No hace falta contraseña.
       have_account: "¿Ya tenés cuenta?"
       invite_body: Usa el email que recibió la invitación. Sin una invitación todavía
@@ -120,6 +138,8 @@ es:
       submit: Crear cuenta
       title: Creá tu cuenta
     session:
+      forgot_help: "¿Olvidaste tu contraseña? Ingresá con un enlace por email y elegí
+        una nueva en Configuración."
       google: Continuar con Google
       invalid_credentials: El email y la contraseña no coinciden. Probá de nuevo o
         pedí un link por email.
@@ -142,6 +162,18 @@ es:
       tab_link: Enviarme un link
       tab_password: Usar contraseña
       title: Ingresá
+    sudo:
+      cancelled: Confirmación cancelada. Intentá el cambio de nuevo cuando quieras.
+      confirm: Confirmar y continuar
+      dialog_lead: Por tu seguridad, confirmá que sos vos. Después continuamos con
+        tu cambio.
+      link_help: Copiá el enlace del botón del email y pegalo acá. Continuamos con
+        tu cambio después de confirmar.
+      link_label: Enlace para ingresar de tu email
+      link_sent: Revisá tu email, copiá el enlace para ingresar y pegalo abajo para
+        continuar acá.
+      title: Confirmá que sos vos
+      use_link: Confirmar con un enlace por email
     unavailable:
       registration_body: Ahora no puedes crear una cuenta, porque no podemos enviar
         el email que la confirma. Inténtalo más tarde.
@@ -213,9 +245,14 @@ es:
   common:
     cancel: Cancelar
     close: Cerrar
+    loading: Cargando…
     'no': 'No'
+    retry: Intentar de nuevo
+    retry_help: Intentá de nuevo para cargar esta página.
     save: Guardar
     save_changes: Guardar cambios
+    saved: Guardado. Tus cambios están listos.
+    saving: Guardando…
     search: Buscar
   dashboard:
     checklist:
@@ -246,56 +283,63 @@ es:
     title: "¿Darte de baja de los emails opcionales?"
   errors:
     api:
+      ai_not_configured: La traducción de textos todavía no está disponible.
+      ai_unavailable: La traducción de textos no está disponible ahora. Probá más
+        tarde.
+      already_subscribed: Tu espacio ya tiene un plan pago. Administralo en pagos.
       bad_request: El pedido no es válido.
-      conflict: Este cambio entra en conflicto con otra actualización.
+      conflict: Este cambio no se puede hacer ahora.
       content_type_not_allowed: Este tipo de archivo no está permitido.
+      email_change_invalid: Este enlace para cambiar el email venció.
+      email_mismatch: Ingresá con el email invitado.
+      email_not_verified: Google no verificó tu dirección de email.
+      email_unavailable: El email no está disponible ahora. Probá más tarde.
+      email_unchanged: Este ya es tu email.
       forbidden: No tenés permiso para hacer esto.
       internal_error: Algo falló de nuestro lado.
-      invalid_json: El pedido contiene JSON inválido.
+      invalid_credentials: Tu email o contraseña no es correcto.
+      invalid_json: Enviá un cuerpo JSON válido.
       invalid_signature: La firma del pedido no es válida.
       invalid_size: El tamaño del archivo no es válido.
+      invalid_token: Este enlace venció. Pedí uno nuevo.
+      invitation_invalid: Esta invitación ya no está disponible.
+      invitation_required: Necesitás una invitación para crear una cuenta.
+      last_owner: Agregá otro propietario antes de salir.
+      limit_reached: Tu plan alcanzó su límite.
+      magic_link_invalid: Este enlace de ingreso venció. Pedí uno nuevo.
+      method_not_allowed: Este método de solicitud no está permitido.
+      network: No pudimos conectarnos. Revisá tu conexión y volvé a intentar.
+      no_subscription: Tu espacio no tiene una suscripción para administrar.
+      not_accepted: Aceptá las condiciones de pago para continuar.
       not_found: No encontramos lo que pediste.
+      not_member: No pertenecés a esa organización.
+      oauth_failed: No pudimos ingresar con Google. Probá de nuevo.
+      offer_changed: El precio cambió. Revisá la oferta actual y probá de nuevo.
+      price_mismatch: Este precio no está disponible. Probá más tarde.
+      rate_limited: Demasiados intentos. Esperá un minuto y probá de nuevo.
+      session_expired: Tu sesión terminó. Ingresá de nuevo.
+      signup_closed: Las cuentas nuevas todavía no están disponibles.
+      state_invalid: Este intento de ingreso venció. Probá de nuevo.
+      storage_rejected: No pudimos subir el archivo. Elegilo de nuevo e intentá otra
+        vez.
+      stripe_unavailable: Los pagos no están disponibles. Probá más tarde.
+      subscription_active: Cancela el plan de pago antes de eliminar tu cuenta.
+      sudo_required: Ingresá de nuevo para continuar.
+      test_mode: Los pagos están disponibles solo para operadores de prueba.
       too_large: El archivo es demasiado grande.
       too_many_requests: Demasiados intentos. Esperá un minuto y probá de nuevo.
+      transfer_ownership: Nombra a otra persona como dueña antes de eliminar tu cuenta.
+      turnstile_failed: Completá la verificación y probá de nuevo.
       unauthorized: Ingresá para continuar.
       unknown_kind: Este tipo de subida no está permitido.
-      uploads_not_configured: La subida de archivos todavía no está configurada.
-      validation_failed: Hay campos para corregir.
-      rate_limited: Demasiados intentos. Esperá un minuto y probá de nuevo.
-      method_not_allowed: Este método no está permitido.
       unsupported_media_type: Enviá la solicitud como JSON.
-      session_expired: Tu sesión venció. Ingresá de nuevo.
-      invalid_credentials: El email y la contraseña no coinciden.
-      sudo_required: Confirmá que sos vos para continuar.
-      magic_link_invalid: Este link venció o ya fue usado. Pedí uno nuevo.
-      turnstile_failed: Completá la verificación y probá de nuevo.
-      signup_closed: El registro de cuentas está cerrado.
-      invitation_required: Necesitás una invitación para crear una cuenta.
-      email_unavailable: Ahora no podemos enviar emails. Probá más tarde.
-      not_member: No perteneces a esta organización.
-      last_owner: Elige otro dueño antes de salir o eliminar a este dueño.
-      email_mismatch: Ingresa con la dirección de email de esta invitación.
-      invitation_invalid: Esta invitación venció o ya no está disponible.
-      email_unchanged: Este ya es tu email.
-      email_change_invalid: Este enlace de confirmación de email no es válido o ha
-        vencido.
-      transfer_ownership: Nombra a otra persona como dueña antes de eliminar tu cuenta.
-      subscription_active: Cancela la suscripción de la organización antes de eliminar
-        tu cuenta.
-      ai_not_configured: La traducción de textos no está configurada.
-      ai_unavailable: El proveedor de traducciones no está disponible. Intentá de
-        nuevo más tarde.
-      stripe_unavailable: Los pagos no están disponibles por el momento. Inténtalo
-        de nuevo.
-      test_mode: Los planes de pago solo están disponibles para operadores de prueba.
-      already_subscribed: Tu organización ya tiene un plan de pago.
-      no_subscription: Tu organización no tiene una suscripción para administrar.
-      offer_changed: Esta oferta cambió. Revisa la oferta actual e inténtalo de nuevo.
-      not_accepted: Acepta el acuerdo de pago antes de continuar.
-      price_mismatch: Esta oferta no está disponible por el momento. Inténtalo más
-        tarde.
-      upload_incomplete: La subida está incompleta o el archivo no está permitido.
-      limit_reached: Tu plan alcanzó su límite.
+      upload_incomplete: No se pudo verificar este archivo. Volvé a subirlo.
+      uploads_not_configured: La subida de archivos todavía no está configurada.
+      validation_error: Hay campos para corregir.
+      validation_failed: Hay campos para corregir.
+    network: No pudimos conectarnos. Revisá tu conexión y volvé a intentar.
+    offline: Estás sin conexión. Reconectate para guardar cambios o cargar páginas.
+    online: Volviste a tener conexión. Ya podés intentar de nuevo.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.
@@ -308,6 +352,7 @@ es:
         title: Algo falló de nuestro lado
       dashboard: Volver a tu inicio
       home: Ir al inicio
+    retry_after: Vuelve a intentar en %{count} segundos.
   fields:
     email: Email
     language: Idioma
@@ -357,6 +402,8 @@ es:
       published: Publicado. Ya todos ven esta versión.
       saved: Versión guardada como borrador.
     magic_link_invalid: Este link ya no sirve. Pedí uno nuevo.
+    magic_link_sent: Si tu cuenta está disponible, revisá tu email para encontrar
+      el enlace de acceso.
     membership:
       last_owner: Una organización necesita al menos un dueño. Primero nombrá a otra
         persona como dueño.
@@ -523,6 +570,9 @@ es:
       subject: 'Novedades de %{app}: %{title}'
     renewal_notice:
       action: Administrar mi plan
+      body: El plan de %{organization} se renueva el %{date} por %{amount}. Puedes
+        administrarlo o cancelarlo antes.
+      cta: Administrar pagos
       footer: Recibiste este email porque administras la facturación de una organización
         en %{app}. Lo enviamos una vez antes de cada renovación.
       headline: Tu plan se renueva pronto
@@ -530,9 +580,6 @@ es:
       note1: 'Ese es el monto total: no se suma nada.'
       note2: Para cambiar o cancelar el plan, hazlo en la app antes del %{date}.
       subject: Tu plan de %{app} se renueva el %{date}
-      body: El plan de %{organization} se renueva el %{date} por %{amount}. Puedes
-        administrarlo o cancelarlo antes.
-      cta: Administrar pagos
     unsubscribe: Darme de baja
     value:
       days_7: En 7 días
@@ -562,6 +609,7 @@ es:
     title: "¡Te damos la bienvenida! Preparemos todo"
   organizations:
     create: Crear una organización
+    default_name: Predeterminada
     new:
       lead: Una organización agrupa a las personas que trabajan en lo mismo. Vas a
         ser el dueño.
@@ -569,12 +617,15 @@ es:
       submit: Crear organización
       title: Crear una organización
     switch: Cambiar de organización
-    default_name: Predeterminada
   pagination:
     label: Páginas
     next: Siguiente
     previous: Anterior
     summary: Página %{page} de %{pages} · %{total} en total
+  role:
+    admin: Administrador
+    member: Miembro
+    owner: Dueño
   roles:
     admin: Administrador
     member: Miembro
@@ -588,7 +639,12 @@ es:
         transfer_ownership: Eres la única persona dueña de %{organization}. Nombra
           a otra persona como dueña en Personas y luego vuelve aquí.
       blocked_title: Una cosa antes de poder borrar tu cuenta
+      check_again: Revisar de nuevo después de resolverlo
       confirm_body: Se va a cerrar tu sesión y no la vas a poder recuperar.
+      confirm_consequence: Se borran tu cuenta y tu acceso a todas las organizaciones.
+        Las organizaciones donde sos la única persona se borran con sus datos, salvo
+        que tengan historial de pagos. Se cierra tu sesión en todos los dispositivos.
+        No podés deshacer esto.
       confirm_title: "¿Borrar tu cuenta?"
       delete: Borrar mi cuenta
       delete_body: Borramos tu cuenta y tu acceso a todas las organizaciones. Una
@@ -606,13 +662,18 @@ es:
       nav: Plan y pagos
       title: Plan y pagos
     email:
+      check_email: Enviamos un enlace a %{email}. Abrilo, ingresá si te lo pedimos
+        y elegí «Cambiar mi email» para terminar. Hasta entonces seguís usando tu
+        email actual.
       help: Te mandamos un link al email nuevo. El cambio se hace cuando lo abrís.
       lead: Ingresás con %{email}.
       nav: Email
       submit: Enviar link de confirmación
       title: Cambiar tu email
+      try_another: Usar otro email
     email_confirmation:
       lead: Desde ahora vas a ingresar con %{email}.
+      request_new: Pedí otra confirmación en Configuración de email
       submit: Cambiar mi email
       title: Confirma tu nuevo email
     email_preferences:
@@ -631,36 +692,53 @@ es:
       organization: Organización
       you: Tu cuenta
     members:
+      access:
+        full: Puede hacer cambios
+        viewer: Solo puede ver
+      access_label: Acceso
       can: Puede
       email_help: Usá el email con el que ingresa.
+      empty_help: Invitá a alguien para trabajar con vos en esta organización.
+      empty_title: No hay personas para mostrar
       expires: vence el %{date}
       explain:
         admin_full: Todo, incluso invitar y quitar personas.
+        admin_viewer: Ver todo, sin hacer cambios ni manejar personas.
         member_full: Crear y cambiar cosas, pero no manejar personas.
         member_viewer: Ver todo, sin cambiar nada.
         owner_full: Todo. Los dueños también pueden nombrar otros dueños.
+        owner_viewer: Ser dueño con acceso de lectura. Cambiá el acceso para manejar
+          personas.
       invite: Invitar a alguien
       invite_lead: Recibe un email con un link para sumarse.
+      invite_sent: Invitación enviada. Puede sumarse con el enlace del email.
       lead: Quién puede usar esta organización y qué puede hacer cada persona.
       leave: Salir
       leave_body: Vas a perder el acceso hasta que alguien te invite de nuevo.
       leave_title: "¿Salir de esta organización?"
       nav: Personas
+      pending_empty_help: Invitá a alguien y aparece acá hasta que se sume.
+      pending_empty_title: No hay invitaciones pendientes
       pending_help: Recibieron un email con un link. Las invitaciones vencen a los
         7 días.
       pending_title: Esperando que se sumen
+      read_only_help: Pedile a un dueño o administrador con acceso completo que invite
+        personas o cambie sus permisos. Podés salir desde tu fila de abajo.
       remove: Quitar
       remove_body: Pierde el acceso al instante. Lo podés invitar de nuevo después.
       remove_title: "¿Quitar a %{name}?"
+      removed: Acceso quitado. Podés invitar a esa persona de nuevo después.
       revoke: Cancelar invitación
       revoke_body: El link de su email va a dejar de funcionar.
       revoke_title: "¿Cancelar la invitación a %{email}?"
       role_for: Rol de %{name}
+      role_label: Rol
       send_invite: Enviar invitación
       step_email: "¿A quién querés invitar?"
       step_review: Revisá y enviá
       step_role: "¿Qué puede hacer?"
       title: Personas
+      unknown_person: Persona de la organización
       you: vos
     organization:
       lead: El nombre que ven todos en la organización.
@@ -675,6 +753,7 @@ es:
       lead_change: Se va a cerrar la sesión en tus otros dispositivos.
       lead_set: Opcional. Siempre podés ingresar con un link por email.
       nav: Contraseña
+      saved: Contraseña guardada. Cerramos la sesión en tus otros dispositivos.
       submit: Guardar contraseña
       title_change: Cambiar tu contraseña
       title_set: Poner una contraseña
@@ -686,7 +765,11 @@ es:
       title: Perfil
     sessions:
       confirm_body: Quien use ese dispositivo va a tener que ingresar de nuevo.
+      confirm_current: Vas a salir de esta sesión. Tenés que ingresar de nuevo para
+        usar tu cuenta.
       confirm_title: "¿Cerrar la sesión en este dispositivo?"
+      empty_help: Volvé a cargar la lista para ver dónde tenés la sesión abierta.
+      empty_title: No hay dispositivos para mostrar
       lead: Si no reconocés un dispositivo, cerrale la sesión.
       nav: Dispositivos
       sign_out: Cerrar sesión en este dispositivo
@@ -711,6 +794,9 @@ es:
     sidebar: Menú
     sidebar_description: El menú principal de la app.
     toggle_sidebar: Mostrar u ocultar el menú
+  uploads:
+    ready: "%{filename} está listo. Guardá los cambios para usarlo."
+    uploading: Subiendo tu archivo…
   validation:
     already_member: Esta persona ya está en la organización.
     cast: Este valor no es válido.
@@ -721,6 +807,7 @@ es:
     exclusion: Este valor no está permitido.
     format: Esto no parece correcto.
     inclusion: Elegí una de las opciones.
+    invalid: Este valor no es válido.
     invitation_owner: Invitá como administrador o miembro. Después podés nombrarlos
       dueños.
     invitation_pending: Ya hay una invitación pendiente para este email.
@@ -728,6 +815,8 @@ es:
     length_is: Usá exactamente %{count} caracteres.
     length_max: Usá como máximo %{count} caracteres.
     length_min: Usá al menos %{count} caracteres.
+    limit_reached: Este plan permite hasta %{limit} personas.
+    magic_link: Pegá el enlace para ingresar de tu email.
     number_greater_than: Tiene que ser mayor que %{number}.
     number_less_than: Tiene que ser menor que %{number}.
     owner_only: Solo los dueños pueden nombrar a otro dueño.

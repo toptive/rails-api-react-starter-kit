@@ -1,30 +1,34 @@
 # Rails API + React starter kit
 
-Rails 8.1 JSON API, PostgreSQL and a React/TypeScript SPA in `frontend/`.
-Use rvm's installed Ruby 3.4.10, Node 22.12+ and pnpm (version pinned in `package.json`).
+Rails 8.1 on Ruby 3.4.10, PostgreSQL and one shared React 19 SPA with TanStack Router,
+React Query, Tailwind and owned shadcn components. Alba + Typelizer generate the API types
+and route helpers used by the SPA. Opaque bearer sessions support magic links, passwords,
+Google sign-in, sudo and impersonation. Tenant policies, billing, runtime translations,
+legal publishing and an administrator jobs dashboard are included.
 
 ```sh
 source ~/.rvm/scripts/rvm && rvm use 3.4.10
 bin/setup --skip-server
-bin/dev                         # API on :3000
-pnpm dev                        # SPA on :5173, in another terminal
+bin/dev
+# In a second terminal:
+pnpm dev
 ```
 
-PostgreSQL must be running. Setup installs dependencies and Git hooks, builds translations
-and the API contract, and prepares development and test databases. Optional local overrides
-are listed in `.env.example`; copy it to `.env` when needed.
+Run frontend commands from the root: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`,
+`pnpm test` and `pnpm i18n:build`. The API runs on 3000, Vite on 5173. Product text comes
+from `i18n/translations.csv`; forms use react-hook-form and Zod. Theme tokens live in
+`frontend/src/styles/theme.css`.
 
-`GET /up` probes Rails; `GET /api/v1/health` returns `{ "data": { "status": "ok" }, "meta": {} }`.
-Protected endpoints require a live bearer session. Superadmins mint browser access to `/jobs`
-through `POST /api/v1/admin/jobs-access`; see [docs/AUTH.md](docs/AUTH.md).
+`bin/check` runs backend architecture, style, security and request tests, generated contract
+and locale checks, frontend gates, and 31 real browser journeys through `bin/e2e`. The browser
+runner owns disposable databases and processes, including a local Stripe HTTP stub. There is
+no CI; pre-commit checks staged changes and pre-push runs the full gate.
 
-```sh
-bin/rails typelizer:generate
-pnpm i18n:build
-git add frontend/src/api/generated i18n/locales config/locales
-bin/check
-pnpm build
-```
+`pnpm build` writes the SPA and prerendered public pages into `public/`. Docker builds both
+frontend and Rails, and serves them through Thruster. The container prepares databases and
+synchronizes runtime text before listening. Kamal uses shared PostgreSQL.
 
-Read [CLAUDE.md](CLAUDE.md) for the rulebook and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-for the application boundaries. Deployment configuration is documented in [docs/DEPLOY.md](docs/DEPLOY.md).
+Read [CLAUDE.md](CLAUDE.md) for the rulebook, [GATES.md](docs/GATES.md) for checks,
+[TYPE_CONTRACT.md](docs/TYPE_CONTRACT.md) for generation, [DESIGN.md](docs/DESIGN.md) for
+UI patterns, [DEPLOY.md](docs/DEPLOY.md) for configuration, and
+[NEW_PRODUCT.md](docs/NEW_PRODUCT.md) to start a product with `bin/rename`.

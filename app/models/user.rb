@@ -15,7 +15,24 @@ class User < ApplicationRecord
   validate :password_byte_length
   before_save :hash_password, if: -> { password.present? }
 
+  def self.bootstrap_superadmin!(email:)
+    transaction do
+      connection.execute("SELECT pg_advisory_xact_lock(7240520)")
+      existing = find_by(email: email)
+      return existing if existing&.role == "superadmin"
+      raise ApiError.conflict if exists?(role: "superadmin")
+
+      user = existing || new(email: email, name: I18n.t("admin.bootstrap_name"), locale: "en")
+      user.update!(role: "superadmin", confirmed_at: user.confirmed_at || Time.current)
+      user
+    end
+  end
+
   def has_password? = hashed_password.present?
+
+  def self.google_enabled? = ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present?
+  def self.google_authorization_url(attributes) = Google.new.start(attributes)
+  def self.google_callback_url(attributes, request) = Google.new.callback(attributes, request)
 
   def self.signup_mode = ENV.fetch("SIGNUP_MODE", "open")
 

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+if [[ "$(uname)" == "Darwin" ]]; then export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES; fi
+export RAILS_ENV=test E2E=1
+export E2E_API_DIR="$PWD"
+export E2E_PGDATABASE="${E2E_PGDATABASE:-rails_starter_kit_e2e_$$}"
+[[ "$E2E_PGDATABASE" =~ ^[a-z0-9_]*e2e[a-z0-9_]*$ ]] || { echo "E2E database must contain e2e" >&2; exit 1; }
+export PORT="${E2E_PORT:-4100}"
+export E2E_API_URL="http://localhost:$PORT" API_ORIGIN="http://localhost:$PORT"
+export E2E_VITE_PORT="${E2E_VITE_PORT:-5174}"
+export SPA_ORIGIN="${E2E_BASE_URL:-http://localhost:$E2E_VITE_PORT}"
+export PUBLIC_URL="$SPA_ORIGIN"
+export E2E_API_OFF_URL="${E2E_API_OFF_URL:-http://localhost:$((PORT + 1))}"
+export E2E_BASE_OFF_URL="${E2E_BASE_OFF_URL:-http://localhost:$((E2E_VITE_PORT + 1))}"
+export E2E_AI=0 E2E_BILLING=1 BILLING_ENABLED=true BILLING_MODE=test
+export E2E_STRIPE_URL="${E2E_STRIPE_URL:-http://127.0.0.1:4242}"
+export STRIPE_TEST_SECRET_KEY=sk_test_browser_fixture STRIPE_TEST_WEBHOOK_SECRET=whsec_test_fake
+export STRIPE_TEST_PRICE_PRO_MONTHLY=price_test_monthly STRIPE_TEST_PRICE_PRO_YEARLY=price_test_yearly
+export TURNSTILE_REQUIRED=false TENANCY=multi SIGNUP_MODE=open
+export SECRET_KEY_BASE=browser_fixture_only_browser_fixture_only_browser_fixture_only_2026
+unset DATABASE_URL CACHE_DATABASE_URL CABLE_DATABASE_URL OPENROUTER_API_KEY FAL_KEY GOOGLE_API_KEY GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET SENTRY_DSN MAIL_ALLOWED_RECIPIENTS POSTHOG_API_KEY
+log_dir=$(mktemp -d "${TMPDIR:-/tmp}/rails-e2e.XXXXXX")
+api_pid=""
+database_owned=false
+cleanup() {
+  status=$?
+  trap - EXIT INT TERM
+  if [[ -n "$api_pid" ]]; then
+    kill "$api_pid" 2>/dev/null || true
+    wait "$api_pid" 2>/dev/null || true
+  fi
+  if [[ "$status" -ne 0 ]]; then cat "$log_dir/api.log" 2>/dev/null || true; fi
+  if [[ "$database_owned" == true ]]; then
+    if ! bin/rails db:drop >"$log_dir/drop.log" 2>&1; then cat "$log_dir/drop.log" >&2; status=1; fi
+    rm -rf "tmp/mailbox/$E2E_PGDATABASE"
+  fi
+  rm -rf "$log_dir"
+  exit "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+if curl --silent --fail "$E2E_API_URL/health" >/dev/null; then echo "E2E port $PORT is already in use" >&2; exit 1; fi
+if [[ "$(psql -X -d postgres -Atc "SELECT count(*) FROM pg_database WHERE datname LIKE '${E2E_PGDATABASE}%'")" != 0 ]]; then
+  echo "Refusing to reuse an existing E2E database" >&2; exit 1
+fi
+database_owned=true
+bin/rails db:prepare >"$log_dir/prepare.log" 2>&1 || { cat "$log_dir/prepare.log"; exit 1; }
+bin/rails i18n:sync >"$log_dir/sync.log" 2>&1 || { cat "$log_dir/sync.log"; exit 1; }
+bin/rails server -b 127.0.0.1 -p "$PORT" --pid "tmp/pids/e2e-$PORT.pid" >"$log_dir/api.log" 2>&1 &
+api_pid=$!
+ready=false
+for _ in {1..120}; do
+  if ! kill -0 "$api_pid" 2>/dev/null; then break; fi
+  if curl --silent --fail "$E2E_API_URL/health" >/dev/null; then ready=true; break; fi
+  sleep 1
+done
+[[ "$ready" == true ]] || { echo "E2E API failed to start" >&2; exit 1; }
+pnpm e2e "$@"

@@ -21,7 +21,7 @@ class ApplicationController < ActionController::API
   end
 
   def resolve_locale
-    requested = params[:locale]
+    requested = request.query_parameters["locale"]
     tags = requested.is_a?(String) && requested.present? ? [ requested, *accept_language_tags ] : accept_language_tags
     tags.each do |tag|
       [ tag, tag.split("-").first ].each do |candidate|
@@ -73,6 +73,23 @@ class ApplicationController < ActionController::API
       data: serializer.new(payload, params: serializer_params).serializable_hash,
       meta: meta
     }, status: status
+  end
+
+  def render_oauth_redirect(url)
+    destination = URI.parse(url)
+    permitted = [ "https://accounts.google.com/o/oauth2/v2/auth",
+      "#{ENV['PUBLIC_URL'].presence || Rails.application.config.x.spa_origin}/auth/callback",
+      "#{ENV.fetch('NATIVE_SCHEME', 'starterkit')}://auth/callback" ]
+    allowed = destination.userinfo.nil? && permitted.any? do |origin|
+      target = URI.parse(origin)
+      [ destination.scheme, destination.host, destination.port, destination.path ] ==
+        [ target.scheme, target.host, target.port, target.path ]
+    end
+    raise ApiError.unprocessable(:oauth_failed) unless allowed
+
+    redirect_to url, allow_other_host: true
+  rescue URI::InvalidURIError
+    raise ApiError.unprocessable(:oauth_failed)
   end
 
   def render_catalogue(catalogue)

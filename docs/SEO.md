@@ -35,3 +35,22 @@ origin remains usable on split-origin deployments. GET `/health` always bypasses
 redirect. Configure the SPA's public web server consistently for routes it serves itself.
 
 See [DEPLOY.md](DEPLOY.md) for environment and proxy configuration.
+
+## SPA prerendering and CSP
+
+`pnpm build` writes hashed assets and HTML to `public/` (`VITE_OUT_DIR=../public`), and also
+creates a portable `frontend/dist/` artifact. Landing pages are prerendered for each bundled
+locale. `VITE_PRERENDER_API_URL` optionally fetches published terms, privacy and cookies;
+without it those pages load their API content in the browser. Configure `VITE_PUBLIC_URL`
+for canonical/hreflang/Open Graph links and `VITE_SITE_INDEXING` to match runtime indexing.
+
+Rails serves a public path's own `index.html` when present and otherwise the root SPA index.
+Unknown browser paths belong to TanStack Router. The API, jobs dashboard and infrastructure
+paths never fall through to HTML. `SpaDelivery` puts a fresh CSP nonce on only the inline
+`data-bootstrap` appearance script; JSON-LD and legal seed scripts are data. HTML is
+private/no-store. `PublicSite` marks hashed assets immutable for one year and applies the
+indexing lock before static delivery. No frontend runtime server is required in production.
+
+The SPA owns the logo and theme. Add product favicons/social images under `public/`; Vite
+keeps existing static files while building. Every private path also has localized robots
+disallows, including `/sudo/new`, `/session/check-your-email` and `/errors/403|404|500`.

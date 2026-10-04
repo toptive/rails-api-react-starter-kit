@@ -48,3 +48,12 @@
 /node_modules/
 /frontend/dist/
 /public/assets/
+
+/frontend/test-results/
+/frontend/playwright-report/
+/frontend/*.tsbuildinfo
+/public/index.html
+/public/es/
+/public/en/
+/public/legal/
+/public/og/

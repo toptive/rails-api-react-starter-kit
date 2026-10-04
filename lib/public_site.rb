@@ -13,6 +13,7 @@ class PublicSite
     else
       @app.call(env)
     end
+    response[1]["cache-control"] = "public, max-age=31536000, immutable" if request.path.start_with?("/assets/") && response[0] == 200
     response[1]["x-robots-tag"] = "noindex, nofollow" unless indexing?
     response
   end

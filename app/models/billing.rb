@@ -71,7 +71,7 @@ class Billing
     fetched = gateway.get("prices/#{price}")
     matches = fetched["active"] == true && fetched["livemode"] == livemode? &&
       fetched["unit_amount"] == offer[:amount_cents] && fetched["currency"] == offer[:currency] &&
-      fetched.dig("recurring", "interval") == offer[:interval] && fetched.dig("recurring", "interval_count") == 1
+      fetched.dig("recurring", "interval") == offer[:interval] && fetched.fetch("recurring", {}).fetch("interval_count", 1) == 1
     unless matches
       Rails.logger.error("Stripe price does not match the configured offer")
       raise ApiError.unprocessable(:price_mismatch)
@@ -121,7 +121,10 @@ class Billing
 
   def self.checked_url(url, host)
     uri = URI.parse(url.to_s)
-    raise ApiError.unavailable(:stripe_unavailable) unless uri.scheme == "https" && uri.host == host && uri.userinfo.nil? && uri.port == 443
+    stub = Rails.env.test? && ENV["E2E_STRIPE_URL"].present? && URI(ENV.fetch("E2E_STRIPE_URL"))
+    allowed_stub = stub && [ uri.scheme, uri.host, uri.port ] == [ stub.scheme, stub.host, stub.port ]
+    allowed_stripe = uri.scheme == "https" && uri.host == host && uri.port == 443
+    raise ApiError.unavailable(:stripe_unavailable) unless uri.userinfo.nil? && (allowed_stripe || allowed_stub)
 
     url
   rescue URI::InvalidURIError

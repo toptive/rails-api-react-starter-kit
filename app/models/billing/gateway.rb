@@ -13,9 +13,10 @@ class Billing::Gateway
   def post(path, form = {}, idempotency_key: nil, **fields) = request(:post, path, form.merge(fields), idempotency_key)
 
   def request(method, path, form, idempotency_key = nil)
-    uri = URI.join(ENDPOINT.to_s, path)
+    endpoint = Rails.env.test? && ENV["E2E_STRIPE_URL"].present? ? "#{ENV.fetch("E2E_STRIPE_URL")}/v1/" : ENDPOINT.to_s
+    uri = URI.join(endpoint, path)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
+    http.use_ssl = uri.scheme == "https"
     http.open_timeout = 5
     http.read_timeout = 15
     http.write_timeout = 5

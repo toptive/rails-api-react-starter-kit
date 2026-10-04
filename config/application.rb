@@ -5,6 +5,7 @@ require "csv"
 require_relative "../lib/client_identity"
 require_relative "../lib/operations_browser_session"
 require_relative "../lib/public_site"
+require_relative "../lib/spa_delivery"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -18,7 +19,7 @@ module StarterKit
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks client_identity.rb operations_browser_session.rb public_site.rb])
+    config.autoload_lib(ignore: %w[assets tasks client_identity.rb operations_browser_session.rb public_site.rb spa_delivery.rb type_contract.rb templates])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -32,6 +33,7 @@ module StarterKit
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.middleware.insert_before ActionDispatch::Static, SpaDelivery
     config.exceptions_app = ->(env) { Api::ExceptionsController.action(:show).call(env) }
     config.active_job.queue_adapter = :solid_queue
     # Inherit the primary connection so inbox and queue writes share a transaction.

@@ -1,4 +1,11 @@
 class AccountMail
+  def self.product_update(user, **content)
+    return unless user.optional_emails?
+
+    require_available!
+    ProductUpdateMailer.with(user: user, **content).notice.deliver_later
+  end
+
   def self.available?
     ActionMailer::Base.delivery_method != :smtp || ENV["SMTP_ADDRESS"].present?
   end

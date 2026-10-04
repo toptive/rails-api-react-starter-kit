@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+require "optparse"
+require "open3"
+require "csv"
+require "json"
+require "shellwords"
+
+options = {}
+OptionParser.new do |parser|
+  %w[app module name domain].each { |key| parser.on("--#{key} VALUE") { |value| options[key.to_sym] = value } }
+  parser.on("--dry-run") { options[:dry_run] = true }
+end.parse!
+app = options.fetch(:app) { abort "--app is required" }
+abort "--app must be snake_case" unless app.match?(/\A[a-z][a-z0-9_]*\z/)
+mod = options.fetch(:module, app.split("_").map(&:capitalize).join)
+abort "--module must be CamelCase" unless mod.match?(/\A[A-Z][a-zA-Z0-9]*\z/)
+name = options.fetch(:name, mod)
+abort "--name must be one nonempty line" if name.empty? || name.match?(/[\r\n]/)
+domain = options.fetch(:domain, "example.com")
+abort "--domain must be a hostname" unless domain.match?(/\A[a-z0-9]+(?:[.-][a-z0-9]+)*\z/)
+root = File.expand_path("..", __dir__)
+Dir.chdir(root) do
+  files, status = Open3.capture2("git", "ls-files", "--cached", "--others", "--exclude-standard", "-z")
+  abort "Cannot list product files" unless status.success?
+  replacements = { '"StarterKit"' => name.dump, "StarterKit —" => "#{name} —", "CHANGE_ME.example.com" => domain, "app.example.com" => domain, "api.example.com" => domain,
+    "hello@example.com" => "hello@#{domain}", "STARTER_KIT" => app.upcase, "StarterKit" => mod,
+    "starter_kit" => app, "starter-kit" => app.tr("_", "-"), "starterkit" => app.delete("_") }
+  changed = 0
+  files.split("\0").uniq.each do |path|
+    next unless File.file?(path) && !File.symlink?(path)
+    next if path == "bin/rename" || path == "pnpm-lock.yaml" || path.start_with?("vendor/")
+
+    content = File.binread(path).force_encoding(Encoding::UTF_8)
+    next unless content.valid_encoding? && !content.include?("\0")
+
+    updated = content.gsub(Regexp.union(replacements.keys)) { |match| replacements.fetch(match) }
+    if path == "i18n/translations.csv"
+      rows = CSV.parse(updated, headers: true)
+      rows.find { |row| row["key"] == "app.name" }&.then { |row| rows.headers.drop(1).each { |locale| row[locale] = name } }
+      updated = rows.to_csv
+    end
+    updated = updated.sub(/APP_NAME: .+$/, "APP_NAME: #{name.to_json}") if path == "config/deploy.yml"
+    if path == ".env.example"
+      updated = updated.gsub(/^(#\s*)?((?:APP_NAME|MAIL_FROM_NAME(?:_[A-Z]+)?)=).+$/) do
+        "#{Regexp.last_match(1)}#{Regexp.last_match(2)}#{Shellwords.escape(name)}"
+      end
+    end
+    next if updated == content
+
+    File.write(path, updated) unless options[:dry_run]
+    changed += 1
+  end
+  unless options[:dry_run]
+    system("bin/rails", "i18n:build", exception: true)
+  end
+  puts "Renamed #{changed} files for #{mod} (#{app}), #{name}, #{domain}."
+end

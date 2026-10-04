@@ -49,7 +49,7 @@ class ControllersTest < ActiveSupport::TestCase
             Prism::ForNode, Prism::RescueNode ].any? { |kind| node.is_a?(kind) }
         end
         assert_empty branches, "#{path}##{method.name}: move business decisions to the model"
-        model_calls = calls(method.body).select { |call| models.include?(call.receiver&.location&.slice) }
+        model_calls = calls(method.body).select { |call| models.include?(call.receiver&.location&.slice&.delete_prefix("::")) }
         assert_operator model_calls.length, :<=, 1, "#{path}##{method.name}: delegate to one model method"
       end
     end

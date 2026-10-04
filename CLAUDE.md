@@ -54,6 +54,9 @@ config/queue.yml            Solid Queue workers: default and marketing only
 config/recurring.yml        recurring job declarations
 Archspec.rb                 executable backend boundaries
 frontend/                   index.html, Vite, TS, ESLint, src/
+frontend/e2e/               browser journeys and per-kit fixtures
+frontend/scripts/           build and prerendering
+frontend/src/styles/theme.css product theme tokens
 frontend/src/api/            shared API client, React Query hooks
 frontend/src/api/generated/ serializers and route helpers; committed, never hand-edited
 i18n/                       translations.csv → locales/*.json + config/locales/*.yml
@@ -131,16 +134,19 @@ docs/                       developer reference by area
 
 ## Frontend — React SPA
 
-- React, TypeScript strict and Vite. The shared SPA uses TanStack Router for navigation and
-  React Query for server state.
-- Data comes through `frontend/src/api/` hooks and the shared HTTP client; no raw `fetch` or
-  axios in pages, no `useEffect` to load data. The client owns bearer and locale headers.
-- Input schemas validate forms; generated interfaces type responses. Avoid duplicated server
-  state and hand-written route strings. A pending background refresh should keep cached data.
-- We own shared components under `components/ui/`. Change repeated visuals there, rather
-  than copying classes between pages. Theme tokens only; no literal hex colours in components.
-- All files and folders use kebab-case. Pages and hooks have meaningful domain names.
-- Every visible string uses translations, including labels, empty states, errors and loading text.
+
+- React 19, TypeScript strict, Vite, Tailwind v4; one SPA in `frontend/`.
+- TanStack Router guards wait for bootstrap; React Query loads data only through `@/api/hooks`.
+  No `useEffect` for data, no `fetch`/`axios` outside `src/api/http.ts`.
+- Forms use react-hook-form + Zod schemas in `src/schemas`; map server field errors using their
+  i18n keys. Keep `FormStepper`, `FieldHelp` and `ConfirmDialog`.
+- Serializer types and API route helpers live in `frontend/src/api/generated/`; the backend
+  generator owns them. Never add hand-written mirror response types.
+- **We own the components.** Edit `components/ui` for app-wide changes; repeated patterns live
+  in `components/app`. Theme tokens only; new colours go in `frontend/src/styles/theme.css`.
+- Admin Jobs opens the ticket URL returned by the API and appears only with `app.jobsDashboard`.
+- Files and folders are kebab-case (generated files follow the generator). Pages mirror resources:
+  `pages/<resource>/<action>.tsx`. Every UI string comes from `i18n/translations.csv`.
 
 ## UX rules
 
@@ -168,7 +174,7 @@ docs/                       developer reference by area
 ## Testing & gates
 
 `bin/check` runs RuboCop, Archspec, Brakeman, bundler-audit, Minitest, contract and translation
-checks, frontend typecheck, ESLint, Vitest and pnpm audit. All failures block completion.
+checks, frontend typecheck, ESLint, Vitest, pnpm audit and isolated Playwright journeys. All failures block completion.
 
 - No CI. `.githooks/pre-commit` checks staged file paths; `.githooks/pre-push` runs `bin/check`.
   `bin/setup` installs the hooks with `git config core.hooksPath .githooks`.
@@ -178,8 +184,8 @@ checks, frontend typecheck, ESLint, Vitest and pnpm audit. All failures block co
   authentication, policies, database, serializers and envelope are the default: test each
   endpoint outcome and flows that chain endpoints. Model tests cover real branching only
   (money, dates, policies, parsers); never private helpers, isolated serializers or getters.
-- SPA flows use Playwright in `frontend/e2e/` against the real backend (`pnpm e2e` boots
-  the test API and seeds). Cover feature flows; mock provider HTTP boundaries only. Vitest
+- SPA flows use Playwright in `frontend/e2e/` against the real backend (`bin/e2e` boots
+  the test API, then runs `pnpm e2e`). Cover feature flows; mock provider HTTP boundaries only. Vitest
   covers pure functions, never component renders with mocked APIs.
 - Architecture tests enforce the rulebook, including no `PLAN.md`, `STATUS.md`, `TODO.md`,
   `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
@@ -209,5 +215,7 @@ files. Never run setup or seeds against production. See [docs/DEPLOY.md](docs/DE
 | Privacy | [docs/PRIVACY.md](docs/PRIVACY.md) | deletion blockers and retained records |
 | Billing | [docs/BILLING.md](docs/BILLING.md) | offers, Stripe checkout, reconciliation, renewals |
 | Platform | [docs/PLATFORM.md](docs/PLATFORM.md) | uploads, analytics, flags, AI, monitoring, health and jobs |
+| Design | [docs/DESIGN.md](docs/DESIGN.md) | theme, components, layouts and UX |
+| New product | [docs/NEW_PRODUCT.md](docs/NEW_PRODUCT.md) | renaming and product setup |
 | SEO | [docs/SEO.md](docs/SEO.md) | sitemap, robots, indexing lock and canonical host |
 | Deploy | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker, Kamal and environment variables |

@@ -10,10 +10,16 @@ en:
     audit:
       action: Action
       actor: By
+      actor_id: Account ID
+      details: Details
+      event_id: Event ID
       impersonated: Impersonated
+      impersonator_id: Acting admin ID
       lead: Who did what, and when. Nothing here can be changed.
+      organization_id: Organization ID
       search: Search by record id or action
       subject: Record
+      subject_id: Record ID
       title: Audit log
       when: When
     empty: Nothing here yet.
@@ -29,6 +35,7 @@ en:
       not_published: Not published
       note: Note about this change
       note_help: For you and other admins, not shown to users.
+      publication: Publication
       publish: Publish
       publish_body: Everyone will see this version from now on.
       publish_now: Publish right away
@@ -69,6 +76,8 @@ en:
         as edited.'
       fill_title: Fill the missing %{language} texts automatically?
       filter_missing: Show
+      inline_help: Save by leaving the field or pressing Enter. Shift + Enter adds
+        a new line.
       lead: Every text of the app, per language. Changes go live at once and survive
         deploys.
       missing_in: Missing in %{language}
@@ -89,8 +98,12 @@ en:
       reason: Reason
       reason_help: 'For example: the support ticket number.'
       role: Role
+      role_confirm_body: "%{email} will have the %{role} role. This changes access
+        to the admin area."
+      role_confirm_title: Change this account’s role?
       search: Search users by email or name
       title: Users
+    bootstrap_name: Administrator
   app:
     name: StarterKit
   appearance:
@@ -99,6 +112,10 @@ en:
     light: Light
     system: Same as my device
   auth:
+    callback:
+      loading: Finishing your sign-in…
+    check_email:
+      title: Open the link in your email
     magic_link:
       confirm_submit: Confirm and sign in
       confirm_title: Confirm your email
@@ -111,6 +128,7 @@ en:
       closed_body: We are not taking new accounts right now. If you already have an
         account, sign in.
       closed_title: Sign-up is closed
+      consent_title: Terms and privacy
       email_help: We send a sign-in link here. No password needed.
       have_account: Already have an account?
       invite_body: Use the email address that got the invitation. Without an invitation
@@ -120,6 +138,8 @@ en:
       submit: Create account
       title: Create your account
     session:
+      forgot_help: Forgot your password? Sign in with an email link, then set a new
+        password in Settings.
       google: Continue with Google
       invalid_credentials: That email and password don't match. Try again or get a
         link by email.
@@ -141,6 +161,17 @@ en:
       tab_link: Email me a link
       tab_password: Use a password
       title: Sign in
+    sudo:
+      cancelled: Confirmation cancelled. Try your change again when you’re ready.
+      confirm: Confirm and continue
+      dialog_lead: For your security, confirm it’s you. Then we’ll continue your change.
+      link_help: Copy the button’s link from the email and paste it here. We’ll continue
+        your change after confirming.
+      link_label: Sign-in link from your email
+      link_sent: Check your inbox, copy the sign-in link, and paste it below to continue
+        here.
+      title: Confirm it’s you
+      use_link: Confirm with an email link
     unavailable:
       registration_body: You can't create an account right now, because we can't send
         the email that confirms it. Please try again later.
@@ -210,9 +241,14 @@ en:
   common:
     cancel: Cancel
     close: Close
+    loading: Loading…
     'no': 'No'
+    retry: Try again
+    retry_help: Try again to reload this page.
     save: Save
     save_changes: Save changes
+    saved: Saved. Your changes are ready.
+    saving: Saving…
     search: Search
   dashboard:
     checklist:
@@ -242,53 +278,61 @@ en:
     title: Unsubscribe from optional emails?
   errors:
     api:
+      ai_not_configured: Text translation is not available yet.
+      ai_unavailable: Text translation is unavailable right now. Try again later.
+      already_subscribed: Your workspace already has a paid plan. Manage it in payments.
       bad_request: The request is not valid.
-      conflict: This change conflicts with another update.
+      conflict: This change cannot be made right now.
       content_type_not_allowed: This type of file is not allowed.
+      email_change_invalid: This email change link has expired.
+      email_mismatch: Sign in with the invited email address.
+      email_not_verified: Google has not verified your email address.
+      email_unavailable: Email is not available right now. Try again later.
+      email_unchanged: This is already your email.
       forbidden: You are not allowed to do this.
       internal_error: Something went wrong on our side.
-      invalid_json: The request contains invalid JSON.
+      invalid_credentials: Your email or password is not correct.
+      invalid_json: Send a valid JSON body.
       invalid_signature: The request signature is not valid.
       invalid_size: The file size is not valid.
+      invalid_token: This link has expired. Ask for a new one.
+      invitation_invalid: This invitation is no longer available.
+      invitation_required: You need an invitation to create an account.
+      last_owner: Add another owner before leaving.
+      limit_reached: Your plan has reached its limit.
+      magic_link_invalid: This sign-in link has expired. Ask for a new one.
+      method_not_allowed: This request method is not allowed.
+      network: We could not connect. Check your connection and try again.
+      no_subscription: Your workspace has no subscription to manage.
+      not_accepted: Accept the payment terms to continue.
       not_found: We can't find what you asked for.
+      not_member: You do not belong to that organization.
+      oauth_failed: We could not sign you in with Google. Try again.
+      offer_changed: The price changed. Review the current offer and try again.
+      price_mismatch: This price is unavailable. Please try again later.
+      rate_limited: Too many attempts. Wait a minute and try again.
+      session_expired: Your session has ended. Sign in again.
+      signup_closed: New accounts are not available yet.
+      state_invalid: This sign-in attempt has expired. Try again.
+      storage_rejected: The file could not be uploaded. Choose it again and try again.
+      stripe_unavailable: Payments are unavailable. Please try again later.
+      subscription_active: Cancel the paid plan before deleting your account.
+      sudo_required: Sign in again to continue.
+      test_mode: Payments are available to test operators only.
       too_large: The file is too large.
       too_many_requests: Too many attempts. Wait a minute and try again.
+      transfer_ownership: Make someone else an owner before deleting your account.
+      turnstile_failed: Complete the verification and try again.
       unauthorized: Sign in to continue.
       unknown_kind: This kind of upload is not allowed.
-      uploads_not_configured: File uploads are not set up yet.
-      validation_failed: Some fields need a fix.
-      rate_limited: Too many attempts. Wait a minute and try again.
-      method_not_allowed: This request method is not supported.
       unsupported_media_type: Send the request as JSON.
-      session_expired: Your session expired. Sign in again.
-      invalid_credentials: That email and password don't match.
-      sudo_required: Confirm it is you to continue.
-      magic_link_invalid: This sign-in link has expired or has already been used.
-        Request a new one.
-      turnstile_failed: Complete the verification and try again.
-      signup_closed: Account registration is closed.
-      invitation_required: You need an invitation to create an account.
-      email_unavailable: We cannot send email right now. Try again later.
-      not_member: You do not belong to this organization.
-      last_owner: Choose another owner before leaving or removing this owner.
-      email_mismatch: Sign in with the email address on this invitation.
-      invitation_invalid: This invitation has expired or is no longer available.
-      email_unchanged: This is already your email.
-      email_change_invalid: This email confirmation link is invalid or has expired.
-      transfer_ownership: Make another person an owner before deleting your account.
-      subscription_active: Cancel the organization’s subscription before deleting
-        your account.
-      ai_not_configured: Text translation is not configured.
-      ai_unavailable: The translation provider is unavailable. Try again later.
-      stripe_unavailable: Payments are temporarily unavailable. Please try again.
-      test_mode: Paid plans are available to test operators only.
-      already_subscribed: Your organization already has a paid plan.
-      no_subscription: Your organization has no subscription to manage.
-      offer_changed: This offer has changed. Review the current offer and try again.
-      not_accepted: Accept the payment agreement before continuing.
-      price_mismatch: This offer is temporarily unavailable. Please try again later.
-      upload_incomplete: The upload is incomplete or the file is not allowed.
-      limit_reached: Your plan has reached its limit.
+      upload_incomplete: This file could not be verified. Upload it again.
+      uploads_not_configured: File uploads are not set up yet.
+      validation_error: Some fields need a fix.
+      validation_failed: Some fields need a fix.
+    network: We could not connect. Check your connection and try again.
+    offline: You are offline. Reconnect to save changes or load pages.
+    online: You are back online. You can try again now.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.
@@ -301,6 +345,7 @@ en:
         title: Something went wrong on our side
       dashboard: Back to your home
       home: Go to the home page
+    retry_after: Try again in %{count} seconds.
   fields:
     email: Email
     language: Language
@@ -350,6 +395,8 @@ en:
       published: Published. Everyone sees this version now.
       saved: Version saved as a draft.
     magic_link_invalid: This link is not valid any more. Ask for a new one.
+    magic_link_sent: If your account is available, check your inbox for a sign-in
+      link.
     membership:
       last_owner: An organization needs at least one owner. Make someone else owner
         first.
@@ -517,6 +564,9 @@ en:
       subject: 'What''s new in %{app}: %{title}'
     renewal_notice:
       action: Manage my plan
+      body: The plan for %{organization} renews on %{date} for %{amount}. You can
+        manage or cancel it before then.
+      cta: Manage payments
       footer: You got this email because you manage billing for an organization at
         %{app}. We send it once before each renewal.
       headline: Your plan renews soon
@@ -524,9 +574,6 @@ en:
       note1: 'That is the full amount: nothing is added.'
       note2: To change or cancel the plan, do it in the app before %{date}.
       subject: Your %{app} plan renews on %{date}
-      body: The plan for %{organization} renews on %{date} for %{amount}. You can
-        manage or cancel it before then.
-      cta: Manage payments
     unsubscribe: Unsubscribe
     value:
       days_7: In 7 days
@@ -555,6 +602,7 @@ en:
     title: Welcome! Let's get you set up
   organizations:
     create: Create an organization
+    default_name: Default
     new:
       lead: An organization groups people who work on the same things. You will be
         its owner.
@@ -562,12 +610,15 @@ en:
       submit: Create organization
       title: Create an organization
     switch: Switch organization
-    default_name: Default
   pagination:
     label: Pages
     next: Next
     previous: Previous
     summary: Page %{page} of %{pages} · %{total} in total
+  role:
+    admin: Admin
+    member: Member
+    owner: Owner
   roles:
     admin: Admin
     member: Member
@@ -580,7 +631,12 @@ en:
         transfer_ownership: You are the only owner of %{organization}. Make another
           person there an owner in People, then come back.
       blocked_title: One thing to do before you can delete your account
+      check_again: Check again after fixing this
       confirm_body: You will be signed out and you cannot get it back.
+      confirm_consequence: Your account and access to every organization will be deleted.
+        Organizations where you are the only person are deleted with their data unless
+        they have billing history. You will be signed out on every device. This cannot
+        be undone.
       confirm_title: Delete your account?
       delete: Delete my account
       delete_body: We delete your account and your access to every organization. An
@@ -598,13 +654,17 @@ en:
       nav: Plan and billing
       title: Plan and billing
     email:
+      check_email: We sent a link to %{email}. Open it, sign in if asked, and choose
+        “Change my email” to finish. Your current email stays in use until then.
       help: We send a link to the new address. The change happens when you open it.
       lead: You sign in with %{email}.
       nav: Email
       submit: Send confirmation link
       title: Change your email
+      try_another: Use a different email
     email_confirmation:
       lead: You will sign in with %{email} from now on.
+      request_new: Request a new confirmation in Email settings
       submit: Change my email
       title: Confirm your new email
     email_preferences:
@@ -623,35 +683,52 @@ en:
       organization: Organization
       you: Your account
     members:
+      access:
+        full: Can make changes
+        viewer: View only
+      access_label: Access
       can: They can
       email_help: Use the email they sign in with.
+      empty_help: Invite someone to work with you in this organization.
+      empty_title: No people to show
       expires: expires %{date}
       explain:
         admin_full: Everything, including inviting and removing people.
+        admin_viewer: See everything, without making changes or managing people.
         member_full: Create and change things, but not manage people.
         member_viewer: See everything, change nothing.
         owner_full: Everything. Owners can also make other owners.
+        owner_viewer: Own the organization with view-only access. Change access to
+          manage people.
       invite: Invite someone
       invite_lead: They get an email with a link to join.
+      invite_sent: Invitation sent. They can join using the link in their email.
       lead: Who can use this organization and what each person can do.
       leave: Leave
       leave_body: You will lose access until someone invites you again.
       leave_title: Leave this organization?
       nav: People
+      pending_empty_help: Invite someone and they will appear here until they join.
+      pending_empty_title: No invitations waiting
       pending_help: They got an email with a link. Invitations expire after 7 days.
       pending_title: Waiting to join
+      read_only_help: Ask an owner or an admin with full access to invite people or
+        change their access. You can leave using your row below.
       remove: Remove
       remove_body: They lose access right away. You can invite them again later.
       remove_title: Remove %{name}?
+      removed: Access removed. You can invite them again later.
       revoke: Cancel invitation
       revoke_body: The link in their email will stop working.
       revoke_title: Cancel the invitation to %{email}?
       role_for: Role of %{name}
+      role_label: Role
       send_invite: Send invitation
       step_email: Who do you want to invite?
       step_review: Check and send
       step_role: What can they do?
       title: People
+      unknown_person: Organization member
       you: you
     organization:
       lead: The name everyone in the organization sees.
@@ -666,6 +743,7 @@ en:
       lead_change: Other devices will be signed out.
       lead_set: Optional. You can always sign in with a link by email.
       nav: Password
+      saved: Password saved. Your other devices have been signed out.
       submit: Save password
       title_change: Change your password
       title_set: Set a password
@@ -677,7 +755,11 @@ en:
       title: Profile
     sessions:
       confirm_body: Whoever uses that device will need to sign in again.
+      confirm_current: This signs you out here. You will need to sign in again to
+        use your account.
       confirm_title: Sign out this device?
+      empty_help: Reload the list to see where you are signed in.
+      empty_title: No devices to show
       lead: If you don't recognise a device, sign it out.
       nav: Devices
       sign_out: Sign out this device
@@ -702,6 +784,9 @@ en:
     sidebar: Menu
     sidebar_description: The main menu of the app.
     toggle_sidebar: Show or hide the menu
+  uploads:
+    ready: "%{filename} is ready. Save your changes to use it."
+    uploading: Uploading your file…
   validation:
     already_member: This person is already in the organization.
     cast: This value is not valid.
@@ -712,12 +797,15 @@ en:
     exclusion: This value is not allowed.
     format: This doesn't look right.
     inclusion: Choose one of the options.
+    invalid: This value is not valid.
     invitation_owner: Invite people as admin or member. You can make them owner later.
     invitation_pending: There is already a pending invitation for this email.
     last_owner: An organization needs at least one owner.
     length_is: Use exactly %{count} characters.
     length_max: Use at most %{count} characters.
     length_min: Use at least %{count} characters.
+    limit_reached: This plan allows up to %{limit} people.
+    magic_link: Paste the sign-in link from your email.
     number_greater_than: Must be greater than %{number}.
     number_less_than: Must be less than %{number}.
     owner_only: Only owners can make someone an owner.

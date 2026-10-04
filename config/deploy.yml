@@ -1,33 +1,40 @@
-# Product template: replace image, registry user, host and server before deploying.
+# Shared PostgreSQL on the Kamal network; provision this product's role/databases first.
 service: starter-kit
-image: your-registry-user/starter-kit
+image: toptive/starter-kit
 servers:
   web:
     - 192.0.2.1
 proxy:
   ssl: true
-  host: api.example.com
+  host: CHANGE_ME.example.com
+  app_port: 80
   healthcheck:
     path: /health
 registry:
-  username: your-registry-user
-  password:
-    - KAMAL_REGISTRY_PASSWORD
+  server: localhost:5555
 builder:
   arch: amd64
+  args:
+    VITE_API_URL: ""
+    VITE_PUBLIC_URL: https://CHANGE_ME.example.com
+    VITE_SITE_INDEXING: "0"
 env:
   clear:
     RAILS_ENV: production
-    PUBLIC_URL: https://app.example.com
-    SPA_ORIGIN: https://app.example.com
-    API_ORIGIN: https://api.example.com
+    APP_NAME: StarterKit
+    PUBLIC_URL: https://CHANGE_ME.example.com
+    SPA_ORIGIN: https://CHANGE_ME.example.com
+    API_ORIGIN: https://CHANGE_ME.example.com
     TENANCY: multi
+    SIGNUP_MODE: open
     SITE_INDEXING: "0"
     BILLING_ENABLED: "false"
     BILLING_MODE: test
+    BILLING_RENEWAL_NOTICES: "false"
     TURNSTILE_REQUIRED: "false"
-    DB_HOST: 192.0.2.2
-    SOLID_QUEUE_IN_PUMA: true
+    DB_HOST: postgres
+    RAILS_MAX_THREADS: 5
+    SOLID_QUEUE_IN_PUMA: "true"
   secret:
     - SECRET_KEY_BASE
     - STARTER_KIT_DATABASE_PASSWORD

@@ -20,6 +20,8 @@ bcrypt comparison and return the same invalid-credentials response.
 | POST | `/api/v1/auth/magic-links/:token/session` | Consume, confirm and issue a bearer; 201 |
 | POST | `/api/v1/auth/sessions` | Email/password sign-in; 201 |
 | DELETE | `/api/v1/auth/session` | Revoke current session; 204 |
+| GET | `/api/v1/auth/google/start` | Redirect to Google with signed, expiring state |
+| GET | `/api/v1/auth/google/callback` | Verify Google identity and hand off a bearer in the URL fragment |
 | POST | `/api/v1/auth/sudo` | Reauthenticate with password or magicLinkToken |
 | DELETE | `/api/v1/auth/impersonation` | End impersonation and preserve admin session; 204 |
 | POST | `/api/v1/admin/jobs-access` | Issue a single-use browser handoff URL; 201 |
@@ -83,6 +85,21 @@ Turnstile is enabled by `TURNSTILE_REQUIRED=true`. Registration and magic-link r
 Cloudflare siteverify before writing: matching hostname/action, success, a five-second deadline,
 no retry. Provider refusals and timeouts fail closed. Only the public site key enters bootstrap.
 
+## Google sign-in
+
+Configure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` together. Bootstrap advertises
+`googleEnabled`; both resources return 404 when credentials are absent. The callback URL is
+`API_ORIGIN/api/v1/auth/google/callback`. HMAC-SHA256 signed state expires after ten minutes and carries
+only a supported locale, web/native client and validated relative return path. The callback
+exchanges the code over HTTPS, requires a verified Google email, and links the Google subject
+to an existing account or creates one according to signup policy. It confirms the email.
+
+Web handoffs use `PUBLIC_URL/auth/callback#token=...` with expiry, new-account marker and
+validated return path; native handoffs use
+`NATIVE_SCHEME://auth/callback`. Tokens remain out of query strings and server access logs.
+Provider failures return a stable error code in the fragment. Both resources allow ten
+requests per minute. Tests stub only Google's HTTP boundary.
+
 ## Rate limits
 
 Rails `rate_limit` keys counters by the resolved IP and endpoint in Solid Cache. Tests use
@@ -106,7 +123,7 @@ avatar field. `GET` and `PUT /api/v1/settings/email-preferences` expose `optiona
 changes audit `user.optional_emails_started` or `user.optional_emails_stopped` once. Optional
 mailers use `ApplicationMailer#optional_email_headers` for the RFC 8058 HTTPS opt-out URL and
 `List-Unsubscribe-Post: List-Unsubscribe=One-Click`. Access and invitation mail have no opt-out
-headers. The starter kit currently has no optional mail kind.
+headers. `AccountMail.product_update` is the optional mail example and checks the recipient preference before enqueueing.
 
 `GET /api/v1/settings/sessions` returns every live device of the bearer user, newest first,
 without pagination or impersonation sessions. The caller's row has `current: true`. Only the

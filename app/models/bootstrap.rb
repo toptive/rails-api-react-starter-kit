@@ -1,12 +1,20 @@
 class Bootstrap
   def self.for_session(session, scope:)
+    return scope.user.with_lock { payload(session, scope) } if session
+
+    payload(nil, scope)
+  end
+
+  def self.payload(session, scope)
     { auth: session && auth_for(scope), locale: I18n.locale.to_s,
       locales: I18n.available_locales.map(&:to_s), i18n_version: TranslationCatalog.version,
       app: { name: ENV.fetch("APP_NAME", "StarterKit"), tenancy: Organization.tenancy, signup_mode: User.signup_mode,
-        email_available: AccountMail.available?, google_enabled: false,
+        email_available: AccountMail.available?, google_enabled: User.google_enabled?,
         public_url: Billing.public_url, jobs_dashboard: true },
       flags: Flags.public_flags, turnstile: Turnstile.widget }
   end
+
+  private_class_method :payload
 
   def self.auth_for(scope)
     session = scope.session

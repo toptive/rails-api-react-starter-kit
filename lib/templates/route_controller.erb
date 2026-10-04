@@ -1,0 +1,20 @@
+import type { RouteDefinition, RouteOptions } from '<%= runtime_import %>'
+import { buildUrl } from '<%= runtime_import %>'
+
+export default {
+<%- routes.each do |route| -%>
+  /** <%= route[:verb].upcase %> <%= route[:path] %> */
+  <%= route[:key] %>: (
+<%- route[:required_params].each do |param| -%>
+    <%= param %>: string | number,
+<%- end -%>
+<%- route[:optional_params].each do |param| -%>
+    <%= param %>?: string | number,
+<%- end -%>
+    options?: RouteOptions,
+  ): RouteDefinition<'<%= route[:verb] %>'> => ({
+    url: buildUrl('<%= route[:path] %>', { <%= (route[:required_params] + route[:optional_params]).join(', ') %> }, options),
+    method: '<%= route[:verb] %>',
+  }),
+<%- end -%>
+}

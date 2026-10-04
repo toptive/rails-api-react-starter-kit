@@ -13,6 +13,10 @@ module Api
       def locale_user = current_user
       def pundit_user = current_scope
 
+      def authenticate_optional!
+        authenticate! if request.authorization.present?
+      end
+
       def authenticate!
         @current_session = Session.authenticate(bearer_token)
         Sentry.set_user(id: @current_session.user_id)
