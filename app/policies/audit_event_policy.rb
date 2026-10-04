@@ -1,0 +1,2 @@
+class AuditEventPolicy < ApplicationPolicy
+end

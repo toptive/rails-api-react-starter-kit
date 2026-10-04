@@ -529,5 +529,18 @@
   "validation.unsafe_unique": "This is already taken.",
   "errors.api.rate_limited": "Too many attempts. Wait a minute and try again.",
   "errors.api.method_not_allowed": "This request method is not supported.",
-  "errors.api.unsupported_media_type": "Send the request as JSON."
+  "errors.api.unsupported_media_type": "Send the request as JSON.",
+  "errors.api.session_expired": "Your session expired. Sign in again.",
+  "errors.api.invalid_credentials": "That email and password don't match.",
+  "errors.api.sudo_required": "Confirm it is you to continue.",
+  "errors.api.magic_link_invalid": "This sign-in link has expired or has already been used. Request a new one.",
+  "errors.api.turnstile_failed": "Complete the verification and try again.",
+  "errors.api.signup_closed": "Account registration is closed.",
+  "errors.api.invitation_required": "You need an invitation to create an account.",
+  "errors.api.email_unavailable": "We cannot send email right now. Try again later.",
+  "mail.confirmation.action": "Sign in",
+  "mail.confirmation.headline": "Sign in to {{app}}",
+  "mail.confirmation.lead": "Use the button to sign in. You do not need a password.",
+  "mail.confirmation.note1": "Did not ask for this link? Ignore this email. Your account stays safe.",
+  "mail.confirmation.subject": "Your sign-in link for {{app}}"
 }

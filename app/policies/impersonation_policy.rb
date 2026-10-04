@@ -1,0 +1,2 @@
+class ImpersonationPolicy < ApplicationPolicy
+end

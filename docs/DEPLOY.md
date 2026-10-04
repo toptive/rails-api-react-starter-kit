@@ -13,7 +13,14 @@ Development/test setup refuses a production environment.
 
 | Variable | Purpose |
 |---|---|
-| `PUBLIC_URL` | Exact allowed SPA origin (default `http://localhost:5173`) |
+| `SPA_ORIGIN`, `PUBLIC_URL` | SPA origin for mail links and CORS (default `http://localhost:5173`) |
+| `APP_NAME`, `SIGNUP_MODE` | Product name; open/invite/closed signup policy |
+| `TRUSTED_PROXY_CIDRS` | Comma-separated proxy networks allowed to supply client forwarding headers |
+| `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_AUTHENTICATION` | Production mail server; port defaults to 587 with STARTTLS |
+| `SMTP_USERNAME`, `SMTP_PASSWORD` | SMTP credentials supplied through environment/cred |
+| `MAIL_FROM`, `MAIL_FROM_NAME` | Email sender; optional locale overrides suffixed `_ES`/`_EN` |
+| `TURNSTILE_REQUIRED` | `true` requires bot verification for registrations and magic-link requests |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_HOSTNAME` | Public widget key, siteverify credential and accepted hostname |
 | `API_URL` | Vite's dev proxy origin (default `http://localhost:3000`) |
 | `PORT`, `VITE_PORT` | API and frontend dev ports |
 | `RAILS_MAX_THREADS` | Puma threads and database connection pool |
@@ -33,3 +40,7 @@ and `.kamal/secrets` contain only placeholders/environment references.
 
 Production enables HTTPS/HSTS behind the TLS-terminating proxy. The job dashboard requires
 a live superadmin session; no default login credentials are configured. Do not deploy placeholder hosts or registry settings.
+
+Primary database schema loads use `db/structure.sql` to retain the append-only audit trigger.
+Production mail uses SMTP; development logs delivery metadata. See [AUTH.md](AUTH.md) for
+session lifetimes, signup behavior and the signed `/jobs` browser access cookie.

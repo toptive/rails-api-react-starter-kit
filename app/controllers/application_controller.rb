@@ -2,6 +2,7 @@ class ApplicationController < ActionController::API
   include Pundit::Authorization
 
   around_action :switch_locale
+  before_action :require_json_body
   before_action :normalize_param_keys
   after_action :verify_authorized
 
@@ -28,10 +29,12 @@ class ApplicationController < ActionController::API
         return locale if locale
       end
     end
-    I18n.default_locale
+    locale_user&.locale || I18n.default_locale
   rescue ActionDispatch::Http::Parameters::ParseError
     I18n.default_locale
   end
+
+  def locale_user = nil
 
   def accept_language_tags
     request.headers["Accept-Language"].to_s.split(",").filter_map do |entry|
@@ -39,6 +42,13 @@ class ApplicationController < ActionController::API
       weight = quality ? quality.to_f : 1.0
       [ tag, weight ] if tag.present? && weight.positive?
     end.sort_by { |_, weight| -weight }.map(&:first)
+  end
+
+  def require_json_body
+    return unless request.content_length.to_i.positive?
+    return if request.media_type == "application/json"
+
+    raise ApiError.new(:unsupported_media_type, :unsupported_media_type)
   end
 
   def normalize_param_keys
@@ -53,6 +63,17 @@ class ApplicationController < ActionController::API
       data: serializer.new(payload, params: serializer_params).serializable_hash,
       meta: meta
     }, status: status
+  end
+
+  def render_catalogue(catalogue)
+    response.headers["ETag"] = catalogue.fetch(:etag)
+    response.headers["Cache-Control"] = "public, no-cache"
+    if request.fresh?(response)
+      head :not_modified
+    else
+      render_data(catalogue.fetch(:catalogue), serializer: LocaleSerializer,
+        meta: catalogue.slice(:locale, :version))
+    end
   end
 
   def render_collection(scope, serializer:, status: :ok, serializer_params: {})

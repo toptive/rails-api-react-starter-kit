@@ -1,0 +1,2 @@
+class UserTokenPolicy < ApplicationPolicy
+end

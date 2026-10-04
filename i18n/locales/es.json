@@ -529,5 +529,18 @@
   "validation.unsafe_unique": "Esto ya está en uso.",
   "errors.api.rate_limited": "Demasiados intentos. Esperá un minuto y probá de nuevo.",
   "errors.api.method_not_allowed": "Este método no está permitido.",
-  "errors.api.unsupported_media_type": "Enviá la solicitud como JSON."
+  "errors.api.unsupported_media_type": "Enviá la solicitud como JSON.",
+  "errors.api.session_expired": "Tu sesión venció. Ingresá de nuevo.",
+  "errors.api.invalid_credentials": "El email y la contraseña no coinciden.",
+  "errors.api.sudo_required": "Confirmá que sos vos para continuar.",
+  "errors.api.magic_link_invalid": "Este link venció o ya fue usado. Pedí uno nuevo.",
+  "errors.api.turnstile_failed": "Completá la verificación y probá de nuevo.",
+  "errors.api.signup_closed": "El registro de cuentas está cerrado.",
+  "errors.api.invitation_required": "Necesitás una invitación para crear una cuenta.",
+  "errors.api.email_unavailable": "Ahora no podemos enviar emails. Probá más tarde.",
+  "mail.confirmation.action": "Ingresar",
+  "mail.confirmation.headline": "Ingresa a {{app}}",
+  "mail.confirmation.lead": "Usa el botón para ingresar. No necesitas contraseña.",
+  "mail.confirmation.note1": "¿No pediste este enlace? Ignora este email. Tu cuenta sigue segura.",
+  "mail.confirmation.subject": "Tu enlace para ingresar a {{app}}"
 }

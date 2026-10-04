@@ -1,6 +1,8 @@
 require_relative "boot"
 
 require "rails/all"
+require_relative "../lib/client_identity"
+require_relative "../lib/operations_browser_session"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -14,7 +16,7 @@ module StarterKit
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w[assets tasks client_identity.rb operations_browser_session.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -33,6 +35,7 @@ module StarterKit
     config.solid_queue.connects_to = { database: { writing: :queue } }
     config.mission_control.jobs.base_controller_class = "ActionController::Base"
     config.mission_control.jobs.http_basic_auth_enabled = false
+    config.mission_control.jobs.adapters = [ :solid_queue ]
     config.i18n.available_locales = %i[en es]
     config.i18n.default_locale = :en
     config.generators { |g| g.orm :active_record, primary_key_type: :uuid }

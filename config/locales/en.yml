@@ -260,6 +260,15 @@ en:
       rate_limited: Too many attempts. Wait a minute and try again.
       method_not_allowed: This request method is not supported.
       unsupported_media_type: Send the request as JSON.
+      session_expired: Your session expired. Sign in again.
+      invalid_credentials: That email and password don't match.
+      sudo_required: Confirm it is you to continue.
+      magic_link_invalid: This sign-in link has expired or has already been used.
+        Request a new one.
+      turnstile_failed: Complete the verification and try again.
+      signup_closed: Account registration is closed.
+      invitation_required: You need an invitation to create an account.
+      email_unavailable: We cannot send email right now. Try again later.
     page:
       '403':
         body: Your role doesn't allow it. Ask an owner or an admin of your organization.
@@ -499,6 +508,12 @@ en:
     value:
       days_7: In 7 days
       minutes_15: 15 minutes, one use
+    confirmation:
+      action: Sign in
+      headline: Sign in to %{app}
+      lead: Use the button to sign in. You do not need a password.
+      note1: Did not ask for this link? Ignore this email. Your account stays safe.
+      subject: Your sign-in link for %{app}
   nav:
     admin: Admin
     home: Home

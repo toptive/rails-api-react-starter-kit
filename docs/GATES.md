@@ -49,3 +49,6 @@ More end-to-end tests, fewer unit tests. Backend request tests through the real 
   covers pure functions, never component renders with mocked APIs.
 - Architecture tests enforce the rulebook, including no `PLAN.md`, `STATUS.md`, `TODO.md`,
   `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
+
+Backend tests use an isolated `rails_api_starter_kit_test` database and two workers by default.
+Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity.

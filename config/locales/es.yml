@@ -264,6 +264,14 @@ es:
       rate_limited: Demasiados intentos. Esperá un minuto y probá de nuevo.
       method_not_allowed: Este método no está permitido.
       unsupported_media_type: Enviá la solicitud como JSON.
+      session_expired: Tu sesión venció. Ingresá de nuevo.
+      invalid_credentials: El email y la contraseña no coinciden.
+      sudo_required: Confirmá que sos vos para continuar.
+      magic_link_invalid: Este link venció o ya fue usado. Pedí uno nuevo.
+      turnstile_failed: Completá la verificación y probá de nuevo.
+      signup_closed: El registro de cuentas está cerrado.
+      invitation_required: Necesitás una invitación para crear una cuenta.
+      email_unavailable: Ahora no podemos enviar emails. Probá más tarde.
     page:
       '403':
         body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.
@@ -502,6 +510,12 @@ es:
     value:
       days_7: En 7 días
       minutes_15: 15 minutos, un solo uso
+    confirmation:
+      action: Ingresar
+      headline: Ingresa a %{app}
+      lead: Usa el botón para ingresar. No necesitas contraseña.
+      note1: "¿No pediste este enlace? Ignora este email. Tu cuenta sigue segura."
+      subject: Tu enlace para ingresar a %{app}
   nav:
     admin: Administración
     home: Inicio
