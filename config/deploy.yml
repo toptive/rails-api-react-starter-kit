@@ -55,13 +55,26 @@ env:
     TRUSTED_PROXY_CIDRS: CHANGE_ME_KAMAL_SUBNET
     MAIL_FROM: hello@CHANGE_ME.toptive.dev
     MAIL_FROM_NAME: StarterKit
+    # Enable SMTP together with its credentials below.
+    # SMTP_ADDRESS: smtp.example.com
+    # SMTP_PORT: "587"
     S3_BUCKET: CHANGE_ME_UPLOADS_BUCKET
     S3_ENDPOINT: https://nyc3.digitaloceanspaces.com
     S3_REGION: us-east-1
     BILLING_ENABLED: "false"
     BILLING_MODE: test
     BILLING_RENEWAL_NOTICES: "false"
+    # Configure prices for the offers in config/billing.yml before enabling billing.
+    # STRIPE_TEST_PRICE_PRO_MONTHLY: price_CHANGE_ME
+    # STRIPE_TEST_PRICE_PRO_YEARLY: price_CHANGE_ME
+    # STRIPE_LIVE_PRICE_PRO_MONTHLY: price_CHANGE_ME
+    # STRIPE_LIVE_PRICE_PRO_YEARLY: price_CHANGE_ME
     TURNSTILE_REQUIRED: "false"
+    # Enable Turnstile together with its secret below.
+    # TURNSTILE_SITE_KEY: CHANGE_ME
+    # TURNSTILE_HOSTNAME: CHANGE_ME.toptive.dev
+    # POSTHOG_HOST: https://us.i.posthog.com
+    # SENTRY_ENV: production
     RAILS_LOG_LEVEL: info
   secret:
     - SECRET_KEY_BASE

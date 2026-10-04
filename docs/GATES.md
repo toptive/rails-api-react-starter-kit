@@ -56,9 +56,8 @@ More end-to-end tests, fewer unit tests.
   `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
 
 Backend tests use an isolated `rails_api_starter_kit_test` database and two workers by default.
-Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity on Linux. macOS
-always uses one worker to avoid forking initialized libpq/Objective-C state, including direct
-`bin/rails test` runs. `bin/check` runs catalogue and translation tests separately with one
+Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity on Linux or macOS.
+`bin/check` runs catalogue and translation tests separately with one
 worker: Cable broadcasts span worker databases, and the Solid Cable test spawns a subprocess.
 All tests run; serial execution does not skip coverage.
 
@@ -73,7 +72,10 @@ workers. `pnpm audit` may require the local network proxy: supply `HTTPS_PROXY` 
 databases on success or failure. Existing databases are refused. Test-only mail is shared by
 the API and fixture runners through JSON files under ignored `tmp/mailbox/`.
 
-Playwright starts Vite on 5174 and 5175, the Stripe stub on 4242, and the billing-off API on
+Playwright reports 31 journeys from 30 test declarations: the sudo spec runs once for
+password confirmation and once for magic link confirmation.
+
+By default, Playwright starts Vite on 5174 and 5175, the Stripe stub on 4242, and the billing-off API on
 4101. The main API uses 4100. The stub receives actual Stripe HTTP requests; signed webhooks
 reach the real Rails boundary and execute reconciliation. Only Rails test mode accepts that
 exact redirect origin. Turnstile is off, AI is unconfigured, and billing is on; all journeys
@@ -92,7 +94,8 @@ inbox insertion and job persistence.
 | `E2E_PORT` | Main API port; 4100 |
 | `E2E_API_OFF_URL` | Billing-off API; defaults to main port + 1 |
 | `E2E_VITE_PORT` | Main Vite port; 5174 |
-| `E2E_BASE_URL`, `E2E_BASE_OFF_URL` | Existing SPAs; omit to let Playwright own Vite |
+| `E2E_BASE_URL` | Existing main SPA; omit to let Playwright own both Vite servers |
+| `E2E_BASE_OFF_URL` | Billing-off SPA URL and managed Vite port; defaults to main Vite port + 1 |
 | `E2E_STRIPE_URL` | Stub origin; `http://127.0.0.1:4242` |
 | `E2E_API_DIR` | Runner checkout; set by `bin/e2e` |
 | `E2E_MAILBOX_PATH` | JSON mailbox; `/dev/mailbox/json` |

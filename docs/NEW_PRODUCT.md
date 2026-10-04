@@ -10,7 +10,9 @@
    Rename rewrites the Rails module, database names, root package name, SPA storage prefix
    (including the inline appearance bootstrap), Docker build domains and Kamal service,
    image, environment and host. It regenerates locales; setup generates the contract after creating the databases. `--dry-run` lists
-   the change count without writing. Encrypted credentials and ignored keys are regenerated
+   each changed file and the change count without writing; `--help` shows the options.
+   Generated contracts, locale catalogues and lockfiles are excluded from replacement.
+   Encrypted credentials and ignored keys are regenerated
    without decrypting the template, and the local development signing secret is removed.
    Production uses a separate runtime `SECRET_KEY_BASE`. No infrastructure or production data
    is changed.
@@ -18,7 +20,8 @@
    `frontend/src/styles/theme.css`, the logo and static branding under `public/`. Review mail
    sender settings and the shared mail layout. See [DESIGN.md](DESIGN.md).
 4. Run `pnpm i18n:build`, `bin/rails typelizer:generate`, and `pnpm build`. Stage generated
-   files before `bin/check`; every gate, including the 31 browser journeys, must pass.
+   files before `bin/check`; every gate, including the 31 browser journeys reported by
+   Playwright (30 declarations; sudo runs both password and magic link cases), must pass.
 5. Start Rails with `bin/dev` and Vite with `pnpm dev` in a second terminal. Choose free API/Vite ports per product; the default
    Vite proxy reaches Rails on 3000. Browser links use `SPA_ORIGIN`; the API uses `API_ORIGIN`.
 6. Add product models, policies, serializers, request tests and task-oriented SPA pages.

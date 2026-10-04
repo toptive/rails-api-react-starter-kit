@@ -42,7 +42,6 @@ COPY config ./config
 COPY db ./db
 COPY i18n/translations.csv ./i18n/translations.csv
 COPY lib ./lib
-COPY public ./public
 COPY Rakefile config.ru ./
 COPY --from=frontend /build/public ./public
 # Precompile app code; assets:precompile warms the gems actually loaded at boot.

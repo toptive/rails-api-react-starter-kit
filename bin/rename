@@ -9,8 +9,10 @@ require "securerandom"
 
 options = {}
 OptionParser.new do |parser|
+  parser.banner = "Usage: bin/rename --app APP [--module MODULE] [--name NAME] [--domain DOMAIN] [--dry-run]"
   %w[app module name domain].each { |key| parser.on("--#{key} VALUE") { |value| options[key.to_sym] = value } }
-  parser.on("--dry-run") { options[:dry_run] = true }
+  parser.on("--dry-run", "List changed files without writing") { options[:dry_run] = true }
+  parser.on("-h", "--help", "Show usage") { puts parser; exit }
 end.parse!
 app = options.fetch(:app) { abort "--app is required" }
 abort "--app must be snake_case (at most 35 characters)" unless app.match?(/\A[a-z][a-z0-9]*(?:_[a-z0-9]+)*\z/) && app.length <= 35
@@ -63,7 +65,11 @@ Dir.chdir(root) do
     end
     next if updated == content
 
-    File.write(path, updated) unless options[:dry_run]
+    if options[:dry_run]
+      puts path
+    else
+      File.write(path, updated)
+    end
     changed += 1
   end
   unless options[:dry_run]

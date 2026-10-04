@@ -22,12 +22,7 @@ rails_tests() {
       *) parallel+=("$path") ;;
     esac
   done < <(ruby -e 'puts Dir.glob("test/**/*_test.rb").sort')
-  # libpq and Objective-C state inherited by fork are unsafe on macOS.
-  if [[ "$(uname)" == "Darwin" ]]; then
-    PARALLEL_WORKERS=1 bin/rails test "${parallel[@]}" || status=1
-  else
-    bin/rails test "${parallel[@]}" || status=1
-  fi
+  bin/rails test "${parallel[@]}" || status=1
   # Catalogue broadcasts cross worker databases; the Cable test spawns a process.
   PARALLEL_WORKERS=1 bin/rails test "${serial[@]}" || status=1
   return "$status"
