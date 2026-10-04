@@ -15,7 +15,7 @@ class AdminImpersonationTest < ActionDispatch::IntegrationTest
     assert_equal @admin.id, data.dig("impersonator", "id")
     assert_nil data.fetch("sudoUntil")
     assert_equal false, data.fetch("newAccount")
-    assert_equal true, data.fetch("canManage")
+    refute data.key?("canManage")
     child = Session.find_by_token(token)
     assert_in_delta 8.hours.from_now.to_i, child.expires_at.to_i, 2
     assert_equal admin_session.id, child.impersonator_session_id

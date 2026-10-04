@@ -1,5 +1,5 @@
 class Translation < ApplicationRecord
-  validates :key, presence: true
+  validates :key, presence: true, length: { maximum: 255 }
   validates :locale, inclusion: { in: ->(_) { TranslationCatalog.locales } }
   validates :value, length: { maximum: 20_000 }, allow_blank: true
   after_commit :reload_catalogue
@@ -39,18 +39,23 @@ class Translation < ApplicationRecord
     entry_for(key, where(key: key).to_a)
   end
 
-  def self.fill!(attributes, scope, request)
+  def self.validate_fill!(attributes)
     User::Input.validate!(attributes, string_fields: [ :locale ], required: [ :locale ])
     locale = attributes[:locale]
     unless TranslationCatalog.locales.drop(1).include?(locale)
       raise ApiError.unprocessable(:validation_failed, User.validation_details(:locale, "validation.inclusion"))
     end
     Ai.require_configured!
+    locale
+  end
+
+  def self.fill!(attributes, scope, request)
+    locale = validate_fill!(attributes)
     keys = entries(missing: locale).map { |entry| entry[:key] }
     source = TranslationCatalog.values(TranslationCatalog.locales.first)
     translated = keys.each_slice(40).each_with_object({}) do |batch, result|
       pairs = batch.to_h { |key| [ key, source[key].presence || key ] }
-      result.merge!(Ai.translate_strings(pairs, from: TranslationCatalog.locales.first, to: locale))
+      result.merge!(Timeout.timeout(20) { Ai.translate_strings(pairs, from: TranslationCatalog.locales.first, to: locale) })
     end
     count = transaction do
       lock_catalogue!

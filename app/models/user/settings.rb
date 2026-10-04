@@ -67,7 +67,7 @@ class User::Settings
       session.update!(organization: scope.organization)
       Audit.record("user.password_changed", scope: scope, subject: user, request: request)
       { token: issued.fetch(:token), expires_at: session.expires_at, sudo_until: session.sudo_until,
-        user: user, impersonator: nil, new_account: false, can_manage: session.can_manage? }
+        user: user, impersonator: nil, new_account: false }
     end
   end
 

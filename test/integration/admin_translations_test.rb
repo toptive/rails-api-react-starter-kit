@@ -100,6 +100,8 @@ class AdminTranslationsTest < ActionDispatch::IntegrationTest
     assert_admin_field "locale", "validation.inclusion"
     put "/api/v1/admin/translations/app.name", params: { locale: "en", value: "a" * 20_001 }, headers: admin_headers, as: :json
     assert_admin_field "value", "validation.length_max", bindings: { "count" => 20_000 }
+    put "/api/v1/admin/translations/#{'k' * 256}", params: { locale: "en", value: "Text" }, headers: admin_headers, as: :json
+    assert_admin_field "key", "validation.length_max", bindings: { "count" => 255 }
     put "/api/v1/admin/translations/app.name", params: { locale: "en", value: "a" * 20_000 }, headers: admin_headers, as: :json
     assert_response :ok
   end

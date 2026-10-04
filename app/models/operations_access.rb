@@ -18,7 +18,7 @@ class OperationsAccess
       row
     end
     signed = verifier.generate(ticket.id, expires_in: 60.seconds, purpose: :jobs_ticket)
-    { url: "#{Rails.application.config.x.api_origin.delete_suffix('/')}#{Rails.application.routes.url_helpers.jobs_session_path}?#{URI.encode_www_form(ticket: signed)}" }
+    { url: "#{Rails.application.config.x.api_origin.delete_suffix('/')}#{Rails.application.routes.url_helpers.admin_jobs_session_path}?#{URI.encode_www_form(ticket: signed)}" }
   end
 
   def self.exchange(ticket)
@@ -27,7 +27,7 @@ class OperationsAccess
 
     session = JobsTicket.consume!(id)
     signed = verifier.generate(session.id, expires_in: LIFETIME, purpose: :jobs_dashboard)
-    Rack::Utils.set_cookie_header(COOKIE, value: signed, path: "/jobs", max_age: LIFETIME.to_i,
+    Rack::Utils.set_cookie_header(COOKIE, value: signed, path: "/admin/jobs", max_age: LIFETIME.to_i,
       httponly: true, secure: Rails.env.production?, same_site: :strict)
   end
 

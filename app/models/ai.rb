@@ -38,7 +38,7 @@ module Ai
     raise ApiError.unavailable(:ai_unavailable) unless valid
 
     result.slice(*strings.keys)
-  rescue Timeout::Error, IOError, SystemCallError, JSON::ParserError, TypeError, OpenSSL::SSL::SSLError
+  rescue SocketError, Timeout::Error, IOError, SystemCallError, JSON::ParserError, TypeError, OpenSSL::SSL::SSLError
     raise ApiError.unavailable(:ai_unavailable)
   end
 end

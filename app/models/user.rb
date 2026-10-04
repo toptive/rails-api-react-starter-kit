@@ -94,7 +94,7 @@ class User < ApplicationRecord
     ActiveSupport::Notifications.instrument("user_signed_in", user_id: id, method: method)
     ActiveSupport::Notifications.instrument("signup_confirmed", user_id: id) if new_account
     { token: issued[:token], expires_at: session.expires_at, sudo_until: session.sudo_until,
-      user: self, impersonator: session.impersonator_user, new_account: new_account, can_manage: session.can_manage? }
+      user: self, impersonator: session.impersonator_user, new_account: new_account }
   end
 
   def record_registration_acceptance!(request)

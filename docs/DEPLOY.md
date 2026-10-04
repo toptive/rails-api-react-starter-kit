@@ -52,7 +52,7 @@ a live superadmin session; no default login credentials are configured. Do not d
 
 Primary database schema loads use `db/structure.sql` to retain the append-only audit trigger.
 Production mail uses SMTP; development logs delivery metadata. See [AUTH.md](AUTH.md) for
-session lifetimes, signup behavior and the signed `/jobs` browser access cookie.
+session lifetimes, signup behavior and the signed `/admin/jobs` browser access cookie.
 
 The Docker server entrypoint runs `db:prepare` followed by `i18n:sync` before listening. Runtime
 text edits survive synchronization; see [I18N.md](I18N.md).

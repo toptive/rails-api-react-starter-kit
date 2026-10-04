@@ -23,7 +23,7 @@ class Impersonation < ApplicationRecord
       Audit.record("impersonation.started", scope: scope, subject: target,
         metadata: { reason: impersonation.reason, impersonationId: impersonation.id }, request: request)
       { token: token, expires_at: session.expires_at, sudo_until: nil, user: target,
-        impersonator: scope.user, new_account: false, can_manage: session.can_manage? }
+        impersonator: scope.user, new_account: false }
     end
   end
 end

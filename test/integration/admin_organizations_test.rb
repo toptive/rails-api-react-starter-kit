@@ -23,6 +23,19 @@ class AdminOrganizationsTest < ActionDispatch::IntegrationTest
     assert_empty data
   end
 
+  test "organization index loads every member count in its page query" do
+    5.times { |index| Organization.create_owned!(create_user, name: "Aggregate #{index}") }
+    queries = []
+    capture = ->(event) { queries << event.payload[:sql] unless event.payload[:cached] }
+    ActiveSupport::Notifications.subscribed(capture, "sql.active_record") do
+      get "/api/v1/admin/organizations", params: { q: "Aggregate" }, headers: admin_headers
+    end
+    assert_response :ok
+    assert_equal [ 1 ] * 5, data.map { |organization| organization.fetch("members") }
+    assert_equal 1, queries.count { |sql| sql.include?("AS admin_members_count") }
+    refute queries.any? { |sql| sql.match?(/SELECT COUNT\(\*\) FROM "memberships"/) }
+  end
+
   test "organization detail only returns that organization's memberships with users" do
     owner = create_user
     organization = Organization.create_owned!(owner, name: "Other tenant")

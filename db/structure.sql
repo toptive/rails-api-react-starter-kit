@@ -265,12 +265,29 @@ CREATE TABLE public.subscriptions (
 
 
 --
+-- Name: translation_fills; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.translation_fills (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    session_id uuid,
+    locale character varying NOT NULL,
+    ip_address character varying,
+    count integer,
+    error_code character varying,
+    completed_at timestamp(6) without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: translations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.translations (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    key character varying NOT NULL,
+    key character varying(255) NOT NULL,
     locale character varying NOT NULL,
     value text DEFAULT ''::text NOT NULL,
     edited boolean DEFAULT false NOT NULL,
@@ -420,6 +437,14 @@ ALTER TABLE ONLY public.sessions
 
 ALTER TABLE ONLY public.subscriptions
     ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: translation_fills translation_fills_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.translation_fills
+    ADD CONSTRAINT translation_fills_pkey PRIMARY KEY (id);
 
 
 --
@@ -678,6 +703,13 @@ CREATE UNIQUE INDEX index_subscriptions_on_organization_id_and_livemode ON publi
 
 
 --
+-- Name: index_translation_fills_on_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_translation_fills_on_session_id ON public.translation_fills USING btree (session_id);
+
+
+--
 -- Name: index_translations_on_key_and_locale; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -855,6 +887,14 @@ ALTER TABLE ONLY public.legal_documents
 
 
 --
+-- Name: translation_fills fk_rails_c20cdbb44c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.translation_fills
+    ADD CONSTRAINT fk_rails_c20cdbb44c FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE SET NULL;
+
+
+--
 -- Name: invitations fk_rails_d799c974a1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -893,6 +933,7 @@ ALTER TABLE ONLY public.impersonations
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261004160000'),
 ('20261004150000'),
 ('20261004110000'),
 ('20261004100000'),

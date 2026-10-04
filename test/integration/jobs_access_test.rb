@@ -8,14 +8,14 @@ class JobsAccessTest < ActionDispatch::IntegrationTest
     path = issue_access
     get path
     assert_response :found
-    assert_redirected_to "/jobs"
+    assert_redirected_to "/admin/jobs"
     cookie = response.headers.fetch("Set-Cookie")
-    assert_includes cookie, "path=/jobs"
+    assert_includes cookie, "path=/admin/jobs"
     assert_includes cookie, "max-age=300"
     assert_includes cookie.downcase, "httponly"
     assert_includes cookie.downcase, "samesite=strict"
     I18n.backend.reload!
-    get "/jobs"
+    get "/admin/jobs"
     follow_redirect! while response.redirect?
     assert_response :ok
     assert_includes response.body, "Mission control"
@@ -23,7 +23,7 @@ class JobsAccessTest < ActionDispatch::IntegrationTest
     assert_equal "es", data.fetch("locale")
     assert I18n.exists?("errors.api.unauthorized", :es)
     travel 6.minutes do
-      get "/jobs"
+      get "/admin/jobs"
       assert_response :not_found
     end
   end
@@ -41,7 +41,7 @@ class JobsAccessTest < ActionDispatch::IntegrationTest
       assert_error :not_found, "not_found"
       assert_nil response.headers["Set-Cookie"]
     end
-    [ "/jobs/session", "#{issue_access}tampered", "/jobs/session?ticket=unknown" ].each do |invalid_path|
+    [ "/admin/jobs/session", "#{issue_access}tampered", "/admin/jobs/session?ticket=unknown" ].each do |invalid_path|
       get invalid_path
       assert_error :not_found, "not_found"
     end
@@ -62,19 +62,19 @@ class JobsAccessTest < ActionDispatch::IntegrationTest
   test "dashboard cookies are rejected after tampering revocation or demotion" do
     get issue_access
     cookie = response.headers.fetch("Set-Cookie").split(";", 2).first
-    get "/jobs", headers: { "Cookie" => cookie.sub(/.$/, "x") }
+    get "/admin/jobs", headers: { "Cookie" => cookie.sub(/.$/, "x") }
     assert_response :not_found
     @admin.update!(role: "user")
-    get "/jobs", headers: { "Cookie" => cookie }
+    get "/admin/jobs", headers: { "Cookie" => cookie }
     assert_response :not_found
     @admin.update!(role: "superadmin")
     delete "/api/v1/auth/session", headers: admin_headers
-    get "/jobs", headers: { "Cookie" => cookie }
+    get "/admin/jobs", headers: { "Cookie" => cookie }
     assert_response :not_found
   end
 
   test "bearer authentication alone never grants browser dashboard access" do
-    get "/jobs", headers: admin_headers
+    get "/admin/jobs", headers: admin_headers
     assert_response :not_found
   end
 
@@ -86,7 +86,7 @@ class JobsAccessTest < ActionDispatch::IntegrationTest
     assert_nil response.headers["Set-Cookie"]
     uri = URI(data.fetch("url"))
     assert_equal Rails.application.config.x.api_origin, "#{uri.scheme}://#{uri.host}:#{uri.port}"
-    assert_equal "/jobs/session", uri.path
+    assert_equal "/admin/jobs/session", uri.path
     assert URI.decode_www_form(uri.query).to_h.fetch("ticket")
     event = AuditEvent.where(action: "admin.jobs_dashboard_opened").order(:created_at).last
     assert_equal @admin.id, event.actor_id

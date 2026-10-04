@@ -13,7 +13,9 @@ class Organization < ApplicationRecord
   def self.tenancy = Rails.application.config.x.tenancy
 
   def self.admin_list(query)
-    records = order(created_at: :desc, id: :desc)
+    # The correlated aggregate is scoped to each authorized organization root.
+    records = select("organizations.*, (SELECT COUNT(*) FROM memberships WHERE memberships.organization_id = organizations.id) AS admin_members_count")
+      .order(created_at: :desc, id: :desc)
     records = records.where("name ILIKE ?", "%#{sanitize_sql_like(query)}%") if query.present?
     records
   end
@@ -25,7 +27,7 @@ class Organization < ApplicationRecord
   end
 
   def admin_member_count
-    Membership.for(Session::Scope.new(organization: self)).count
+    self[:admin_members_count] || Membership.for(Session::Scope.new(organization: self)).count
   end
 
   def self.ensure_default!

@@ -99,7 +99,7 @@ docs/                       developer reference by area
   controller APIs in jobs. Tests require `default` or `marketing` as the queue.
 - Solid Queue, Solid Cache and Solid Cable use PostgreSQL in development and production.
   Recurring jobs live in `config/recurring.yml`; never add an undeclared worker queue.
-- Mission Control Jobs is mounted at `/jobs`, behind a live, non-impersonating
+- Mission Control Jobs is mounted at `/admin/jobs`, behind a live, non-impersonating
   superadmin session constraint. Browser access uses a short-lived signed dashboard cookie.
 - The dashboard uses Propshaft for its assets; the SPA uses Vite. Do not move SPA assets
   into Rails views or add a second frontend application.

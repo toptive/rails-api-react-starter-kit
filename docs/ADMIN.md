@@ -36,7 +36,7 @@ The admin user policy is separate from the account settings policy.
 Reasons contain 5–255 characters. Self and superadmin targets return 403; missing targets
 return 404. Starting impersonation creates an `impersonations` row and an eight-hour session
 with the parent admin session and user IDs, no sudo and no renewal. The original admin token
-stays active. The response includes the target user, impersonator and `canManage`.
+stays active. The response includes the target user and impersonator.
 
 The SPA retains its admin token separately, uses the target token, and shows the bootstrap
 impersonator banner. Sensitive user operations retain the impersonator ID in audit events.
@@ -85,11 +85,21 @@ actor ID, subject ID and creation time; the API omits client IPs from its respon
 Bootstrap exposes `app.jobsDashboard: true`. POST `/api/v1/admin/jobs-access` returns a URL
 on configured `API_ORIGIN` and audits `admin.jobs_dashboard_opened`. It does not set cookies.
 The signed ticket has a 60-second expiry and a database row consumed under a lock exactly
-once. A browser GET `/jobs/session?ticket=...` checks the ticket and live admin session, sets
-a signed five-minute HttpOnly, SameSite=Strict cookie scoped to `/jobs` (Secure in production),
-and returns 302 to Mission Control at `/jobs`.
+once. A browser GET `/admin/jobs/session?ticket=...` checks the ticket and live admin session, sets
+a signed five-minute HttpOnly, SameSite=Strict cookie scoped to `/admin/jobs` (Secure in production),
+and returns 302 to Mission Control at `/admin/jobs`.
 
 Every dashboard request checks current role, session expiry/revocation and impersonation.
 The engine has its own CSRF-protected browser session; JSON API requests retain bearer auth
 and credential-free CORS. Open the returned URL in a new tab. Session cleanup removes expired
 tickets. See [DEPLOY.md](DEPLOY.md) for `API_ORIGIN` and infrastructure settings.
+
+## Translation fill response
+
+POST `/api/v1/admin/translation-fills` enqueues `FillTranslationsJob` on the default
+Solid Queue. Each provider batch has a 20-second deadline. The request waits at most
+25 seconds: completed work returns 201 `TranslationFill { count }`; pending work
+returns 202 `TranslationFill { count: null }`. The SPA refetches translations and the
+locale catalogue after a few seconds when count is null. Provider failure within the
+request returns 503 `ai_unavailable`; later failures are recorded on the fill and reported
+to monitoring. Manual edits made during the provider call win over generated text.

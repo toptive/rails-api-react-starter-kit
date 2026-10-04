@@ -1,7 +1,6 @@
 class SessionPolicy < ApplicationPolicy
   def destroy? = own_session?
   def update? = own_session? && !record.impersonating?
-  def jobs_access? = own_session? && record.superadmin?
 
   private
 

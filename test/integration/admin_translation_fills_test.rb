@@ -5,13 +5,18 @@ class AdminTranslationFillsTest < ActionDispatch::IntegrationTest
   include AdminRequests
 
   setup do
+    @saved_fill_adapter = FillTranslationsJob.queue_adapter
+    FillTranslationsJob.queue_adapter = :inline
     @saved_ai_key = ENV["OPENROUTER_API_KEY"]
     ENV["OPENROUTER_API_KEY"] = "test-key"
     Translation.create!(key: "custom.fill", locale: "en", value: "Hello {{name}}", edited: true)
     Translation.create!(key: "custom.fill", locale: "es", value: "", edited: true)
   end
 
-  teardown { ENV["OPENROUTER_API_KEY"] = @saved_ai_key }
+  teardown do
+    ENV["OPENROUTER_API_KEY"] = @saved_ai_key
+    FillTranslationsJob.queue_adapter = @saved_fill_adapter
+  end
 
   test "fills missing cells through OpenRouter marks them edited and publishes a new catalogue" do
     get "/api/v1/locales/es"
@@ -59,7 +64,7 @@ class AdminTranslationFillsTest < ActionDispatch::IntegrationTest
   end
 
   test "provider errors malformed replies missing translations and altered placeholders fail atomically" do
-    [ :timeout, :http_error, :malformed, [], {}, { "custom.fill" => 42 },
+    [ :socket_error, :timeout, :http_error, :malformed, [], {}, { "custom.fill" => 42 },
       { "custom.fill" => "Hola" }, { "custom.fill" => "" }, { "custom.fill" => "a" * 20_001 } ].each do |reply|
       with_provider(reply) do
         assert_no_difference [ "Translation.count", "AuditEvent.count" ] do
@@ -82,6 +87,28 @@ class AdminTranslationFillsTest < ActionDispatch::IntegrationTest
     assert_equal "Manual {{name}}", Translation.find_by!(key: "custom.fill", locale: "es").value
   end
 
+  test "a queued fill returns 202 at the wait deadline and later completes through the job" do
+    FillTranslationsJob.queue_adapter = ActiveJob::Base.queue_adapter
+    TranslationFill.send(:remove_const, :WAIT_SECONDS)
+    TranslationFill.const_set(:WAIT_SECONDS, 0)
+    begin
+      assert_enqueued_with(job: FillTranslationsJob, queue: "default") do
+        post "/api/v1/admin/translation-fills", params: { locale: "es" }, headers: admin_headers, as: :json
+      end
+      assert_response :accepted
+      assert_equal({ "count" => nil }, data)
+      with_provider({ "custom.fill" => "Hola {{name}}" }) do
+        perform_enqueued_jobs(only: FillTranslationsJob)
+      end
+      get "/api/v1/locales/es"
+      assert_equal "Hola {{name}}", data.fetch("custom.fill")
+      assert_equal 1, TranslationFill.order(:created_at).last.count
+    ensure
+      TranslationFill.send(:remove_const, :WAIT_SECONDS)
+      TranslationFill.const_set(:WAIT_SECONDS, 25)
+    end
+  end
+
   private
 
   def with_provider(reply, during_request: nil)
@@ -94,6 +121,7 @@ class AdminTranslationFillsTest < ActionDispatch::IntegrationTest
       assert_equal({ "custom.fill" => "Hello {{name}}" }, JSON.parse(body.fetch("messages").last.fetch("content")))
       during_request&.call
       raise Net::ReadTimeout if reply == :timeout
+      raise SocketError if reply == :socket_error
 
       response = reply == :http_error ? Net::HTTPServiceUnavailable.new("1.1", "503", "Unavailable") : Net::HTTPOK.new("1.1", "200", "OK")
       response.define_singleton_method(:body) do

@@ -1,11 +1,13 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
-  namespace :jobs do
-    resource :session, only: :show, controller: :sessions
+  namespace :admin do
+    namespace :jobs do
+      resource :session, only: :show, controller: "/jobs/sessions"
+    end
   end
 
   constraints OperationsAccess do
-    mount MissionControl::Jobs::Engine, at: "/jobs"
+    mount MissionControl::Jobs::Engine, at: "/admin/jobs"
   end
 
   namespace :api do
