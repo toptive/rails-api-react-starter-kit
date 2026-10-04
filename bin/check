@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -uo pipefail
+cd "$(dirname "$0")/.."
+failed=()
+run() {
+  local label="$1"
+  shift
+  printf '\n== %s ==\n' "$label"
+  "$@" || failed+=("$label")
+}
+run "Ruby style" bundle exec rubocop
+run "Architecture" bundle exec archspec check
+run "Application security" bundle exec brakeman --no-pager -q
+run "Gem security" bundle exec bundler-audit check --update
+run "Rails tests" bin/rails test
+run "Type contract" bin/rails contract:check
+run "Translation contract" bin/rails i18n:check
+run "Frontend types" pnpm typecheck
+run "Frontend lint" pnpm lint
+run "Frontend tests" pnpm test
+run "Frontend security" pnpm audit --audit-level=high
+if (( ${#failed[@]} )); then
+  printf '\nFailed gate: %s\n' "${failed[@]}" >&2
+  exit 1
+fi
+printf '\nAll gates green.\n'

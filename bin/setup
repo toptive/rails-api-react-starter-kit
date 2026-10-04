@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args, **options)
+  system(*args, **options, exception: true)
+end
+
+FileUtils.chdir APP_ROOT do
+  abort "bin/setup is for development and test only" unless ENV.fetch("RAILS_ENV", "development") == "development"
+  puts "== Installing dependencies =="
+  system("bundle", "check") || system!("bundle", "install")
+  system! "pnpm", "install", "--frozen-lockfile"
+  puts "== Building translations and the API contract =="
+  system! "bin/rails", "i18n:build"
+  system! "bin/rails", "typelizer:generate"
+  puts "== Preparing development and test databases =="
+  system! "bin/rails", "db:prepare"
+  system!({ "RAILS_ENV" => "test" }, "bin/rails", "db:prepare")
+  puts "== Installing Git hooks =="
+  system! "git", "config", "core.hooksPath", ".githooks"
+  unless ARGV.include?("--skip-server")
+    STDOUT.flush
+    exec "bin/dev"
+  end
+end

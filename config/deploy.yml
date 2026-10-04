@@ -1,0 +1,29 @@
+# Product template: replace image, registry user, host and server before deploying.
+service: starter-kit
+image: your-registry-user/starter-kit
+servers:
+  web:
+    - 192.0.2.1
+proxy:
+  ssl: true
+  host: api.example.com
+  healthcheck:
+    path: /up
+registry:
+  username: your-registry-user
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+builder:
+  arch: amd64
+env:
+  clear:
+    RAILS_ENV: production
+    PUBLIC_URL: https://app.example.com
+    DB_HOST: 192.0.2.2
+    SOLID_QUEUE_IN_PUMA: true
+  secret:
+    - SECRET_KEY_BASE
+    - STARTER_KIT_DATABASE_PASSWORD
+volumes:
+  - starter_kit_storage:/rails/storage
+asset_path: /rails/public/assets

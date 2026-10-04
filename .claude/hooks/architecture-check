@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+require "json"
+require "open3"
+
+input = begin
+  JSON.parse($stdin.read)
+rescue JSON::ParserError
+  {}
+end
+root = File.expand_path("../..", __dir__)
+file = File.expand_path(input.dig("tool_input", "file_path").to_s, root)
+exit 0 unless file.start_with?("#{root}/")
+relative = file.delete_prefix("#{root}/")
+commands = []
+if relative == "Archspec.rb" || (relative.start_with?("app/") && relative.end_with?(".rb"))
+  commands << [ "bundle", "exec", "archspec", "check" ]
+end
+if relative.end_with?(".rb") || %w[Gemfile Rakefile].include?(relative)
+  commands << [ "bundle", "exec", "rubocop", "--force-exclusion", relative ]
+end
+if relative.start_with?("app/controllers/", "app/jobs/") || relative == "Archspec.rb"
+  commands << [ "bin/rails", "test", "test/architecture" ]
+end
+if relative.start_with?("app/serializers/") || relative == "config/routes.rb"
+  commands << [ "bin/rails", "typelizer:generate" ]
+end
+if relative == "i18n/translations.csv" || relative.start_with?("i18n/scripts/")
+  commands << [ "bin/rails", "i18n:build" ]
+end
+if relative == "frontend/eslint.config.js"
+  commands << [ "pnpm", "lint" ]
+elsif relative.match?(%r{\Afrontend/src/.*\.(ts|tsx)\z})
+  commands << [ "pnpm", "--dir", "frontend", "exec", "eslint", "--no-warn-ignored", "--max-warnings", "0", relative.delete_prefix("frontend/") ]
+end
+failures = commands.filter_map do |command|
+  output, status = Open3.capture2e(*command, chdir: root)
+  "$ #{command.join(' ')}\n#{output}" unless status.success?
+end
+exit 0 if failures.empty?
+warn failures.join("\n")
+warn "architecture-check: fix the code before committing."
+exit 2

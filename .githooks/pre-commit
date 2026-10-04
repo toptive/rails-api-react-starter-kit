@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+require "open3"
+
+Dir.chdir(File.expand_path("..", __dir__)) do
+  output, status = Open3.capture2("git", "diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z")
+  abort "Cannot read staged files" unless status.success?
+  staged = output.split("\0")
+  ruby = staged.select { |file| file.end_with?(".rb") || %w[Gemfile Rakefile].include?(file) }
+  frontend = staged.grep(%r{\Afrontend/(src/.*\.(ts|tsx)|eslint\.config\.js)\z})
+  commands = []
+  if ruby.any?
+    commands << [ "bundle", "exec", "rubocop", "--force-exclusion", *ruby ]
+    commands << [ "bundle", "exec", "archspec", "check" ]
+    commands << [ "bin/rails", "test", "test/architecture" ]
+  end
+  if staged.any? { |file| file.start_with?("app/serializers/", "frontend/src/api/generated/") || file == "config/routes.rb" }
+    commands << [ "bin/rails", "contract:check" ]
+  end
+  if staged.any? { |file| file.start_with?("i18n/", "config/locales/") || file == "lib/tasks/i18n.rake" }
+    commands << [ "bin/rails", "i18n:check" ]
+  end
+  if frontend.any?
+    commands << [ "pnpm", "--dir", "frontend", "exec", "eslint", "--no-warn-ignored", "--max-warnings", "0", *frontend.map { |file| file.delete_prefix("frontend/") } ]
+  end
+  failures = commands.reject { |command| system(*command) }
+  abort "Commit blocked: fix the failed gates." if failures.any?
+end

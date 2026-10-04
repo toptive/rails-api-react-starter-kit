@@ -1,0 +1,3 @@
+# One root package only; this file holds pnpm's build-script approvals.
+allowBuilds:
+  esbuild: true

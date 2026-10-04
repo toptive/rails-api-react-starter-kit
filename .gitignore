@@ -1,0 +1,15 @@
+/.bundle/
+/vendor/bundle/
+/.local/
+/tmp/
+/log/
+/storage/
+node_modules/
+.env*
+!.env.example
+/config/master.key
+/config/credentials/*.key
+/frontend/dist/
+/coverage/
+.DS_Store
+/public/assets/

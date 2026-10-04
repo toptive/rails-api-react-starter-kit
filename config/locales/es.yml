@@ -1,0 +1,703 @@
+# Generated from i18n/translations.csv. Do not edit.
+---
+es:
+  a11y:
+    skip_to_content: Ir al contenido
+  access:
+    full: puede editar
+    viewer: solo puede ver
+  admin:
+    audit:
+      action: Acción
+      actor: Por
+      impersonated: Suplantado
+      lead: Quién hizo qué, y cuándo. Nada de esto se puede cambiar.
+      search: Buscar por id o acción
+      subject: Registro
+      title: Registro de auditoría
+      when: Cuándo
+    empty: Todavía no hay nada acá.
+    lead: Manejá usuarios, organizaciones, textos y documentos legales.
+    legal:
+      body: Texto
+      body_help: 'Dejá una línea en blanco entre párrafos. Empezá una línea con ##
+        para un título.'
+      doc_title: Título
+      lead: Términos, privacidad y cookies. Las personas siempre ven la versión publicada.
+      live: Publicada
+      new_version: Versión nueva
+      not_published: Sin publicar
+      note: Nota sobre el cambio
+      note_help: Para vos y otros administradores, no se muestra a los usuarios.
+      publish: Publicar
+      publish_body: Desde ahora todos van a ver esta versión.
+      publish_now: Publicar ya
+      publish_title: "¿Publicar la versión %{version}?"
+      published_version: La versión %{version} está publicada
+      save: Guardar borrador
+      save_publish: Guardar y publicar
+      show_lead: Escribí una versión nueva y después publicala. Las versiones viejas
+        quedan guardadas.
+      title: Documentos legales
+      version: Versión %{version}
+      versions: Versiones
+      versions_help: Solo una versión está publicada a la vez.
+    nav:
+      audit: Registro de auditoría
+      back: Volver a la app
+      jobs: Tareas en segundo plano
+      legal: Documentos legales
+      organizations: Organizaciones
+      overview: Resumen
+      translations: Textos
+      users: Usuarios
+    organizations:
+      lead: Todas las organizaciones y cuántas personas tienen.
+      members: Personas
+      search: Buscar organizaciones por nombre
+      title: Organizaciones
+    stats:
+      organizations: Organizaciones
+      users: Usuarios
+    title: Administración
+    translations:
+      all: Todos los textos
+      edit: Editar %{key} (%{locale})
+      edited: Editado
+      empty: Vacío
+      fill: Completar %{language}
+      fill_body: 'Una IA los traduce del inglés. Revisá el resultado: queda marcado
+        como editado.'
+      fill_title: "¿Completar automáticamente los textos que faltan en %{language}?"
+      filter_missing: Mostrar
+      lead: Todos los textos de la app, por idioma. Los cambios se ven al instante
+        y no se pierden al actualizar.
+      missing_in: Faltan en %{language}
+      placeholder_help: 'Dejá las palabras entre {{ }} tal cual: la app las completa.'
+      search: Buscar textos
+      title: Textos
+    users:
+      confirmed: Confirmado
+      impersonate: Actuar como %{email}
+      impersonate_lead: Ver la app exactamente como la ve, para ayudarle. Queda en
+        el registro de auditoría con tu motivo.
+      impersonate_title: Actuar como este usuario
+      joined: Creado
+      lead: Todas las personas con cuenta.
+      name: Nombre
+      organizations: Organizaciones
+      reason: Motivo
+      reason_help: 'Por ejemplo: el número del pedido de soporte.'
+      role: Rol
+      search: Buscar usuarios por email o nombre
+      title: Usuarios
+  app:
+    name: StarterKit
+  appearance:
+    dark: Oscuro
+    label: Tema
+    light: Claro
+    system: Igual que mi dispositivo
+  auth:
+    magic_link:
+      confirm_submit: Confirmar e ingresar
+      confirm_title: Confirmá tu email
+      lead: Vas a ingresar como %{email}.
+      submit: Ingresar
+      title: Ingresá
+    registration:
+      accept: Acepto los <terms>términos del servicio</terms> y la <privacy>política
+        de privacidad</privacy>.
+      closed_body: Ahora no estamos creando cuentas nuevas. Si ya tienes una cuenta,
+        ingresa.
+      closed_title: El registro está cerrado
+      email_help: Te mandamos acá un link para ingresar. No hace falta contraseña.
+      have_account: "¿Ya tenés cuenta?"
+      invite_body: Usa el email que recibió la invitación. Sin una invitación todavía
+        no puedes crear una cuenta.
+      invite_title: El registro es por invitación
+      lead: Solo necesitamos tu nombre y tu email. Te mandamos un link para confirmarlo.
+      submit: Crear cuenta
+      title: Creá tu cuenta
+    session:
+      google: Continuar con Google
+      invalid_credentials: El email y la contraseña no coinciden. Probá de nuevo o
+        pedí un link por email.
+      lead: Recibí un link por email o usá tu contraseña.
+      link_help: El link sirve una vez y vence en 15 minutos.
+      link_sent_body: Si %{email} tiene cuenta, le mandamos un link para ingresar.
+        Abrilo en este dispositivo; sirve por 15 minutos.
+      link_sent_body_new: Te mandamos un link a %{email}. Abrilo en este dispositivo
+        para confirmar tu email e ingresar; sirve por 15 minutos.
+      link_sent_title: Revisá tu email
+      no_account: "¿Primera vez?"
+      or: o
+      password_help: "¿Todavía no tenés contraseña? Usá el link por email."
+      reauth_lead: Este cambio necesita que hayas ingresado hace poco. Ingresá de
+        nuevo para seguir.
+      reauth_title: Confirmá que sos vos
+      remember_me: Mantener la sesión en este dispositivo
+      send_link: Enviarme el link
+      submit: Ingresar
+      tab_link: Enviarme un link
+      tab_password: Usar contraseña
+      title: Ingresá
+    unavailable:
+      registration_body: Ahora no puedes crear una cuenta, porque no podemos enviar
+        el email que la confirma. Inténtalo más tarde.
+      session_body: Ahora no podemos enviar links para ingresar. Si tienes contraseña,
+        úsala para ingresar.
+      title: Ahora no podemos enviar emails
+    verification:
+      label: Verificación de seguridad
+      retry: Intentar de nuevo
+      unavailable: No pudimos cargar la verificación de seguridad. Revisa tu conexión
+        e inténtalo de nuevo.
+  billing:
+    accept: Acepto los <terms>términos del servicio</terms> y la <privacy>política
+      de privacidad</privacy>. Acepto pagar %{price} %{period} hasta que cancele.
+      Puedo cancelar en cualquier momento.
+    checkout:
+      already_subscribed: Tu organización ya tiene un plan pago. Usa "Administrar
+        pagos" para cambiarlo.
+      failed: No pudimos iniciar el pago. No se cobró nada. Intenta de nuevo en un
+        minuto.
+      not_accepted: Marca la casilla para aceptar los términos antes de pagar.
+      offer_changed: El precio cambió después de que abriste esta página. Revisa el
+        nuevo precio e intenta de nuevo.
+      submit: Continuar al pago (%{price})
+      test_mode: Los pagos están en modo de prueba. Por ahora, solo nuestro equipo
+        puede probarlos.
+    closed: Los planes pagos todavía no están disponibles.
+    current_plan: El plan de tu organización
+    interval:
+      month: Mensual
+      year: Anual
+    offers:
+      title: Elige un plan pago
+    per:
+      month: por mes
+      year: por año
+    plan:
+      free: Gratis
+      pro: Pro
+    plan_summary:
+      free: Hasta 3 personas en tu organización.
+      pro: Todo, sin límite de personas.
+    portal:
+      failed: No pudimos abrir la configuración de pagos. Intenta de nuevo en un minuto.
+      help: Cambia tu tarjeta, descarga facturas o cancela. Esto abre Stripe, nuestro
+        proveedor de pagos.
+      no_subscription: Todavía no hay una suscripción para administrar.
+      open: Administrar pagos
+    price_note: El precio que ves es el precio que pagas. No se suma nada al pagar.
+    read_only: Solo los dueños y administradores pueden cambiar el plan
+    read_only_help: Pide a un dueño o administrador si tu organización necesita otro
+      plan.
+    return:
+      active: "¡Gracias! Tu nuevo plan está activo."
+      check_again: Volver a revisar
+      confirming: "¡Gracias! Estamos confirmando tu pago"
+      confirming_help: Esto suele tardar unos segundos. Tu nuevo plan aparece aquí
+        cuando se confirma el pago.
+    status:
+      ended: Esta suscripción terminó el %{date}.
+      ends: Termina el %{date} y no se renovará.
+      past_due: Tu último pago falló. Actualiza tu tarjeta para mantener este plan.
+      paused: Los pagos están en pausa, así que el plan pago no está activo.
+      renews: Se renueva el %{date}.
+    test_mode:
+      body: Usa una tarjeta de prueba de Stripe. No se mueve dinero real. Por ahora,
+        solo nuestro equipo ve estos planes.
+      title: Modo de prueba
+  common:
+    cancel: Cancelar
+    close: Cerrar
+    'no': 'No'
+    save: Guardar
+    save_changes: Guardar cambios
+    search: Buscar
+  dashboard:
+    checklist:
+      done: Listo
+      invite: Invitá a las personas con las que trabajás
+      password: Poné una contraseña (opcional)
+      profile: Agregá tu nombre
+      title: Para empezar
+      todo: Pendiente
+    empty:
+      body: Cuando empieces algo, lo vas a encontrar acá con su próximo paso.
+      title: Acá va a aparecer tu trabajo
+    greeting: Hola, %{name}
+    lead: Estás trabajando en %{organization}.
+    title: Inicio
+  email_opt_out:
+    done_lead: Ya no enviaremos novedades ni consejos a %{email}. Seguirás recibiendo
+      los enlaces para ingresar y los mensajes sobre tu cuenta.
+    done_title: Te diste de baja
+    home: Ir a la página de inicio
+    lead: Deja de recibir novedades y consejos en %{email}.
+    resubscribe: "¿Cambiaste de opinión? Puedes volver a activar las novedades y consejos
+      en tu configuración."
+    settings: Abrir la configuración de emails
+    still_sent: Seguirás recibiendo los enlaces para ingresar y los mensajes sobre
+      tu cuenta, invitaciones y pagos.
+    submit: Darme de baja
+    title: "¿Darte de baja de los emails opcionales?"
+  errors:
+    api:
+      bad_request: El pedido no es válido.
+      conflict: Este cambio entra en conflicto con otra actualización.
+      content_type_not_allowed: Este tipo de archivo no está permitido.
+      forbidden: No tenés permiso para hacer esto.
+      internal_error: Algo falló de nuestro lado.
+      invalid_json: El pedido contiene JSON inválido.
+      invalid_signature: La firma del pedido no es válida.
+      invalid_size: El tamaño del archivo no es válido.
+      not_found: No encontramos lo que pediste.
+      too_large: El archivo es demasiado grande.
+      too_many_requests: Demasiados intentos. Esperá un minuto y probá de nuevo.
+      unauthorized: Ingresá para continuar.
+      unknown_kind: Este tipo de subida no está permitido.
+      uploads_not_configured: La subida de archivos todavía no está configurada.
+      validation_error: Hay campos para corregir.
+      validation_failed: Hay campos para corregir.
+    page:
+      '403':
+        body: Tu rol no lo permite. Pedíselo a un dueño o administrador de tu organización.
+        title: No podés abrir esta página
+      '404':
+        body: Puede que el link sea viejo o tenga un error.
+        title: No encontramos esta página
+      '500':
+        body: Ya nos avisaron. Probá de nuevo en unos minutos.
+        title: Algo falló de nuestro lado
+      dashboard: Volver a tu inicio
+      home: Ir al inicio
+  fields:
+    email: Email
+    language: Idioma
+    name: Tu nombre
+    new_email: Email nuevo
+    new_password: Contraseña nueva
+    organization_name: Nombre de la organización
+    password: Contraseña
+    password_confirmation: Repetí la contraseña
+  flash:
+    account:
+      deleted: Tu cuenta fue borrada.
+      subscription_active: Primero cancela el plan de pago. Nadie más podría detener
+        los pagos cuando te vayas.
+      transfer_ownership: Primero nombra a otra persona como dueña. Una organización
+        no puede quedarse sin dueño.
+    admin:
+      translation_failed: No pudimos guardar el texto. Probá de nuevo.
+      translation_saved: Texto guardado. Ya lo ven todos.
+      translations_filled: Se completaron %{count} textos.
+      translations_filled_one: Se completó 1 texto. Revisalo antes de confiar en él.
+      translations_filled_other: Se completaron %{count} textos. Revisalos antes de
+        confiar en ellos.
+      user_updated: Usuario actualizado.
+    email:
+      changed: Tu email fue cambiado.
+      confirmation_sent: Te mandamos un link a %{email}. Abrilo para terminar el cambio.
+      link_invalid: Este link ya no sirve. Pedí uno nuevo.
+    email_opt_out_invalid: Este enlace para cancelar la suscripción ya no es válido.
+      Usa el enlace de un email más reciente.
+    email_preferences:
+      updated: Preferencias de email guardadas.
+    email_unavailable: Ahora no podemos enviar emails. Inténtalo más tarde.
+    impersonation:
+      forbidden: No podés actuar como este usuario.
+      started: Ahora estás actuando como %{email}.
+      stopped: Volviste a tu cuenta.
+    invitation:
+      accepted: "¡Bienvenido! Te sumaste a la organización."
+      email_mismatch: Esta invitación es para otro email.
+      invalid: Esta invitación ya no sirve. Pedí una nueva.
+      revoked: Invitación cancelada.
+      sent: Invitación enviada a %{email}.
+    invitation_required: Necesitas una invitación para crear una cuenta. Pide a quien
+      te invitó que la envíe a este email.
+    legal:
+      published: Publicado. Ya todos ven esta versión.
+      saved: Versión guardada como borrador.
+    magic_link_invalid: Este link ya no sirve. Pedí uno nuevo.
+    membership:
+      last_owner: Una organización necesita al menos un dueño. Primero nombrá a otra
+        persona como dueño.
+      left: Saliste de la organización.
+      removed: Persona quitada.
+      updated: Rol actualizado.
+    oauth_failed: No pudimos hacerte ingresar con Google. Probá de nuevo o usá tu
+      email.
+    onboarding:
+      done: Todo listo.
+    organization:
+      created: Organización creada. Sos el dueño.
+      updated: Organización actualizada.
+    password:
+      updated: Contraseña guardada. Se cerró la sesión en tus otros dispositivos.
+    profile:
+      updated: Perfil guardado.
+    reauthenticate: Ingresá de nuevo para hacer este cambio.
+    session:
+      not_found: Ese dispositivo ya no tenía sesión.
+      revoked: Se cerró la sesión del dispositivo.
+    sign_in_required: Ingresá para continuar.
+    signed_in: "¡Hola de nuevo!"
+    signed_out: Saliste de tu cuenta.
+    signup_closed: Ahora no estamos creando cuentas nuevas. Si ya tienes una cuenta,
+      ingresa.
+    welcome: "¡Bienvenido! Tu cuenta está lista."
+  footer:
+    copyright: "© %{year} %{app}"
+    legal: Legales
+  global_roles:
+    superadmin: Superadmin
+    user: Usuario
+  home:
+    demo:
+      caption: Cada pregunta explica por qué la hacemos.
+      field: Calle y número
+      help: Usamos la dirección solo para completar tu contrato.
+      label: Ejemplo de un paso de formulario guiado
+      progress: Paso 2 de 4
+      question: "¿Dónde está la propiedad?"
+      value: Av. Corrientes 1234
+    faq:
+      a1: No. Cada pregunta viene con una explicación corta y un ejemplo.
+      a2: Sí. Tus respuestas se guardan mientras avanzás.
+      a3: Solo vos y las personas que invites a tu organización.
+      a4: Te enviamos un link por email. Lo abrís y listo. Si preferís, después podés
+        agregar una contraseña.
+      q1: "¿Tengo que saber de leyes o formularios?"
+      q2: "¿Puedo dejar y seguir después?"
+      q3: "¿Quién puede ver mi información?"
+      q4: "¿Cómo ingreso sin contraseña?"
+      title: Preguntas frecuentes
+    final:
+      body: Lleva unos diez minutos. Podés dejar y seguir después.
+      title: Cuando quieras, empezamos.
+    hero:
+      cta_primary: Crear tu cuenta gratis
+      cta_secondary: Ingresar
+      lead: Respondé preguntas simples, en palabras claras. Te explicamos cada campo
+        mientras avanzás, revisamos tus respuestas y te damos un documento confiable.
+      note: Gratis para probar. Sin tarjeta, sin palabras raras.
+      title: Hacé tus trámites, un paso claro a la vez.
+    how:
+      step1:
+        body: Una pregunta por pantalla. Salteá lo que no sepas y volvé después.
+        title: Respondé unas preguntas
+      step2:
+        body: Antes de terminar, ves un resumen y podés cambiar cualquier respuesta.
+        title: Revisá todo en un solo lugar
+      step3:
+        body: Descargalo, compartilo o envialo para firmar.
+        title: Recibí tu documento
+      title: Cómo funciona
+    seo:
+      description: Respondé preguntas simples, en palabras claras. Te explicamos cada
+        campo, revisamos tus respuestas y te damos un documento confiable.
+      title: StarterKit — tus trámites, un paso claro a la vez
+    values:
+      help:
+        body: Cada campo dice por qué lo pedimos y qué escribir.
+        title: Ayuda donde la necesitás
+      language:
+        body: Cambiá entre español e inglés cuando quieras.
+        title: En tu idioma
+      plain:
+        body: Ningún término legal o técnico sin una explicación al lado.
+        title: Palabras claras
+      privacy:
+        body: Guardados de forma segura, nunca vendidos, y podés borrar tu cuenta
+          cuando quieras.
+        title: Tus datos son tuyos
+      title: Hecho para personas, no para expertos
+  impersonation:
+    banner: Estás actuando como %{email}. Todo lo que hagas queda registrado.
+    stop: Volver a mi cuenta
+  invitation:
+    accept: Aceptar la invitación
+    create_account: Crear una cuenta para aceptar
+    guest_help: Usá %{email} para que podamos encontrar la invitación.
+    lead: Te invitaron como %{role} con el email %{email}.
+    other_account: Ingresaste como %{email}.
+    other_account_help: Esta invitación es para %{email}. Salí e ingresá con ese email.
+    sign_in: Ya tengo cuenta
+    title: Sumate a %{organization}
+  legal:
+    cookies: Política de cookies
+    privacy: Política de privacidad
+    terms: Términos del servicio
+    version: Versión %{version} · vigente desde %{date}
+  level:
+    admin_full: Administrador
+    admin_viewer: Administrador (solo ver)
+    member_full: Editor
+    member_viewer: Lector
+    owner_full: Dueño
+    owner_viewer: Dueño (solo ver)
+  locale:
+    label: Cambiar idioma
+    name:
+      en: English
+      es: Español
+  mail:
+    badge:
+      test: Modo de prueba
+    email_change:
+      action: Confirmar mi email nuevo
+      headline: Confirma tu email nuevo
+      lead: Confírmalo para ingresar con este email desde ahora.
+      note1: "¿No pediste este cambio? Ignora este email. Tu email no cambia."
+      subject: Confirma tu email nuevo en %{app}
+    fact:
+      account: Cuenta
+      amount: Monto
+      expires: Vence
+      invited_by: Te invitó
+      new_email: Email nuevo
+      organization: Organización
+      plan: Plan
+      renews_on: Se renueva el
+      valid_for: El enlace vale
+    footer: Recibiste este email por tu cuenta en %{app}. Si no lo esperabas, puedes
+      ignorarlo.
+    invitation:
+      action: Ver la invitación
+      footer: Recibiste este email porque %{inviter} te invitó. Si no conoces a esa
+        persona, puedes ignorarlo.
+      headline: Únete a %{organization}
+      lead: "%{inviter} te invitó a trabajar en equipo en %{app}."
+      subject: "%{inviter} te invitó a %{organization}"
+    magic_link:
+      action: Ingresar
+      headline: Ingresa a %{app}
+      lead: Usa el botón para ingresar. No necesitas contraseña.
+      note1: "¿No pediste este enlace? Ignora este email. Tu cuenta sigue segura."
+      subject: Tu enlace para ingresar a %{app}
+    preferences: Preferencias de email
+    product_update:
+      action: Ver las novedades
+      footer: Recibiste este email porque tienes una cuenta en %{app}. Date de baja
+        y dejamos de enviarte novedades.
+      headline: "%{title}"
+      lead: "%{summary}"
+      subject: 'Novedades de %{app}: %{title}'
+    renewal_notice:
+      action: Administrar mi plan
+      footer: Recibiste este email porque administras la facturación de una organización
+        en %{app}. Lo enviamos una vez antes de cada renovación.
+      headline: Tu plan se renueva pronto
+      lead: En la fecha de renovación cobramos el monto de abajo.
+      note1: 'Ese es el monto total: no se suma nada.'
+      note2: Para cambiar o cancelar el plan, hazlo en la app antes del %{date}.
+      subject: Tu plan de %{app} se renueva el %{date}
+    unsubscribe: Darme de baja
+    value:
+      days_7: En 7 días
+      minutes_15: 15 minutos, un solo uso
+  nav:
+    admin: Administración
+    home: Inicio
+    open_app: Abrir la app
+    people: Personas
+    settings: Configuración
+    sign_in: Ingresar
+    sign_out: Salir
+    sign_up: Crear cuenta
+  og:
+    tagline: Tus trámites, un paso claro a la vez.
+  onboarding:
+    lead: Unas preguntas rápidas. Puedes saltar cualquiera y cambiar las respuestas
+      más tarde en Ajustes.
+    name:
+      description: Las personas que invites ven este nombre.
+      help: Usa el nombre con el que la conocen. Déjalo vacío para mantener el nombre
+        que se muestra.
+      title: "¿Cómo se llama tu equipo o empresa?"
+      too_short: Escribe al menos 2 letras, o salta esta pregunta.
+    skip: Saltar por ahora
+    submit: Terminar
+    title: "¡Te damos la bienvenida! Preparemos todo"
+  organizations:
+    create: Crear una organización
+    new:
+      lead: Una organización agrupa a las personas que trabajan en lo mismo. Vas a
+        ser el dueño.
+      name_help: Usá el nombre con el que la conocen. Lo podés cambiar después.
+      submit: Crear organización
+      title: Crear una organización
+    switch: Cambiar de organización
+  pagination:
+    label: Páginas
+    next: Siguiente
+    previous: Anterior
+    summary: Página %{page} de %{pages} · %{total} en total
+  roles:
+    admin: Administrador
+    member: Miembro
+    owner: Dueño
+  settings:
+    account:
+      blocked:
+        subscription_active: "%{organization} todavía tiene un plan de pago y eres
+          la única persona en ella. Cancela el plan en Plan y pagos y luego vuelve
+          aquí."
+        transfer_ownership: Eres la única persona dueña de %{organization}. Nombra
+          a otra persona como dueña en Personas y luego vuelve aquí.
+      blocked_title: Una cosa antes de poder borrar tu cuenta
+      confirm_body: Se va a cerrar tu sesión y no la vas a poder recuperar.
+      confirm_title: "¿Borrar tu cuenta?"
+      delete: Borrar mi cuenta
+      delete_body: Borramos tu cuenta y tu acceso a todas las organizaciones. Una
+        organización en la que eres la única persona se borra con sus datos.
+      delete_title: Esto no se puede deshacer
+      lead: Te podés ir cuando quieras.
+      nav: Borrar cuenta
+      title: Borrar tu cuenta
+    appearance:
+      lead: Elegí claro u oscuro. Solo cambia en este navegador.
+      nav: Apariencia
+      title: Apariencia
+    billing:
+      lead: El plan y los pagos de tu organización.
+      nav: Plan y pagos
+      title: Plan y pagos
+    email:
+      help: Te mandamos un link al email nuevo. El cambio se hace cuando lo abrís.
+      lead: Ingresás con %{email}.
+      nav: Email
+      submit: Enviar link de confirmación
+      title: Cambiar tu email
+    email_confirmation:
+      lead: Desde ahora vas a ingresar con %{email}.
+      submit: Cambiar mi email
+      title: Confirma tu nuevo email
+    email_preferences:
+      always_body: Los enlaces para ingresar, la seguridad de la cuenta, las invitaciones
+        y los pagos. Tu cuenta los necesita para funcionar, por eso no se pueden desactivar.
+      always_title: Siempre se envían
+      lead: Elige qué emails te enviamos.
+      nav: Notificaciones por email
+      'off': Desactivado
+      'on': Activado
+      optional_help: Funciones nuevas y consejos. Desactívalos aquí cuando quieras
+        o con el enlace «Darme de baja» de cualquiera de estos emails.
+      optional_label: Novedades y consejos
+      title: Notificaciones por email
+    group:
+      organization: Organización
+      you: Tu cuenta
+    members:
+      can: Puede
+      email_help: Usá el email con el que ingresa.
+      expires: vence el %{date}
+      explain:
+        admin_full: Todo, incluso invitar y quitar personas.
+        member_full: Crear y cambiar cosas, pero no manejar personas.
+        member_viewer: Ver todo, sin cambiar nada.
+        owner_full: Todo. Los dueños también pueden nombrar otros dueños.
+      invite: Invitar a alguien
+      invite_lead: Recibe un email con un link para sumarse.
+      lead: Quién puede usar esta organización y qué puede hacer cada persona.
+      leave: Salir
+      leave_body: Vas a perder el acceso hasta que alguien te invite de nuevo.
+      leave_title: "¿Salir de esta organización?"
+      nav: Personas
+      pending_help: Recibieron un email con un link. Las invitaciones vencen a los
+        7 días.
+      pending_title: Esperando que se sumen
+      remove: Quitar
+      remove_body: Pierde el acceso al instante. Lo podés invitar de nuevo después.
+      remove_title: "¿Quitar a %{name}?"
+      revoke: Cancelar invitación
+      revoke_body: El link de su email va a dejar de funcionar.
+      revoke_title: "¿Cancelar la invitación a %{email}?"
+      role_for: Rol de %{name}
+      send_invite: Enviar invitación
+      step_email: "¿A quién querés invitar?"
+      step_review: Revisá y enviá
+      step_role: "¿Qué puede hacer?"
+      title: Personas
+      you: vos
+    organization:
+      lead: El nombre que ven todos en la organización.
+      name_help: Corto y fácil de reconocer.
+      nav: Organización
+      read_only: Solo los dueños y administradores pueden cambiar esto
+      read_only_help: Pedile a un dueño o administrador si hay que cambiar algo.
+      title: Organización
+    password:
+      help: Al menos 12 caracteres. Una frase corta es fácil de recordar y difícil
+        de adivinar.
+      lead_change: Se va a cerrar la sesión en tus otros dispositivos.
+      lead_set: Opcional. Siempre podés ingresar con un link por email.
+      nav: Contraseña
+      submit: Guardar contraseña
+      title_change: Cambiar tu contraseña
+      title_set: Poner una contraseña
+    profile:
+      language_help: La app y nuestros emails usan este idioma.
+      lead: Cómo te ven los demás y el idioma de la app.
+      name_help: Las personas de tu organización ven este nombre.
+      nav: Perfil
+      title: Perfil
+    sessions:
+      confirm_body: Quien use ese dispositivo va a tener que ingresar de nuevo.
+      confirm_title: "¿Cerrar la sesión en este dispositivo?"
+      lead: Si no reconocés un dispositivo, cerrale la sesión.
+      nav: Dispositivos
+      sign_out: Cerrar sesión en este dispositivo
+      signed_in_at: Ingresó el %{date}
+      this_device: Este dispositivo
+      title: Dónde tenés la sesión abierta
+      unknown_device: Dispositivo desconocido
+  stepper:
+    back: Atrás
+    invalid: Revisa esta respuesta antes de continuar.
+    next: Continuar
+    progress: Paso %{current} de %{total}
+    review: Revisa tus respuestas
+  ui:
+    loading: Cargando
+    more: Más
+    more_pages: Más páginas
+    next_page: Ir a la página siguiente
+    next_slide: Imagen siguiente
+    previous_page: Ir a la página anterior
+    previous_slide: Imagen anterior
+    sidebar: Menú
+    sidebar_description: El menú principal de la app.
+    toggle_sidebar: Mostrar u ocultar el menú
+  validation:
+    already_member: Esta persona ya está en la organización.
+    cast: Este valor no es válido.
+    confirmation: Los dos valores no coinciden.
+    email_format: Escribí un email completo, como ana@ejemplo.com.
+    email_unchanged: Este ya es tu email.
+    english_required: La versión en inglés es obligatoria.
+    exclusion: Este valor no está permitido.
+    format: Esto no parece correcto.
+    inclusion: Elegí una de las opciones.
+    invitation_owner: Invitá como administrador o miembro. Después podés nombrarlos
+      dueños.
+    invitation_pending: Ya hay una invitación pendiente para este email.
+    last_owner: Una organización necesita al menos un dueño.
+    length_is: Usá exactamente %{count} caracteres.
+    length_max: Usá como máximo %{count} caracteres.
+    length_min: Usá al menos %{count} caracteres.
+    number_greater_than: Tiene que ser mayor que %{number}.
+    number_less_than: Tiene que ser menor que %{number}.
+    owner_only: Solo los dueños pueden nombrar a otro dueño.
+    password_mismatch: Las contraseñas no coinciden.
+    required: Este campo es obligatorio.
+    terms_required: Acepta los términos y la política de privacidad para crear tu
+      cuenta.
+    turnstile_required: No pudimos confirmar que eres una persona. Espera a que termine
+      la verificación de seguridad y vuelve a enviar el formulario.
+    unique: Esto ya está en uso.
+    unsafe_unique: Esto ya está en uso.

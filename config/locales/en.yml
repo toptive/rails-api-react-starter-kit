@@ -1,0 +1,695 @@
+# Generated from i18n/translations.csv. Do not edit.
+---
+en:
+  a11y:
+    skip_to_content: Skip to content
+  access:
+    full: can edit
+    viewer: can only view
+  admin:
+    audit:
+      action: Action
+      actor: By
+      impersonated: Impersonated
+      lead: Who did what, and when. Nothing here can be changed.
+      search: Search by record id or action
+      subject: Record
+      title: Audit log
+      when: When
+    empty: Nothing here yet.
+    lead: Manage users, organizations, texts and legal documents.
+    legal:
+      body: Text
+      body_help: 'Leave a blank line between paragraphs. Start a line with ## for
+        a heading.'
+      doc_title: Title
+      lead: Terms, privacy and cookies. People always see the published version.
+      live: Live
+      new_version: New version
+      not_published: Not published
+      note: Note about this change
+      note_help: For you and other admins, not shown to users.
+      publish: Publish
+      publish_body: Everyone will see this version from now on.
+      publish_now: Publish right away
+      publish_title: Publish version %{version}?
+      published_version: Version %{version} is live
+      save: Save as draft
+      save_publish: Save and publish
+      show_lead: Write a new version, then publish it. Old versions stay for the record.
+      title: Legal documents
+      version: Version %{version}
+      versions: Versions
+      versions_help: Only one version is live at a time.
+    nav:
+      audit: Audit log
+      back: Back to the app
+      jobs: Background jobs
+      legal: Legal documents
+      organizations: Organizations
+      overview: Overview
+      translations: Texts
+      users: Users
+    organizations:
+      lead: Every organization and how many people it has.
+      members: People
+      search: Search organizations by name
+      title: Organizations
+    stats:
+      organizations: Organizations
+      users: Users
+    title: Admin
+    translations:
+      all: All texts
+      edit: Edit %{key} (%{locale})
+      edited: Edited
+      empty: Empty
+      fill: Fill missing %{language}
+      fill_body: 'An AI translates them from English. Review the result: it is marked
+        as edited.'
+      fill_title: Fill the missing %{language} texts automatically?
+      filter_missing: Show
+      lead: Every text of the app, per language. Changes go live at once and survive
+        deploys.
+      missing_in: Missing in %{language}
+      placeholder_help: 'Keep words inside {{ }} exactly as they are: the app fills
+        them in.'
+      search: Search texts
+      title: Texts
+    users:
+      confirmed: Confirmed
+      impersonate: Act as %{email}
+      impersonate_lead: See the app exactly as they do, to help them. It is recorded
+        in the audit log with your reason.
+      impersonate_title: Act as this user
+      joined: Created
+      lead: Everyone with an account.
+      name: Name
+      organizations: Organizations
+      reason: Reason
+      reason_help: 'For example: the support ticket number.'
+      role: Role
+      search: Search users by email or name
+      title: Users
+  app:
+    name: StarterKit
+  appearance:
+    dark: Dark
+    label: Theme
+    light: Light
+    system: Same as my device
+  auth:
+    magic_link:
+      confirm_submit: Confirm and sign in
+      confirm_title: Confirm your email
+      lead: You are signing in as %{email}.
+      submit: Sign in
+      title: Sign in
+    registration:
+      accept: I accept the <terms>terms of service</terms> and the <privacy>privacy
+        policy</privacy>.
+      closed_body: We are not taking new accounts right now. If you already have an
+        account, sign in.
+      closed_title: Sign-up is closed
+      email_help: We send a sign-in link here. No password needed.
+      have_account: Already have an account?
+      invite_body: Use the email address that got the invitation. Without an invitation
+        you can't create an account yet.
+      invite_title: Sign-up is by invitation
+      lead: We only need your name and email. We'll send you a link to confirm it.
+      submit: Create account
+      title: Create your account
+    session:
+      google: Continue with Google
+      invalid_credentials: That email and password don't match. Try again or get a
+        link by email.
+      lead: Get a sign-in link by email, or use your password.
+      link_help: The link works once and expires in 15 minutes.
+      link_sent_body: If %{email} has an account, we sent it a sign-in link. Open
+        it on this device; it works for 15 minutes.
+      link_sent_body_new: We sent a link to %{email}. Open it on this device to confirm
+        your email and sign in; it works for 15 minutes.
+      link_sent_title: Check your email
+      no_account: New here?
+      or: or
+      password_help: No password yet? Use the email link instead.
+      reauth_lead: This change needs a recent sign-in. Sign in again to continue.
+      reauth_title: Confirm it's you
+      remember_me: Keep me signed in on this device
+      send_link: Send me the link
+      submit: Sign in
+      tab_link: Email me a link
+      tab_password: Use a password
+      title: Sign in
+    unavailable:
+      registration_body: You can't create an account right now, because we can't send
+        the email that confirms it. Please try again later.
+      session_body: We can't send sign-in links right now. If you have a password,
+        use it to sign in.
+      title: We can't send emails right now
+    verification:
+      label: Security check
+      retry: Try again
+      unavailable: We couldn't load the security check. Check your connection and
+        try again.
+  billing:
+    accept: I accept the <terms>terms of service</terms> and the <privacy>privacy
+      policy</privacy>. I agree to pay %{price} %{period} until I cancel. I can cancel
+      at any time.
+    checkout:
+      already_subscribed: Your organization already has a paid plan. Use "Manage payments"
+        to change it.
+      failed: We couldn't start the payment. Nothing was charged. Try again in a minute.
+      not_accepted: Tick the box to accept the terms before you pay.
+      offer_changed: The price changed after you opened this page. Check the new price
+        and try again.
+      submit: Continue to payment (%{price})
+      test_mode: Payments are in test mode. For now, only our team can try them.
+    closed: Paid plans are not available yet.
+    current_plan: Your organization's plan
+    interval:
+      month: Monthly
+      year: Yearly
+    offers:
+      title: Choose a paid plan
+    per:
+      month: per month
+      year: per year
+    plan:
+      free: Free
+      pro: Pro
+    plan_summary:
+      free: Up to 3 people in your organization.
+      pro: Everything, with no limit on people.
+    portal:
+      failed: We couldn't open the payment settings. Try again in a minute.
+      help: Change your card, download invoices or cancel. This opens Stripe, our
+        payment provider.
+      no_subscription: There is no subscription to manage yet.
+      open: Manage payments
+    price_note: The price you see is the price you pay. Nothing is added at checkout.
+    read_only: Only owners and admins can change the plan
+    read_only_help: Ask an owner or an admin if your organization needs a different
+      plan.
+    return:
+      active: Thank you! Your new plan is active.
+      check_again: Check again
+      confirming: Thank you! We are confirming your payment
+      confirming_help: This usually takes a few seconds. Your new plan shows here
+        when the payment is confirmed.
+    status:
+      ended: This subscription ended on %{date}.
+      ends: It ends on %{date} and will not renew.
+      past_due: Your last payment failed. Update your card to keep this plan.
+      paused: Payments are paused, so the paid plan is not active.
+      renews: It renews on %{date}.
+    test_mode:
+      body: Use a Stripe test card. No real money moves. Only our team sees these
+        plans now.
+      title: Test mode
+  common:
+    cancel: Cancel
+    close: Close
+    'no': 'No'
+    save: Save
+    save_changes: Save changes
+    search: Search
+  dashboard:
+    checklist:
+      done: Done
+      invite: Invite the people you work with
+      password: Set a password (optional)
+      profile: Add your name
+      title: Get started
+      todo: To do
+    empty:
+      body: When you start something, you will find it here with its next step.
+      title: This is where your work will appear
+    greeting: Hi, %{name}
+    lead: You are working in %{organization}.
+    title: Home
+  email_opt_out:
+    done_lead: We won't send news or tips to %{email} any more. You still get sign-in
+      links and messages about your account.
+    done_title: You are unsubscribed
+    home: Go to the home page
+    lead: Stop news and tips sent to %{email}.
+    resubscribe: Changed your mind? You can turn news and tips back on in your settings.
+    settings: Open email settings
+    still_sent: You will still get sign-in links and messages about your account,
+      invitations and payments.
+    submit: Unsubscribe
+    title: Unsubscribe from optional emails?
+  errors:
+    api:
+      bad_request: The request is not valid.
+      conflict: This change conflicts with another update.
+      content_type_not_allowed: This type of file is not allowed.
+      forbidden: You are not allowed to do this.
+      internal_error: Something went wrong on our side.
+      invalid_json: The request contains invalid JSON.
+      invalid_signature: The request signature is not valid.
+      invalid_size: The file size is not valid.
+      not_found: We can't find what you asked for.
+      too_large: The file is too large.
+      too_many_requests: Too many attempts. Wait a minute and try again.
+      unauthorized: Sign in to continue.
+      unknown_kind: This kind of upload is not allowed.
+      uploads_not_configured: File uploads are not set up yet.
+      validation_error: Some fields need a fix.
+      validation_failed: Some fields need a fix.
+    page:
+      '403':
+        body: Your role doesn't allow it. Ask an owner or an admin of your organization.
+        title: You can't open this page
+      '404':
+        body: The link may be old or mistyped.
+        title: We can't find this page
+      '500':
+        body: We were notified. Try again in a few minutes.
+        title: Something went wrong on our side
+      dashboard: Back to your home
+      home: Go to the home page
+  fields:
+    email: Email
+    language: Language
+    name: Your name
+    new_email: New email
+    new_password: New password
+    organization_name: Organization name
+    password: Password
+    password_confirmation: Type the password again
+  flash:
+    account:
+      deleted: Your account was deleted.
+      subscription_active: Cancel the paid plan first. Nobody else could stop the
+        payments after you leave.
+      transfer_ownership: Make someone else an owner first. An organization cannot
+        stay without an owner.
+    admin:
+      translation_failed: We couldn't save the text. Try again.
+      translation_saved: Text saved. Everyone sees it now.
+      translations_filled: "%{count} texts filled."
+      translations_filled_one: 1 text filled. Review it before relying on it.
+      translations_filled_other: "%{count} texts filled. Review them before relying
+        on them."
+      user_updated: User updated.
+    email:
+      changed: Your email was changed.
+      confirmation_sent: We sent a link to %{email}. Open it to finish the change.
+      link_invalid: This link is not valid any more. Ask for a new one.
+    email_opt_out_invalid: This unsubscribe link is not valid any more. Use the link
+      in a newer email.
+    email_preferences:
+      updated: Email preferences saved.
+    email_unavailable: We can't send emails right now. Please try again later.
+    impersonation:
+      forbidden: You can't act as this user.
+      started: You are now acting as %{email}.
+      stopped: You are back in your own account.
+    invitation:
+      accepted: Welcome! You joined the organization.
+      email_mismatch: This invitation is for another email.
+      invalid: This invitation is not valid any more. Ask for a new one.
+      revoked: Invitation cancelled.
+      sent: Invitation sent to %{email}.
+    invitation_required: You need an invitation to create an account. Ask the person
+      who invited you to send it to this email address.
+    legal:
+      published: Published. Everyone sees this version now.
+      saved: Version saved as a draft.
+    magic_link_invalid: This link is not valid any more. Ask for a new one.
+    membership:
+      last_owner: An organization needs at least one owner. Make someone else owner
+        first.
+      left: You left the organization.
+      removed: Person removed.
+      updated: Role updated.
+    oauth_failed: We couldn't sign you in with Google. Try again or use your email.
+    onboarding:
+      done: You are all set.
+    organization:
+      created: Organization created. You are its owner.
+      updated: Organization updated.
+    password:
+      updated: Password saved. Other devices were signed out.
+    profile:
+      updated: Profile saved.
+    reauthenticate: Please sign in again to make this change.
+    session:
+      not_found: That device was already signed out.
+      revoked: Device signed out.
+    sign_in_required: Sign in to continue.
+    signed_in: Welcome back!
+    signed_out: You signed out.
+    signup_closed: We are not taking new accounts right now. If you already have an
+      account, sign in.
+    welcome: Welcome! Your account is ready.
+  footer:
+    copyright: "© %{year} %{app}"
+    legal: Legal
+  global_roles:
+    superadmin: Superadmin
+    user: User
+  home:
+    demo:
+      caption: Every question explains why we ask it.
+      field: Street and number
+      help: We use the address only to fill in your contract.
+      label: Example of a guided form step
+      progress: Step 2 of 4
+      question: Where is the property?
+      value: Av. Corrientes 1234
+    faq:
+      a1: No. Each question comes with a short explanation and an example.
+      a2: Yes. Your answers are saved as you go.
+      a3: Only you and the people you invite to your organization.
+      a4: We email you a link. Open it and you are in. You can add a password later
+        if you prefer.
+      q1: Do I need to know anything about law or forms?
+      q2: Can I stop and continue later?
+      q3: Who can see my information?
+      q4: How do I sign in without a password?
+      title: Questions people ask
+    final:
+      body: It takes about ten minutes. You can stop and continue later.
+      title: Ready when you are.
+    hero:
+      cta_primary: Create your free account
+      cta_secondary: Sign in
+      lead: Answer simple questions in plain words. We explain every field as you
+        go, check your answers, and give you a document you can trust.
+      note: Free to try. No card, no jargon.
+      title: Get your paperwork done, one clear step at a time.
+    how:
+      step1:
+        body: One question per screen. Skip what you don't know and come back to it
+          later.
+        title: Answer a few questions
+      step2:
+        body: Before anything is final, you see a summary and can change any answer.
+        title: Check everything in one place
+      step3:
+        body: Download it, share it, or send it for signature.
+        title: Get your document
+      title: How it works
+    seo:
+      description: Answer simple questions in plain words. We explain every field,
+        check your answers and give you a document you can trust.
+      title: StarterKit — paperwork done, one clear step at a time
+    values:
+      help:
+        body: Every field says why we ask and what to write.
+        title: Help where you need it
+      language:
+        body: Switch between English and Spanish whenever you like.
+        title: In your language
+      plain:
+        body: No legal or technical terms without an explanation right next to them.
+        title: Plain words
+      privacy:
+        body: Stored safely, never sold, and you can delete your account at any time.
+        title: Your data stays yours
+      title: Made for people, not for experts
+  impersonation:
+    banner: You are acting as %{email}. Everything you do is recorded.
+    stop: Back to my account
+  invitation:
+    accept: Accept the invitation
+    create_account: Create an account to accept
+    guest_help: Use %{email} so we can match the invitation.
+    lead: You were invited as %{role} with the email %{email}.
+    other_account: You are signed in as %{email}.
+    other_account_help: This invitation is for %{email}. Sign out and sign in with
+      that email.
+    sign_in: I already have an account
+    title: Join %{organization}
+  legal:
+    cookies: Cookie policy
+    privacy: Privacy policy
+    terms: Terms of service
+    version: Version %{version} · in force since %{date}
+  level:
+    admin_full: Admin
+    admin_viewer: Admin (view only)
+    member_full: Editor
+    member_viewer: Viewer
+    owner_full: Owner
+    owner_viewer: Owner (view only)
+  locale:
+    label: Change language
+    name:
+      en: English
+      es: Español
+  mail:
+    badge:
+      test: Test mode
+    email_change:
+      action: Confirm my new email
+      headline: Confirm your new email
+      lead: Confirm it to sign in with this address from now on.
+      note1: Did not ask for this change? Ignore this email. Your email stays the
+        same.
+      subject: Confirm your new email for %{app}
+    fact:
+      account: Account
+      amount: Amount
+      expires: Expires
+      invited_by: Invited by
+      new_email: New email
+      organization: Organization
+      plan: Plan
+      renews_on: Renews on
+      valid_for: Link valid for
+    footer: You got this email because of your account at %{app}. If you didn't expect
+      it, you can ignore it.
+    invitation:
+      action: See the invitation
+      footer: You got this email because %{inviter} invited you. If you don't know
+        them, you can ignore it.
+      headline: Join %{organization}
+      lead: "%{inviter} invited you to work together on %{app}."
+      subject: "%{inviter} invited you to %{organization}"
+    magic_link:
+      action: Sign in
+      headline: Sign in to %{app}
+      lead: Use the button to sign in. You do not need a password.
+      note1: Did not ask for this link? Ignore this email. Your account stays safe.
+      subject: Your sign-in link for %{app}
+    preferences: Email preferences
+    product_update:
+      action: See what's new
+      footer: You got this email because you have an account at %{app}. Unsubscribe
+        and we stop sending news.
+      headline: "%{title}"
+      lead: "%{summary}"
+      subject: 'What''s new in %{app}: %{title}'
+    renewal_notice:
+      action: Manage my plan
+      footer: You got this email because you manage billing for an organization at
+        %{app}. We send it once before each renewal.
+      headline: Your plan renews soon
+      lead: On the renewal date we charge the amount below.
+      note1: 'That is the full amount: nothing is added.'
+      note2: To change or cancel the plan, do it in the app before %{date}.
+      subject: Your %{app} plan renews on %{date}
+    unsubscribe: Unsubscribe
+    value:
+      days_7: In 7 days
+      minutes_15: 15 minutes, one use
+  nav:
+    admin: Admin
+    home: Home
+    open_app: Open the app
+    people: People
+    settings: Settings
+    sign_in: Sign in
+    sign_out: Sign out
+    sign_up: Create account
+  og:
+    tagline: Paperwork done, one clear step at a time.
+  onboarding:
+    lead: A few quick questions. You can skip any of them and change the answers later
+      in Settings.
+    name:
+      description: People you invite see this name.
+      help: Use the name people know it by. Leave it empty to keep the name shown.
+      title: What is your team or company called?
+      too_short: Write at least 2 letters, or skip this question.
+    skip: Skip for now
+    submit: Finish
+    title: Welcome! Let's get you set up
+  organizations:
+    create: Create an organization
+    new:
+      lead: An organization groups people who work on the same things. You will be
+        its owner.
+      name_help: Use the name people know it by. You can change it later.
+      submit: Create organization
+      title: Create an organization
+    switch: Switch organization
+  pagination:
+    label: Pages
+    next: Next
+    previous: Previous
+    summary: Page %{page} of %{pages} · %{total} in total
+  roles:
+    admin: Admin
+    member: Member
+    owner: Owner
+  settings:
+    account:
+      blocked:
+        subscription_active: "%{organization} still has a paid plan, and you are the
+          only person in it. Cancel the plan in Plan and billing, then come back."
+        transfer_ownership: You are the only owner of %{organization}. Make another
+          person there an owner in People, then come back.
+      blocked_title: One thing to do before you can delete your account
+      confirm_body: You will be signed out and you cannot get it back.
+      confirm_title: Delete your account?
+      delete: Delete my account
+      delete_body: We delete your account and your access to every organization. An
+        organization where you are the only person is deleted with its data.
+      delete_title: This cannot be undone
+      lead: You can leave at any time.
+      nav: Delete account
+      title: Delete your account
+    appearance:
+      lead: Choose light or dark. This only changes this browser.
+      nav: Appearance
+      title: Appearance
+    billing:
+      lead: Your organization's plan and payments.
+      nav: Plan and billing
+      title: Plan and billing
+    email:
+      help: We send a link to the new address. The change happens when you open it.
+      lead: You sign in with %{email}.
+      nav: Email
+      submit: Send confirmation link
+      title: Change your email
+    email_confirmation:
+      lead: You will sign in with %{email} from now on.
+      submit: Change my email
+      title: Confirm your new email
+    email_preferences:
+      always_body: Sign-in links, account security, invitations and payments. Your
+        account needs them to work, so you can't turn them off.
+      always_title: Always sent
+      lead: Choose which emails we send you.
+      nav: Email notifications
+      'off': 'Off'
+      'on': 'On'
+      optional_help: New features and tips. Turn them off here at any time, or with
+        the Unsubscribe link in any of these emails.
+      optional_label: News and tips
+      title: Email notifications
+    group:
+      organization: Organization
+      you: Your account
+    members:
+      can: They can
+      email_help: Use the email they sign in with.
+      expires: expires %{date}
+      explain:
+        admin_full: Everything, including inviting and removing people.
+        member_full: Create and change things, but not manage people.
+        member_viewer: See everything, change nothing.
+        owner_full: Everything. Owners can also make other owners.
+      invite: Invite someone
+      invite_lead: They get an email with a link to join.
+      lead: Who can use this organization and what each person can do.
+      leave: Leave
+      leave_body: You will lose access until someone invites you again.
+      leave_title: Leave this organization?
+      nav: People
+      pending_help: They got an email with a link. Invitations expire after 7 days.
+      pending_title: Waiting to join
+      remove: Remove
+      remove_body: They lose access right away. You can invite them again later.
+      remove_title: Remove %{name}?
+      revoke: Cancel invitation
+      revoke_body: The link in their email will stop working.
+      revoke_title: Cancel the invitation to %{email}?
+      role_for: Role of %{name}
+      send_invite: Send invitation
+      step_email: Who do you want to invite?
+      step_review: Check and send
+      step_role: What can they do?
+      title: People
+      you: you
+    organization:
+      lead: The name everyone in the organization sees.
+      name_help: Short and recognisable.
+      nav: Organization
+      read_only: Only owners and admins can change this
+      read_only_help: Ask an owner or an admin if something needs to change.
+      title: Organization
+    password:
+      help: At least 12 characters. A short sentence is easy to remember and hard
+        to guess.
+      lead_change: Other devices will be signed out.
+      lead_set: Optional. You can always sign in with a link by email.
+      nav: Password
+      submit: Save password
+      title_change: Change your password
+      title_set: Set a password
+    profile:
+      language_help: The app and our emails use this language.
+      lead: How you appear to others and the language of the app.
+      name_help: People in your organization see this name.
+      nav: Profile
+      title: Profile
+    sessions:
+      confirm_body: Whoever uses that device will need to sign in again.
+      confirm_title: Sign out this device?
+      lead: If you don't recognise a device, sign it out.
+      nav: Devices
+      sign_out: Sign out this device
+      signed_in_at: Signed in %{date}
+      this_device: This device
+      title: Where you are signed in
+      unknown_device: Unknown device
+  stepper:
+    back: Back
+    invalid: Check this answer before continuing.
+    next: Continue
+    progress: Step %{current} of %{total}
+    review: Review your answers
+  ui:
+    loading: Loading
+    more: More
+    more_pages: More pages
+    next_page: Go to the next page
+    next_slide: Next slide
+    previous_page: Go to the previous page
+    previous_slide: Previous slide
+    sidebar: Menu
+    sidebar_description: The main menu of the app.
+    toggle_sidebar: Show or hide the menu
+  validation:
+    already_member: This person is already in the organization.
+    cast: This value is not valid.
+    confirmation: The two values don't match.
+    email_format: Write a full email, like ana@example.com.
+    email_unchanged: This is already your email.
+    english_required: The English version is required.
+    exclusion: This value is not allowed.
+    format: This doesn't look right.
+    inclusion: Choose one of the options.
+    invitation_owner: Invite people as admin or member. You can make them owner later.
+    invitation_pending: There is already a pending invitation for this email.
+    last_owner: An organization needs at least one owner.
+    length_is: Use exactly %{count} characters.
+    length_max: Use at most %{count} characters.
+    length_min: Use at least %{count} characters.
+    number_greater_than: Must be greater than %{number}.
+    number_less_than: Must be less than %{number}.
+    owner_only: Only owners can make someone an owner.
+    password_mismatch: The passwords don't match.
+    required: This field is required.
+    terms_required: Accept the terms and the privacy policy to create your account.
+    turnstile_required: We couldn't confirm that you're a person. Wait for the security
+      check to finish, then send the form again.
+    unique: This is already taken.
+    unsafe_unique: This is already taken.

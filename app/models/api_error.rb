@@ -1,0 +1,19 @@
+# Domain errors carry stable codes; the controller translates the message.
+class ApiError < StandardError
+  attr_reader :code, :http_status, :details
+
+  def initialize(code, http_status, details = {})
+    @code = code.to_s
+    @http_status = http_status
+    @details = details
+    super(@code)
+  end
+
+  def self.bad_request(code = :bad_request, details = {}) = new(code, :bad_request, details)
+  def self.unauthorized(code = :unauthorized, details = {}) = new(code, :unauthorized, details)
+  def self.forbidden(code = :forbidden, details = {}) = new(code, :forbidden, details)
+  def self.not_found(code = :not_found, details = {}) = new(code, :not_found, details)
+  def self.conflict(code = :conflict, details = {}) = new(code, :conflict, details)
+  def self.unprocessable(code = :validation_failed, details = {}) = new(code, :unprocessable_entity, details)
+  def self.too_many_requests(code = :too_many_requests, details = {}) = new(code, :too_many_requests, details)
+end
