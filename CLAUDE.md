@@ -218,4 +218,6 @@ files. Never run setup or seeds against production. See [docs/DEPLOY.md](docs/DE
 | Design | [docs/DESIGN.md](docs/DESIGN.md) | theme, components, layouts and UX |
 | New product | [docs/NEW_PRODUCT.md](docs/NEW_PRODUCT.md) | renaming and product setup |
 | SEO | [docs/SEO.md](docs/SEO.md) | sitemap, robots, indexing lock and canonical host |
+| Security | [docs/SECURITY.md](docs/SECURITY.md) | reviews, findings, verified-safe areas |
 | Deploy | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker, Kamal and environment variables |
+| New server | [docs/NEW_SERVER.md](docs/NEW_SERVER.md) | preparing the product server |

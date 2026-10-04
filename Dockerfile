@@ -43,6 +43,8 @@ COPY db ./db
 COPY i18n/translations.csv ./i18n/translations.csv
 COPY lib ./lib
 COPY Rakefile config.ru ./
+# Product branding (favicons, social images) lives under public/; the SPA build lands on top.
+COPY public ./public
 COPY --from=frontend /build/public ./public
 # Precompile app code; assets:precompile warms the gems actually loaded at boot.
 RUN bundle exec bootsnap precompile -j 1 app/ lib/

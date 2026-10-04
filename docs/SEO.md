@@ -51,6 +51,7 @@ paths never fall through to HTML. `SpaDelivery` puts a fresh CSP nonce on only t
 private/no-store. `PublicSite` marks hashed assets immutable for one year and applies the
 indexing lock before static delivery. No frontend runtime server is required in production.
 
-The SPA owns the logo and theme. Add product favicons/social images under `public/`; Vite
+The SPA owns the logo and theme. Add product favicons/social images under `public/` (tracked;
+the Docker image copies that folder before the SPA build lands on top); Vite
 keeps existing static files while building. Every private path also has localized robots
 disallows, including `/sudo/new`, `/session/check-your-email` and `/errors/403|404|500`.
