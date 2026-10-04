@@ -10,7 +10,10 @@
    Rename rewrites the Rails module, database names, root package name, SPA storage prefix
    (including the inline appearance bootstrap), Docker build domains and Kamal service,
    image, environment and host. It regenerates locales; setup generates the contract after creating the databases. `--dry-run` lists
-   the change count without writing. No infrastructure or production data is changed.
+   the change count without writing. Encrypted credentials and ignored keys are regenerated
+   without decrypting the template, and the local development signing secret is removed.
+   Production uses a separate runtime `SECRET_KEY_BASE`. No infrastructure or production data
+   is changed.
 3. Choose `TENANCY=multi` or `single`. Change copy in `i18n/translations.csv`, theme tokens in
    `frontend/src/styles/theme.css`, the logo and static branding under `public/`. Review mail
    sender settings and the shared mail layout. See [DESIGN.md](DESIGN.md).
@@ -22,7 +25,7 @@
    Read `CLAUDE.md` first. Keep tenant queries scoped through `Model.for(scope)`.
 7. Provision the product's PostgreSQL role and primary/cache/cable databases on shared
    PostgreSQL, configure DNS and fill the server address in `config/deploy.yml`. Configure
-   runtime secrets through `cred`; use environment references in `.kamal/secrets`.
+   runtime secrets through `cred`; follow [NEW_SERVER.md](NEW_SERVER.md) for provisioning and use environment references in `.kamal/secrets`.
 8. Run gates, commit, build the image and deploy with Kamal. The entrypoint prepares schemas
    and synchronizes translations before the server listens. Never run seeds in production.
 9. Bootstrap the first administrator with

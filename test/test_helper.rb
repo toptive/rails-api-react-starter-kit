@@ -5,8 +5,8 @@ require "minitest/mock"
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    parallelize(workers: ENV.fetch("PARALLEL_WORKERS", 2).to_i)
+    # Avoid forking initialized libpq/Objective-C state on macOS, including direct runs.
+    parallelize(workers: RUBY_PLATFORM.include?("darwin") ? 1 : ENV.fetch("PARALLEL_WORKERS", 2).to_i)
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all

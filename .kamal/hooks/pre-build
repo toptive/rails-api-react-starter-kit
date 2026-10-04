@@ -1,3 +1,15 @@
-#!/usr/bin/env bash
-set -euo pipefail
-exec bin/check
+#!/usr/bin/env ruby
+require "bundler/setup"
+
+Dir.chdir(File.expand_path("../..", __dir__)) do
+  # Never let deploy credentials or production connection URLs enter the gates.
+  names = Dir.glob(".kamal/secrets*").flat_map do |path|
+    File.read(path).scan(/^\s*(?:#\s*)?(?:export\s+)?([A-Z][A-Z0-9_]*)=/).flatten
+  end
+  names.concat(%w[RAILS_ENV RACK_ENV RAILS_MASTER_KEY SECRET_KEY_BASE SECRET_KEY_BASE_DUMMY
+    DATABASE_URL PRIMARY_DATABASE_URL CACHE_DATABASE_URL QUEUE_DATABASE_URL CABLE_DATABASE_URL
+    DB_HOST PGHOST PGPORT PGUSER PGPASSWORD PGDATABASE PGSERVICE PGSERVICEFILE PGOPTIONS])
+  clean_env = names.uniq.to_h { |name| [ name, nil ] }
+  # Always run: this kit does not yet emit a clean-HEAD gate stamp.
+  exec(clean_env, "bin/check")
+end

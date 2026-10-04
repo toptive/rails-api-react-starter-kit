@@ -38,19 +38,21 @@ class StripeWebhooksTest < ActionDispatch::IntegrationTest
   end
 
   test "invalid tampered stale and future signatures are refused without writes" do
-    [ { signature: "bad" }, { secret: "whsec_wrong" }, { timestamp: 301.seconds.ago.to_i },
-      { timestamp: 301.seconds.from_now.to_i } ].each do |options|
-      assert_no_difference "BillingEvent.count" do
-        assert_no_enqueued_jobs(only: ProcessStripeEventJob) { deliver_webhook(**options) }
+    freeze_time do
+      [ { signature: "bad" }, { secret: "whsec_wrong" }, { timestamp: 301.seconds.ago.to_i },
+        { timestamp: 301.seconds.from_now.to_i } ].each do |options|
+        assert_no_difference "BillingEvent.count" do
+          assert_no_enqueued_jobs(only: ProcessStripeEventJob) { deliver_webhook(**options) }
+        end
+        assert_error :bad_request, "invalid_signature"
       end
+      raw = '{ "id": "evt_raw", "type": "unhandled", "livemode": false }'
+      signature = "t=#{Time.current.to_i},v1=#{OpenSSL::HMAC.hexdigest('SHA256', 'whsec_stub', "#{Time.current.to_i}.#{raw}")}"
+      deliver_webhook(raw: JSON.generate(JSON.parse(raw)), signature: signature)
+      assert_error :bad_request, "invalid_signature"
+      deliver_webhook(raw: "not-json")
       assert_error :bad_request, "invalid_signature"
     end
-    raw = '{ "id": "evt_raw", "type": "unhandled", "livemode": false }'
-    signature = "t=#{Time.current.to_i},v1=#{OpenSSL::HMAC.hexdigest('SHA256', 'whsec_stub', "#{Time.current.to_i}.#{raw}")}"
-    deliver_webhook(raw: JSON.generate(JSON.parse(raw)), signature: signature)
-    assert_error :bad_request, "invalid_signature"
-    deliver_webhook(raw: "not-json")
-    assert_error :bad_request, "invalid_signature"
   end
 
   test "raw JSON whitespace is preserved and a rotating secret signature is accepted" do

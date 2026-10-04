@@ -31,4 +31,5 @@ synchronizes runtime text before listening. Kamal uses shared PostgreSQL.
 Read [CLAUDE.md](CLAUDE.md) for the rulebook, [GATES.md](docs/GATES.md) for checks,
 [TYPE_CONTRACT.md](docs/TYPE_CONTRACT.md) for generation, [DESIGN.md](docs/DESIGN.md) for
 UI patterns, [DEPLOY.md](docs/DEPLOY.md) for configuration, and
-[NEW_PRODUCT.md](docs/NEW_PRODUCT.md) to start a product with `bin/rename`.
+[NEW_PRODUCT.md](docs/NEW_PRODUCT.md) to start a product with `bin/rename`, and
+[NEW_SERVER.md](docs/NEW_SERVER.md) for shared-server provisioning.

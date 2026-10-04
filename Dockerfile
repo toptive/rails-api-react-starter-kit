@@ -14,10 +14,10 @@ ARG VITE_PRERENDER_API_URL=""
 ENV VITE_OUT_DIR=../public
 RUN pnpm build
 
-FROM ruby:${RUBY_VERSION}-slim AS base
+FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
 WORKDIR /rails
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    apt-get install --no-install-recommends -y libjemalloc2 libpq5 libreadline8 liblz4-1 libzstd1 && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 ENV RAILS_ENV=production BUNDLE_DEPLOYMENT=1 BUNDLE_PATH=/usr/local/bundle \
@@ -25,25 +25,40 @@ ENV RAILS_ENV=production BUNDLE_DEPLOYMENT=1 BUNDLE_PATH=/usr/local/bundle \
 
 FROM base AS build
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
-    rm -rf /usr/local/bundle/ruby/*/cache && \
-    bundle exec bootsnap precompile -j 1 --gemfile
-COPY . .
+    rm -rf /usr/local/bundle/ruby/*/cache
+RUN find /usr/local/bundle/ruby/*/gems -mindepth 2 -maxdepth 2 -type d \( -name test -o -name tests -o -name spec -o -name features -o -name doc -o -name docs -o -name rbi -o -name ext \) -prune -exec rm -rf '{}' + && \
+    find /usr/local/bundle -type f \( -name '*.o' -o -name '*.a' \) -delete && \
+    find /usr/local/bundle -type f -name '*.so' -exec strip --strip-unneeded '{}' + && \
+    strip --strip-unneeded /usr/local/bundle/ruby/*/gems/thruster-*/exe/*/thrust
+# Prebuilt native gems ship several Ruby ABIs; this image runs only the pinned ABI.
+RUN ruby -rrbconfig -rfileutils -e 'abi = RbConfig::CONFIG.fetch("ruby_version").split(".").first(2).join("."); Dir.glob("/usr/local/bundle/ruby/*/gems/{nokogiri-*/lib/nokogiri,pg-*/lib}/[0-9]*").each { |path| FileUtils.rm_r(path) unless File.basename(path) == abi }'
+COPY app ./app
+COPY bin ./bin
+COPY config ./config
+COPY db ./db
+COPY i18n/translations.csv ./i18n/translations.csv
+COPY lib ./lib
+COPY public ./public
+COPY Rakefile config.ru ./
 COPY --from=frontend /build/public ./public
+# Precompile app code; assets:precompile warms the gems actually loaded at boot.
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 RUN SPA_ORIGIN=https://CHANGE_ME.example.com API_ORIGIN=https://CHANGE_ME.example.com \
     SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile
 
 FROM base AS runtime
+# Direct PostgreSQL tools avoid the distribution's Perl-based version wrapper.
+COPY --from=build /usr/lib/postgresql/15/bin/psql /usr/lib/postgresql/15/bin/pg_dump /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin/
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
 COPY --chown=rails:rails --from=build /usr/local/bundle /usr/local/bundle
 COPY --chown=rails:rails --from=build /rails /rails
-RUN mkdir -p tmp log storage && chown -R rails:rails tmp log storage
+RUN install -d -o rails -g rails tmp/pids log storage
 USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["./bin/thrust", "./bin/rails", "server", "-b", "0.0.0.0"]

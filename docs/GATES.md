@@ -9,7 +9,7 @@ earlier one fails; the command exits nonzero and lists the failures. Never weake
 | Boundaries | `bundle exec archspec check` |
 | Application security | `bundle exec brakeman --no-pager -q` |
 | Gem advisories | `bundle exec bundler-audit check --update` |
-| Rails tests | `bin/rails test` |
+| Rails tests | `bin/rails test` (parallel suite, then serial catalogue/Cable suite) |
 | Generated API contract | `bin/rails contract:check` |
 | Generated locales | `bin/rails i18n:check` |
 | TypeScript | `pnpm typecheck` |
@@ -56,7 +56,11 @@ More end-to-end tests, fewer unit tests.
   `NOTES.md`, `REPORT.md` or `tasks/` in the repository.
 
 Backend tests use an isolated `rails_api_starter_kit_test` database and two workers by default.
-Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity.
+Set `PARALLEL_WORKERS` to match available PostgreSQL connection capacity on Linux. macOS
+always uses one worker to avoid forking initialized libpq/Objective-C state, including direct
+`bin/rails test` runs. `bin/check` runs catalogue and translation tests separately with one
+worker: Cable broadcasts span worker databases, and the Solid Cable test spawns a subprocess.
+All tests run; serial execution does not skip coverage.
 
 On macOS, `bin/check` exports `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` for Rails parallel
 workers. `pnpm audit` may require the local network proxy: supply `HTTPS_PROXY` and

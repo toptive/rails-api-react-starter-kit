@@ -1,9 +1,17 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -euo pipefail
+cd /rails
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
-  ./bin/rails i18n:sync
-fi
+# Only server boots prepare data; consoles and one-off commands run as requested.
+# Accept both the Thruster wrapper and rails server with additional Puma flags.
+previous=""
+for argument in "$@"; do
+  if [[ "$previous" == */rails || "$previous" == rails ]] && [[ "$argument" == server || "$argument" == s ]]; then
+    ./bin/rails db:prepare
+    ./bin/rails i18n:sync
+    break
+  fi
+  previous="$argument"
+done
 
-exec "${@}"
+exec "$@"

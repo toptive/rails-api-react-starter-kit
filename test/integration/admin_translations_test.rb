@@ -46,13 +46,37 @@ class AdminTranslationsTest < ActionDispatch::IntegrationTest
     refute_equal original_version, new_version
     assert_equal "Texto actualizado Ana", I18n.t("errors.api.not_found", locale: :es, name: "Ana")
     get "/api/v1/bootstrap?locale=es"
-    refute_equal original_version, data.fetch("i18nVersion")
+    assert_equal new_version, data.fetch("i18nVersion")
     get "/api/v1/locales/es"
     assert_equal "Texto actualizado {{name}}", data.fetch("errors.api.not_found")
-    event = AuditEvent.find_by!(action: "translation.updated")
+    event = AuditEvent.find_by!(action: "translation.updated", actor_id: @admin.id)
     assert_equal @admin.id, event.actor_id
     assert_equal({ "key" => "errors.api.not_found", "locale" => "es" }, event.metadata)
     assert_equal Translation.find_by!(key: "errors.api.not_found", locale: "es").id, event.subject_id
+  end
+
+  test "catalogue versions hash content and survive no-op writes rebuilds and restored edits" do
+    catalogues = %w[en es].to_h do |locale|
+      get "/api/v1/locales/#{locale}"
+      assert_response :ok
+      [ locale, data.sort.to_h ]
+    end
+    original = Digest::SHA256.hexdigest(JSON.generate(catalogues))
+    assert_equal original, response.parsed_body.dig("meta", "version")
+    original_value = catalogues.fetch("es").fetch("app.name")
+    [ "Edited brand", "Edited brand", original_value ].each do |value|
+      put "/api/v1/admin/translations/app.name", params: { locale: "es", value: value }, headers: admin_headers, as: :json
+      assert_response :ok
+      catalogues.fetch("es")["app.name"] = value
+      expected = Digest::SHA256.hexdigest(JSON.generate(catalogues))
+      TranslationCatalog.invalidate!
+      get "/api/v1/locales/es"
+      assert_equal value, data.fetch("app.name")
+      assert_equal expected, response.parsed_body.dig("meta", "version")
+      get "/api/v1/bootstrap"
+      assert_equal expected, data.fetch("i18nVersion")
+    end
+    assert_equal original, data.fetch("i18nVersion")
   end
 
   test "runtime edits survive the real sync task while defaults refresh and stale unedited keys disappear" do

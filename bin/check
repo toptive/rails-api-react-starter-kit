@@ -13,7 +13,26 @@ run "Ruby style" bundle exec rubocop
 run "Architecture" bundle exec archspec check
 run "Application security" bundle exec brakeman --no-pager -q
 run "Gem security" bundle exec bundler-audit check --update
-run "Rails tests" bin/rails test
+rails_tests() {
+  local parallel=() serial=() path status=0
+  while IFS= read -r path; do
+    case "$path" in
+      test/integration/admin_translation*_test.rb|test/integration/locales_test.rb|test/integration/runtime_i18n_test.rb|test/integration/solid_cable_translations_test.rb)
+        serial+=("$path") ;;
+      *) parallel+=("$path") ;;
+    esac
+  done < <(ruby -e 'puts Dir.glob("test/**/*_test.rb").sort')
+  # libpq and Objective-C state inherited by fork are unsafe on macOS.
+  if [[ "$(uname)" == "Darwin" ]]; then
+    PARALLEL_WORKERS=1 bin/rails test "${parallel[@]}" || status=1
+  else
+    bin/rails test "${parallel[@]}" || status=1
+  fi
+  # Catalogue broadcasts cross worker databases; the Cable test spawns a process.
+  PARALLEL_WORKERS=1 bin/rails test "${serial[@]}" || status=1
+  return "$status"
+}
+run "Rails tests" rails_tests
 run "Type contract" bin/rails contract:check
 run "Translation contract" bin/rails i18n:check
 run "Frontend types" pnpm typecheck
